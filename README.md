@@ -1,8 +1,8 @@
-# 폭스스토어
+# 딥레이서
 
 ## Git URL
 ```
-http://YOUR_ID@office.dataeum.kr:9900/dymoon/%ED%8F%AD%EC%8A%A4%EB%AA%B0
+https://github.com/NamBeomSeok1/DEEPRACER.git
 
 Dataeum YONA server
 http://office.dataeum.kr:9900/
@@ -11,13 +11,6 @@ http://office.dataeum.kr:9900/
 
 ## 프로젝트 설정
 
-### globals.properties
-
-```
-/src/main/resources/egovframework/egovProps/globals.properties
-Globals.fileStorePath =  C:/JAVA_PROJECTS/store/AttachFiles/
-CMS.contents.fileStorePath = C:/JAVA_PROJECTS/store/AttachFiles/contents/
-```
 
 ### Tomcat context.xml
 ```xml
