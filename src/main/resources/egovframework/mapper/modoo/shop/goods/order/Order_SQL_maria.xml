@@ -1,0 +1,958 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.order.service.impl.OrderMapper">
+
+	<select id="selectMyOrderList" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="modoo.module.shop.goods.order.service.OrderVO">
+		SELECT
+			o.ORDER_NO
+			,o.ORDER_GROUP_NO
+			,o.GOODS_ID
+			,o.ORDER_KND_CODE
+			,o.ORDER_SETLE_SE_CODE
+			,o.SBSCRPT_CYCLE_SE_CODE
+			,o.SBSCRPT_WEEK_CYCLE
+			,o.SBSCRPT_DLVY_WD
+			,o.SBSCRPT_USE_WEEK
+			,o.SBSCRPT_MT_CYCLE
+			,o.SBSCRPT_USE_MT
+			,o.SBSCRPT_DLVY_DAY
+			,o.ORDER_CO
+			,o.GOODS_AMOUNT
+			,o.DSCNT_AMOUNT
+			,o.DLVY_AMOUNT
+			,o.ISLAND_DLVY_AMOUNT
+			,o.RSRVMNEY
+			,o.TOT_AMOUNT
+			,o.EXPRN_USE_AT
+			,o.EXPRN_AMOUNT
+			,o.COMPNO_DSCNT_USE_AT
+			,o.DLVY_ADRES_NM
+			,o.DLVY_USER_NM
+			,o.TELNO
+			,o.RECPTR_TELNO
+			,o.ORDER_CANCL_RESN
+			,o.DLVY_ZIP
+			,o.DLVY_ADRES
+			,o.DLVY_ADRES_DETAIL
+			,o.DLVY_MSSAGE
+			,o.ORDER_STTUS_CODE
+			,o.ORDER_PNTTM
+			,o.ORDER_CANCL_PNTTM
+			,o.ORDRR_ID
+			,o.ORDRR_NM
+			,o.ORDRR_SEXDSTN
+			,o.ORDRR_AGRDE
+			,o.CARD_ID
+			,o.BILL_KEY
+			,o.NOW_ODR
+			,o.INDVDLINFO_AGRE_AT
+			,o.PURCHS_CND_AGRE_AT
+			,o.FRST_REGIST_PNTTM
+			,o.FRST_REGISTER_ID
+			,o.USE_AT
+			,(SELECT GOODS_IMAGE_THUMB_PATH FROM stn_goods_image WHERE GOODS_ID = o.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' ORDER BY GOODS_IMAGE_SN ASC LIMIT 1 ) AS GOODS_TITLE_IMAGE_PATH
+			,(o.GOODS_AMOUNT*o.ORDER_CO+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_order_item t WHERE o.ORDER_NO = t.ORDER_NO AND t.GISTEM_SE_CODE IN ('D','A') ) ) NEXT_TOT_PC
+		FROM	stn_order o
+		WHERE	o.ORDRR_ID = #{ordrrId}
+			AND o.ORDER_GROUP_NO = #{orderGroupNo}
+	</select>
+
+	<!-- 주문 그룹 저장 -->
+	<insert id="insertOrderGroup" parameterType="modoo.module.shop.goods.order.service.OrderGroupVO">
+		INSERT INTO stn_order_group (
+			ORDER_GROUP_NO
+		) VALUES (
+			#{orderGroupNo}
+		)
+	</insert>
+
+	<!-- 주문 저장 -->
+	<insert id="insertOrder" parameterType="modoo.module.shop.goods.order.service.OrderVO">
+		INSERT INTO stn_order (
+			ORDER_NO
+			,ORDER_GROUP_NO
+			,GOODS_ID
+			,ORDER_KND_CODE
+			,ORDER_SETLE_SE_CODE
+			,SBSCRPT_CYCLE_SE_CODE
+			,SBSCRPT_WEEK_CYCLE
+			,SBSCRPT_DLVY_WD
+			,SBSCRPT_USE_WEEK
+			,SBSCRPT_MT_CYCLE
+			,SBSCRPT_USE_MT
+			,SBSCRPT_DLVY_DAY
+			,ORDER_CO
+			,GOODS_AMOUNT
+			,DSCNT_AMOUNT
+			,DLVY_AMOUNT
+			,ISLAND_DLVY_AMOUNT
+			,EXPRN_AMOUNT
+			,EXPRN_USE_AT
+			,COMPNO_DSCNT_USE_AT
+			,RSRVMNEY
+			,TOT_AMOUNT
+			,DLVY_ADRES_NM
+			,DLVY_USER_NM
+			,TELNO
+			,RECPTR_TELNO
+			,ORDER_CANCL_RESN
+			,DLVY_ZIP
+			,DLVY_ADRES
+			,DLVY_ADRES_DETAIL
+			,DLVY_MSSAGE
+			,ORDER_STTUS_CODE
+			,ORDER_PNTTM
+			,ORDER_CANCL_PNTTM
+			,ORDRR_ID
+			,ORDRR_NM
+			,ORDRR_EMAIL
+			,ORDRR_SEXDSTN
+			,ORDRR_AGRDE
+			,CARD_ID
+			,BILL_KEY
+			,NOW_ODR
+			,INDVDLINFO_AGRE_AT
+			,PURCHS_CND_AGRE_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,USE_AT
+		)
+		SELECT 
+			#{orderNo}
+			,#{orderGroupNo}
+			,g.GOODS_ID
+			,#{orderKndCode}
+			,#{orderSetleSeCode}
+			,c.SBSCRPT_CYCLE_SE_CODE
+			,c.SBSCRPT_WEEK_CYCLE
+			,c.SBSCRPT_DLVY_WD
+			,c.SBSCRPT_USE_WEEK
+			,c.SBSCRPT_MT_CYCLE
+			,c.SBSCRPT_USE_MT
+			,c.SBSCRPT_DLVY_DAY
+			,c.ORDER_CO
+			,g.GOODS_PC AS GOODS_AMOUNT
+			,IFNULL(#{dscntAmount},0)
+			,(CASE WHEN g.FREE_DLVY_PC <![CDATA[>]]> 0 AND g.FREE_DLVY_PC IS NOT NULL AND g.FREE_DLVY_PC <![CDATA[<=]]> g.GOODS_PC * c.ORDER_CO +IFNULL(#{dscntAmount},0)+IFNULL(#{exprnAmount},0)+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO)
+				THEN 0
+				ELSE g.DLVY_PC   
+				END
+			)
+			,#{islandDlvyAmount}
+			,(CASE WHEN c.EXPRN_USE_AT='Y' THEN g.EXPRN_PC*c.ORDER_CO ELSE 0 END)
+			 ,c.EXPRN_USE_AT 
+			 ,c.COMPNO_DSCNT_USE_AT 
+			,( CASE WHEN g.GOODS_RSRVMNEY_RATE_AT = 'Y' 
+				THEN (g.GOODS_PC * #{orderCo}) * (g.GOODS_RSRVMNEY_RATE / 100 ) 
+				ELSE g.GOODS_RSRVMNEY * #{orderCo}  END
+			)
+			,(CASE WHEN c.EXPRN_USE_AT='Y' THEN 
+				(
+					CASE WHEN g.FREE_DLVY_PC <![CDATA[>]]> 0 AND g.FREE_DLVY_PC IS NOT NULL AND g.FREE_DLVY_PC <![CDATA[<=]]> g.GOODS_PC * c.ORDER_CO +IFNULL(#{dscntAmount},0)+#{exprnAmount}+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0)
+					THEN (g.GOODS_PC * c.ORDER_CO+#{islandDlvyAmount}+(#{exprnAmount}*c.ORDER_CO)+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0))
+					ELSE (g.GOODS_PC * c.ORDER_CO + g.DLVY_PC+#{islandDlvyAmount}+(#{exprnAmount}*c.ORDER_CO)+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0 ))
+					END 
+				)
+				ELSE
+				(
+					CASE WHEN g.FREE_DLVY_PC <![CDATA[>]]> 0 AND g.FREE_DLVY_PC IS NOT NULL AND g.FREE_DLVY_PC <![CDATA[<=]]> g.GOODS_PC * c.ORDER_CO +IFNULL(#{dscntAmount},0)+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0)
+					THEN (g.GOODS_PC * c.ORDER_CO+#{islandDlvyAmount}+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0))
+					ELSE (g.GOODS_PC * c.ORDER_CO + g.DLVY_PC+#{islandDlvyAmount}+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0 ))
+					END 
+				)
+				END) 
+			<!-- <choose>
+				<when test="exprnUseAt='Y'">
+				,(
+					CASE WHEN g.FREE_DLVY_PC <![CDATA[<=]]> g.GOODS_PC * c.ORDER_CO +IFNULL(#{dscntAmount},0)+#{exprnAmount}+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0) 
+					THEN (g.GOODS_PC * c.ORDER_CO+#{islandDlvyAmount}+#{exprnAmount}+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0))
+					ELSE (g.GOODS_PC * c.ORDER_CO + g.DLVY_PC+#{islandDlvyAmount}+#{exprnAmount}+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0 ))   
+					END 
+				)
+				</when>
+				<otherwise>
+				,(
+					CASE WHEN g.FREE_DLVY_PC <![CDATA[<=]]> g.GOODS_PC * c.ORDER_CO +IFNULL(#{dscntAmount},0)+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0) 
+					THEN (g.GOODS_PC * c.ORDER_CO+#{islandDlvyAmount}+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0))
+					ELSE (g.GOODS_PC * c.ORDER_CO + g.DLVY_PC+#{islandDlvyAmount}+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO AND GITEM_PC <![CDATA[>]]> 0 ))   
+					END 
+				) 
+				</otherwise>
+			</choose> -->
+			<!-- (g.GOODS_PC * c.ORDER_CO + g.DLVY_PC+#{islandDlvyAmount} +(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_cart_item WHERE CART_NO = c.CART_NO)) AS TOT_AMOUNT -->  
+			,#{dlvyAdresNm}
+			,#{dlvyUserNm}
+			,#{telno}
+			,#{recptrTelno}
+			,NULL AS ORDER_CANCL_RESN
+			,#{dlvyZip}
+			,#{dlvyAdres}
+			,#{dlvyAdresDetail}
+			,#{dlvyMssage}
+			,#{orderSttusCode}
+			,SYSDATE() AS ORDER_PNTTM
+			,NULL AS ORDER_CANCL_PNTTM
+			,c.ORDRR_ID
+			,#{ordrrNm}
+			,#{ordrrEmail}
+			,#{ordrrSexdstn}
+			,#{ordrrAgrde}
+			,#{cardId}
+			,#{billKey}
+			,1 AS NOW_ODR
+			,#{indvdlinfoAgreAt}
+			,#{purchsCndAgreAt}
+			,SYSDATE()
+			,#{frstRegisterId}
+			,'Y'
+		FROM	stn_cart c
+		JOIN	stn_goods g ON c.GOODS_ID = g.GOODS_ID
+		WHERE	c.CART_NO = #{cartNo}
+		
+	</insert>
+	
+	<!--주문 수정 -->
+	<update id="updateOrder" parameterType="modoo.module.shop.goods.order.service.OrderVO">
+		UPDATE stn_order
+		<set>
+			<if test="cardId!=null">
+				CARD_ID=#{cardId},
+			</if>
+			<if test="orderSttusCode!=null">
+				ORDER_STTUS_CODE=#{orderSttusCode},
+			</if>
+			<if test="orderCanclPnttm!=null">
+				ORDER_CANCL_PNTTM=#{orderCanclPnttm},
+			</if>
+			<if test="billKey!=null">
+				BILL_KEY=#{billKey},
+			</if>
+			<if test="nowOdr!=null">
+				NOW_ODR=#{nowOdr},
+			</if>
+			<if test="totAmount!=null">
+				TOT_AMOUNT=#{totAmount},
+			</if>
+			<if test="totAmount!=null">
+				DSCNT_AMOUNT=#{dscntAmount},
+			</if>
+			<if test="nextSetlede!=null">
+				NEXT_SETLEDE=#{nextSetlede},
+			</if>
+			<if test="lastUpdtPnttm!=null">
+				LAST_UPDT_PNTTM=#{lastUpdtPnttm},
+			</if>
+			<if test="lastUpdusrId!=null">
+				LAST_UPDUSR_ID=#{lastUpdusrId},
+			</if>
+			<if test="dlvyMssage!=null">
+				DLVY_MSSAGE=#{dlvyMssage},
+			</if>
+		</set>
+		WHERE 
+			ORDER_NO=#{orderNo}	
+	</update>
+	
+	<!--주문 구독변경-->
+	<update id="updateSbsOrder" parameterType="modoo.module.shop.goods.order.service.OrderVO">
+		UPDATE stn_order o
+			<set>
+			LAST_UPDT_PNTTM=SYSDATE()
+			,LAST_UPDUSR_ID=#{lastUpdusrId}
+			<!-- ,TOT_AMOUNT=(o.GOODS_AMOUNT * 
+			<if test="orderCo!=null">
+			#{orderCo} 
+			</if>
+			<if test="orderCo == null">
+			o.ORDER_CO 
+			</if>
+			+
+			<choose>
+				<when test="islandDlvyChk == 'jeju'">
+					o.DLVY_AMOUNT+(SELECT g.JEJU_DLVY_PC FROM STN_GOODS g  JOIN  STN_ORDER o ON o.ORDER_NO = #{orderNo} AND g.GOODS_ID = o.GOODS_ID )
+				</when>
+				<when test="islandDlvyChk == 'island'">
+					o.DLVY_AMOUNT+ (SELECT g.ISLAND_DLVY_PC FROM STN_GOODS g  JOIN  STN_ORDER o ON o.ORDER_NO = #{orderNo} AND g.GOODS_ID = o.GOODS_ID )
+				</when>
+				<otherwise>
+					o.DLVY_AMOUNT
+				</otherwise>
+			</choose> 
+				 +(SELECT IFNULL(SUM(GITEM_PC),0) FROM STN_ORDER_ITEM i  JOIN  STN_ORDER o ON o.ORDER_NO=#{orderNo} AND o.ORDER_NO = i.ORDER_NO)) -->
+			,TOT_AMOUNT=
+			CASE 
+			WHEN 	
+			(o.GOODS_AMOUNT * 
+			<if test="orderCo!=null">
+				#{orderCo} 
+			</if>
+			<if test="orderCo == null">
+				o.ORDER_CO 
+			</if> 
+			<if test="dscntAmount !=0">
+				#{dscntAmount}		
+			</if>
+			+(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_order_item i  JOIN  stn_order o ON o.ORDER_NO=#{orderNo} AND o.ORDER_NO = i.ORDER_NO AND i.GITEM_PC <![CDATA[>]]> 0)) <![CDATA[>=]]> #{freeDlvyPc}
+			THEN
+			(o.GOODS_AMOUNT * 
+			<if test="orderCo!=null">
+			#{orderCo} 
+			</if>
+			<if test="orderCo == null">
+			o.ORDER_CO 
+			</if>
+			+
+			<choose>
+				<when test="islandDlvyChk == 'jeju'">
+					(SELECT g.JEJU_DLVY_PC FROM stn_goods g  JOIN  stn_order o ON o.ORDER_NO = #{orderNo} AND g.GOODS_ID = o.GOODS_ID )
+				</when>
+				<when test="islandDlvyChk == 'island'">
+					(SELECT g.ISLAND_DLVY_PC FROM stn_goods g  JOIN  stn_order o ON o.ORDER_NO = #{orderNo} AND g.GOODS_ID = o.GOODS_ID )
+				</when>
+				<otherwise>
+					0
+				</otherwise>
+			</choose> 
+				 +(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_order_item i  JOIN  stn_order o ON o.ORDER_NO=#{orderNo} AND o.ORDER_NO = i.ORDER_NO AND i.GITEM_PC <![CDATA[>]]> 0))
+				 ELSE
+				 (o.GOODS_AMOUNT * 
+			<if test="orderCo!=null">
+			#{orderCo} 
+			</if>
+			<if test="orderCo == null">
+			o.ORDER_CO 
+			</if>
+			+
+			<choose>
+				<when test="islandDlvyChk == 'jeju'">
+					(SELECT g.DLVY_PC FROM stn_goods g  JOIN  stn_order o ON o.ORDER_NO = #{orderNo} AND g.GOODS_ID = o.GOODS_ID )+(SELECT g.JEJU_DLVY_PC FROM stn_goods g  JOIN  stn_order o ON o.ORDER_NO = #{orderNo} AND g.GOODS_ID = o.GOODS_ID )
+				</when>
+				<when test="islandDlvyChk == 'island'">
+					(SELECT g.DLVY_PC FROM stn_goods g  JOIN  stn_order o ON o.ORDER_NO = #{orderNo} AND g.GOODS_ID = o.GOODS_ID )+ (SELECT g.ISLAND_DLVY_PC FROM stn_goods g  JOIN  stn_order o ON o.ORDER_NO = #{orderNo} AND g.GOODS_ID = o.GOODS_ID )
+				</when>
+				<otherwise>
+					o.DLVY_AMOUNT
+				</otherwise>
+			</choose> 
+			 +(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_order_item i  JOIN  stn_order o ON o.ORDER_NO=#{orderNo} AND o.ORDER_NO = i.ORDER_NO AND i.GITEM_PC <![CDATA[>]]> 0)) END
+			<if test="orderCo != null">
+				,ORDER_CO=#{orderCo}
+			</if>
+			<if test="sbscrptWeekCycle != null">
+				,SBSCRPT_WEEK_CYCLE=#{sbscrptWeekCycle}	
+			</if>
+			,DLVY_AMOUNT=
+			CASE 
+			WHEN 	
+			(o.GOODS_AMOUNT * 
+			<if test="orderCo!=null">
+				#{orderCo} 
+			</if>
+			<if test="orderCo == null">
+				o.ORDER_CO 
+			</if>
+			<if test="dscntAmount != 0">
+				#{dscntAmount}		
+			</if>
+			 +(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_order_item i  JOIN  stn_order o ON o.ORDER_NO=#{orderNo} AND o.ORDER_NO = i.ORDER_NO AND i.GITEM_PC <![CDATA[>]]> 0)) <![CDATA[>=]]> #{freeDlvyPc}
+			THEN
+			0
+			ELSE
+			(SELECT g.DLVY_PC FROM stn_goods g  JOIN  stn_order o ON o.ORDER_NO = #{orderNo} AND g.GOODS_ID = o.GOODS_ID ) END
+			<if test="sbscrptDlvyWd != null">
+				,SBSCRPT_DLVY_WD=#{sbscrptDlvyWd}
+			</if>
+			<if test="sbscrptMtCycle != null">
+				,SBSCRPT_MT_CYCLE=#{sbscrptMtCycle}		
+			</if>
+			<if test="dscntAmount != null">
+				,DSCNT_AMOUNT=#{dscntAmount}		
+			</if>
+			<if test="sbscrptDlvyDay != null">
+				,SBSCRPT_DLVY_DAY=#{sbscrptDlvyDay}
+			</if>
+			<if test="dlvyMssage != null">
+				,DLVY_MSSAGE=#{dlvyMssage}
+			</if>
+			<if test="dlvyAdresNm != null">
+				,DLVY_ADRES_NM=#{dlvyAdresNm}
+			</if>
+			<if test="compnoDscntUseAt != null">
+				,COMPNO_DSCNT_USE_AT=#{compnoDscntUseAt}
+			</if>
+			<if test="dlvyUserNm != null">
+				,DLVY_USER_NM=#{dlvyUserNm}
+			</if>
+			<if test="recptrTelno != null">
+				,RECPTR_TELNO=#{recptrTelno}
+			</if>
+			<if test="dlvyZip != null">
+				,DLVY_ZIP=#{dlvyZip}
+			</if>
+			<if test="dlvyAdres != null">
+				,DLVY_ADRES=#{dlvyAdres}
+			</if>
+			<if test="dlvyAdresDetail != null">
+				,DLVY_ADRES_DETAIL=#{dlvyAdresDetail}
+			</if>
+			<if test="nextSetlede != null">
+				,NEXT_SETLEDE=#{nextSetlede}
+			</if>
+			<choose>
+				<when test="islandDlvyChk == 'jeju'">
+					,ISLAND_DLVY_AMOUNT=(SELECT g.JEJU_DLVY_PC FROM stn_goods g  JOIN  stn_order o ON o.ORDER_NO = #{orderNo} AND g.GOODS_ID = o.GOODS_ID )
+				</when>
+				<when test="islandDlvyChk == 'island'">
+					,ISLAND_DLVY_AMOUNT=(SELECT g.ISLAND_DLVY_PC FROM stn_goods g  JOIN  stn_order o ON o.ORDER_NO = #{orderNo} AND g.GOODS_ID = o.GOODS_ID )
+				</when>
+				<otherwise>
+					,ISLAND_DLVY_AMOUNT=0
+				</otherwise>
+			</choose> 
+		</set>
+		WHERE 
+			ORDER_NO=#{orderNo}	
+	</update>
+	
+	<!-- 주문항목 저장 -->
+	<insert id="insertOrderItem" parameterType="modoo.module.shop.goods.order.service.OrderItemVO">
+		INSERT INTO stn_order_item (
+			OITEM_NO
+			,ORDER_NO
+			,GITEM_ID
+			,GITEM_NM
+			,GISTEM_SE_CODE
+			,GITEM_PC
+			,GITEM_ANSWER
+		)
+		SELECT
+			#{oitemNo}
+			,#{orderNo}
+			,i.GITEM_ID
+			,i.GITEM_NM
+			,i.GITEM_SE_CODE
+			,i.GITEM_PC
+			,#{gitemAnswer}
+		FROM	stn_goods_item i
+		LEFT JOIN	stn_cart_item c ON c.GITEM_ID = i.GITEM_ID AND c.CART_NO = #{cartNo}
+		WHERE	i.GITEM_ID = #{gitemId}
+	</insert>
+
+	<!-- 구독중 목록 -->
+	<select id="selectSubscribeNowList" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="egovMap">
+		SELECT
+			a.ORDER_NO
+			,a.ORDER_STTUS_CODE 
+			,b.ORDER_DLVY_NO
+			,a.ORDER_KND_CODE 
+			,br.BRAND_ID
+			,br.BRAND_NM
+			,c.GOODS_ID 
+			,(STR_TO_DATE(a.NEXT_SETLEDE,'%Y%m%d')) AS NEXT_SETLEDE 
+			,c.GOODS_NM
+			,a.SBSCRPT_CYCLE_SE_CODE 
+			,a.NOW_ODR 
+			, CASE a.SBSCRPT_CYCLE_SE_CODE
+			   WHEN 'WEEK' THEN CONCAT(a.SBSCRPT_WEEK_CYCLE, '주')
+			   WHEN 'MONTH' THEN CONCAT(a.SBSCRPT_MT_CYCLE, '개월')
+			   ELSE '' END AS SBSCRPT_CYCLE
+		   , CASE a.SBSCRPT_CYCLE_SE_CODE
+			   WHEN 'WEEK' THEN CONCAT(c.SBSCRPT_MIN_USE_WEEK, '회')
+			   WHEN 'MONTH' THEN CONCAT(c.SBSCRPT_MIN_USE_MT, '회')
+			   ELSE '' END AS SBSCRPT_MIN_USE
+		   , CASE a.SBSCRPT_CYCLE_SE_CODE
+			   WHEN 'WEEK' THEN CONCAT(code3.CODE_NM, '요일')
+			   WHEN 'MONTH' THEN CONCAT(a.SBSCRPT_DLVY_DAY, '일')
+			   ELSE '' END AS SBSCRPT_DLVY_DAY
+			,a.ORDER_CO
+			,IFNULL(f.SETLE_TOT_AMOUNT, a.TOT_AMOUNT) AS SETLE_TOT_AMOUNT
+			,IFNULL(a.ISLAND_DLVY_AMOUNT,0) AS ISLAND_DLVY_AMOUNT
+			,(a.TOT_AMOUNT+a.DSCNT_AMOUNT) AS TOT_AMOUNT
+			,b.ORDER_REQ_STTUS_CODE
+			,b.REQ_TY_CODE
+			,b.DLVY_AMOUNT
+			,b.DLVY_STTUS_CODE
+			,code5.CODE_NM AS DLVY_STTUS_CODE_NM 
+			,(SELECT GOODS_IMAGE_THUMB_PATH FROM stn_goods_image WHERE GOODS_ID = c.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' LIMIT 1) AS GOODS_IMAGE_THUMB_PATH
+			,code1.CODE_NM AS ORDER_KND_CODE_NM
+			,code2.CODE_NM AS SBSCRPT_CYCLE_SE_CODE_NM
+			,code3.CODE_NM AS SBSCRPT_DLVY_WD_NM
+			,CASE WHEN a.ORDER_KND_CODE = 'SBS' AND a.ORDER_STTUS_CODE = 'ST02' THEN code4.CODE_NM	
+				WHEN a.ORDER_KND_CODE = 'CPN' AND a.ORDER_STTUS_CODE = 'ST02' THEN '쿠폰상품'
+				WHEN a.ORDER_KND_CODE = 'GNR' AND a.ORDER_STTUS_CODE = 'ST02' THEN '체험구독'	
+				WHEN a.ORDER_KND_CODE = 'GNR' AND a.ORDER_STTUS_CODE = 'ST99' THEN code6.CODE_NM 	
+				ELSE code6.CODE_NM 	
+				END AS ORDER_STTUS_CODE_NM
+			,CASE WHEN a.ORDER_KND_CODE = 'CPN' THEN '구매완료' 
+			ELSE code5.CODE_NM END AS DLVY_STTUS_CODE_NM
+			,g.COMMENT_ID
+			,b.INVC_NO 
+			,j.API_ID 
+		<include refid="selectSubscribeNowListFrom"></include>
+		GROUP BY a.ORDER_NO
+		ORDER BY a.ORDER_NO DESC, b.ORDER_DLVY_NO DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectSubscribeNowListFrom">
+		FROM	stn_order a
+		JOIN    stn_order_dlvy b ON b.ORDER_NO = a.ORDER_NO AND b.ORDER_DLVY_NO IN (SELECT MAX(ORDER_DLVY_NO) FROM stn_order_dlvy WHERE ORDER_REQ_STTUS_CODE IN ('O', 'E', 'R', 'F', 'C', 'T') GROUP BY ORDER_NO)
+		JOIN	stn_order_setle f ON f.ORDER_SETLE_NO = b.ORDER_SETLE_NO
+		JOIN	stn_goods c ON c.GOODS_ID = a.GOODS_ID
+		LEFT JOIN	stn_goods_brand br ON br.BRAND_ID = c.BRAND_ID
+		LEFT JOIN	dtn_comment g ON g.CNTNTS_ID = c.GOODS_ID AND g.CNTNTS_SE_CODE = 'STN_ORDER' AND a.ORDRR_ID = g.WRTER_ID AND g.COMMENT_PARNT_ID = '0'
+									AND g.COMMENT_ID = (SELECT MAX(COMMENT_ID) FROM dtn_comment
+														WHERE USE_AT = 'Y' AND CNTNTS_ID = c.GOODS_ID AND CNTNTS_SE_CODE = 'STN_ORDER' AND WRTER_ID = a.ORDRR_ID AND g.COMMENT_PARNT_ID = '0')
+		LEFT JOIN 	stn_hdry_cmpny j ON j.HDRY_ID = b.HDRY_ID 
+		LEFT JOIN dtc_cmmn_detail_code code1 ON a.ORDER_KND_CODE = code1.CODE AND code1.USE_AT = 'Y' AND code1.CODE_ID='CMS009'
+		LEFT JOIN dtc_cmmn_detail_code code2 ON a.SBSCRPT_CYCLE_SE_CODE = code2.CODE AND code2.USE_AT = 'Y' AND code2.CODE_ID='CMS029'
+		LEFT JOIN dtc_cmmn_detail_code code3 ON a.SBSCRPT_DLVY_WD = code3.CODE AND code3.USE_AT = 'Y' AND code3.CODE_ID='CMS023'
+		LEFT JOIN dtc_cmmn_detail_code code4 ON a.ORDER_STTUS_CODE = code4.CODE AND code4.USE_AT = 'Y' AND code4.CODE_ID='CMS021'
+		LEFT JOIN dtc_cmmn_detail_code code5 ON b.DLVY_STTUS_CODE = code5.CODE AND code5.USE_AT = 'Y' AND code5.CODE_ID='CMS022'
+		LEFT JOIN dtc_cmmn_detail_code code6 ON b.REQ_TY_CODE = code6.CODE AND code6.USE_AT = 'Y' AND code6.CODE_ID='CMS027'
+		WHERE 	a.USE_AT = 'Y'
+			AND a.ORDRR_ID = #{ordrrId}
+		<choose>
+			<when test="orderSttusCode == 'ST02'"> <!-- 구독중 -->
+				AND b.ORDER_REQ_STTUS_CODE IN ('O', 'E', 'R', 'F', 'C')
+				AND a.ORDER_STTUS_CODE IN ('ST99','ST02', 'ST03')
+				AND (b.REQ_TY_CODE IS NULL OR b.REQ_TY_CODE IN ('C01', 'C03', 'E01', 'E02', 'E03', 'E04', 'E05', 'R01', 'R02', 'R03', 'R04', 'R05', 'T03'))
+			</when>
+			<otherwise> <!-- 구독해지 -->
+				AND b.ORDER_REQ_STTUS_CODE IN ('C', 'T')
+				AND a.ORDER_STTUS_CODE IN ('ST01', 'ST04', 'ST99')
+				AND (b.REQ_TY_CODE IS NULL OR b.REQ_TY_CODE IN ('C02', 'C04', 'E01', 'E02', 'E03', 'E04', 'E05', 'R01', 'R02', 'R03', 'R04', 'R05', 'T01', 'T02'))
+			</otherwise>
+		</choose>
+	</sql>
+
+	<!-- 구독중 목록 카운트 -->
+	<select id="selectSubscribeNowListCnt" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="int">
+		SELECT		
+			COUNT(*) AS CNT            
+		<include refid="selectSubscribeNowListFrom"></include>
+	</select>
+
+	<!-- 주문 1개 상세 정보 -->
+	<select id="selectOrder" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="modoo.module.shop.goods.order.service.OrderVO">
+		SELECT
+			A.ORDER_NO
+			, A.ORDER_GROUP_NO
+			, A.GOODS_ID
+			, A.ORDER_KND_CODE
+			, A.ORDER_SETLE_SE_CODE
+			, A.SBSCRPT_CYCLE_SE_CODE
+			, A.SBSCRPT_WEEK_CYCLE
+			, A.SBSCRPT_DLVY_WD
+			, A.SBSCRPT_USE_WEEK
+			, A.SBSCRPT_MT_CYCLE
+			, A.SBSCRPT_USE_MT
+			, A.SBSCRPT_DLVY_DAY                                                                   
+			, A.ORDER_CO                                                                           
+			, A.GOODS_AMOUNT                                                                       
+			, A.DSCNT_AMOUNT                                                                       
+			, A.DLVY_AMOUNT      
+			, A.ISLAND_DLVY_AMOUNT                                                                  
+			, A.RSRVMNEY                                                                           
+			, A.TOT_AMOUNT     
+			, A.EXPRN_USE_AT
+			, A.EXPRN_AMOUNT   
+			, A.COMPNO_DSCNT_USE_AT                                                                 
+			, A.DLVY_ADRES_NM                                                                      
+			, A.DLVY_USER_NM                                                                       
+			, A.TELNO                                                                              
+			, A.RECPTR_TELNO                                                                       
+			, A.ORDER_CANCL_RESN                                                                   
+			, A.DLVY_ZIP                                                                           
+			, A.DLVY_ADRES                                                                         
+			, A.DLVY_ADRES_DETAIL                                                                  
+			, A.DLVY_MSSAGE                                                                        
+			, A.ORDER_STTUS_CODE                                                                   
+			, A.ORDER_PNTTM                                                                        
+			, A.ORDER_CANCL_PNTTM                                                                  
+			, A.ORDRR_ID                                                                        
+			, A.ORDRR_NM   
+			, A.ORDRR_EMAIL                                                                        
+			, A.ORDRR_SEXDSTN                                                                      
+			, A.ORDRR_AGRDE                                                                        
+			, A.CARD_ID                                                                            
+			, A.BILL_KEY                                                                           
+			, A.NOW_ODR                                                                            
+			, A.NEXT_SETLEDE                                                                       
+			, A.INDVDLINFO_AGRE_AT                                                                 
+			, A.PURCHS_CND_AGRE_AT                                                                 
+			, A.FRST_REGIST_PNTTM                                                                  
+			, A.FRST_REGISTER_ID                                                                   
+			, A.LAST_UPDT_PNTTM                                                                    
+			, A.LAST_UPDUSR_ID                                                                     
+			, A.USE_AT
+			, B.REQ_TY_CODE
+			, B.ORDER_DLVY_NO
+			,/* CASE WHEN A.ORDER_KND_CODE = 'SBS' AND A.ORDER_STTUS_CODE = 'ST02' THEN code4.CODE_NM
+				WHEN A.ORDER_KND_CODE = 'CPN' AND A.ORDER_STTUS_CODE = 'ST02' THEN '쿠폰상품'
+				WHEN A.ORDER_KND_CODE = 'GNR' AND A.ORDER_STTUS_CODE = 'ST02' THEN '체험구독'	
+				WHEN A.ORDER_KND_CODE = 'GNR' AND A.ORDER_STTUS_CODE = 'ST99' THEN code6.CODE_NM 	
+				ELSE IFNULL(code6.CODE_NM, code4.CODE_NM)
+				END AS ORDER_STTUS_CODE_NM
+		FROM STN_ORDER A
+		LEFT JOIN stn_order_dlvy B ON A.ORDER_NO = B.ORDER_NO AND B.ORDER_DLVY_NO = (SELECT
+																					IFNULL(MAX(AA.ORDER_DLVY_NO), 0)
+																				FROM stn_order_dlvy AA
+																				JOIN stn_order_setle BB ON AA.ORDER_SETLE_NO = BB.ORDER_SETLE_NO
+																				WHERE BB.SETLE_STTUS_CODE = 'S'
+																					AND A.ORDER_NO = AA.ORDER_NO)
+		LEFT JOIN dtc_cmmn_detail_code code1 ON A.ORDER_KND_CODE = code1.CODE AND code1.USE_AT = 'Y' AND code1.CODE_ID='CMS009'
+		LEFT JOIN dtc_cmmn_detail_code code2 ON A.SBSCRPT_CYCLE_SE_CODE = code2.CODE AND code2.USE_AT = 'Y' AND code2.CODE_ID='CMS029'
+		LEFT JOIN dtc_cmmn_detail_code code3 ON A.SBSCRPT_DLVY_WD = code3.CODE AND code3.USE_AT = 'Y' AND code3.CODE_ID='CMS023'
+		LEFT JOIN dtc_cmmn_detail_code code4 ON A.ORDER_STTUS_CODE = code4.CODE AND code4.USE_AT = 'Y' AND code4.CODE_ID='CMS021'
+		LEFT JOIN dtc_cmmn_detail_code code5 ON B.DLVY_STTUS_CODE = code5.CODE AND code5.USE_AT = 'Y' AND code5.CODE_ID='CMS022'
+		LEFT JOIN dtc_cmmn_detail_code code6 ON B.REQ_TY_CODE = code6.CODE AND code6.USE_AT = 'Y' AND code6.CODE_ID='CMS027'*/
+		CASE WHEN A.ORDER_KND_CODE = 'SBS' AND A.ORDER_STTUS_CODE = 'ST02' THEN code4.CODE_NM
+			WHEN A.ORDER_KND_CODE = 'SBS' AND A.ORDER_STTUS_CODE = 'ST99' AND B.REQ_TY_CODE = 'C01' THEN '구독해지접수'
+			WHEN A.ORDER_KND_CODE = 'SBS' AND A.ORDER_STTUS_CODE = 'ST99' AND B.REQ_TY_CODE = 'C04' THEN '구독해지완료'
+			WHEN A.ORDER_KND_CODE = 'SBS' AND A.ORDER_STTUS_CODE = 'ST99' AND B.REQ_TY_CODE IS NULL THEN '구독해지완료'
+			WHEN A.ORDER_KND_CODE = 'SBS' AND A.ORDER_STTUS_CODE = 'ST04' THEN '구독해지완료'
+			WHEN A.ORDER_KND_CODE = 'CPN' AND A.ORDER_STTUS_CODE = 'ST02' THEN '쿠폰상품'
+			WHEN A.ORDER_KND_CODE = 'GNR' AND A.ORDER_STTUS_CODE = 'ST02' THEN '한번만사보기'
+			WHEN A.ORDER_KND_CODE = 'RNT' AND A.ORDER_STTUS_CODE = 'ST02' THEN '렌탈상품'
+			WHEN A.ORDER_KND_CODE = 'GNR' AND A.ORDER_STTUS_CODE = 'ST99' THEN code6.CODE_NM
+		ELSE IFNULL(code6.CODE_NM, code4.CODE_NM)
+		END AS ORDER_STTUS_CODE_NM
+		, code5.CODE_NM AS DLVY_STTUS_CODE_NM
+		FROM stn_order A
+		LEFT JOIN stn_order_dlvy B ON A.ORDER_NO = B.ORDER_NO AND B.ORDER_DLVY_NO = (SELECT
+																					IFNULL(MAX(AA.ORDER_DLVY_NO), 0)
+																				FROM stn_order_dlvy AA
+																				JOIN stn_order_setle BB ON AA.ORDER_SETLE_NO = BB.ORDER_SETLE_NO
+																				WHERE BB.SETLE_PNTTM IS NOT NULL
+																						AND A.ORDER_NO = AA.ORDER_NO)
+		LEFT JOIN dtc_cmmn_detail_code code1 ON A.ORDER_KND_CODE = code1.CODE AND code1.USE_AT = 'Y' AND code1.CODE_ID='CMS009'
+		LEFT JOIN dtc_cmmn_detail_code code2 ON A.SBSCRPT_CYCLE_SE_CODE = code2.CODE AND code2.USE_AT = 'Y' AND code2.CODE_ID='CMS029'
+		LEFT JOIN dtc_cmmn_detail_code code3 ON A.SBSCRPT_DLVY_WD = code3.CODE AND code3.USE_AT = 'Y' AND code3.CODE_ID='CMS023'
+		LEFT JOIN dtc_cmmn_detail_code code4 ON A.ORDER_STTUS_CODE = code4.CODE AND code4.USE_AT = 'Y' AND code4.CODE_ID='CMS021'
+		LEFT JOIN dtc_cmmn_detail_code code5 ON B.DLVY_STTUS_CODE = code5.CODE AND code5.USE_AT = 'Y' AND code5.CODE_ID='CMS022'
+		LEFT JOIN dtc_cmmn_detail_code code6 ON B.REQ_TY_CODE = code6.CODE AND code6.USE_AT = 'Y' AND code6.CODE_ID='CMS027'
+		<include refid="selectOrderWhere"/>
+	</select>
+	
+	<sql id="selectOrderWhere">
+		<where>
+			A.USE_AT = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(orderNo)">
+				AND  A.ORDER_NO = #{orderNo}
+			</if> 
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(orderGroupNo)">
+				AND  A.ORDER_GROUP_NO = #{orderGroupNo}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(ordrrId)">
+				AND A.ORDRR_ID = #{ordrrId}
+				limit 1
+			</if> 
+		</where>
+	</sql>
+	
+		<!--구독옵션변경 주문 1개 상세 정보 -->
+	<select id="selectModOrder" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="egovMap">
+		SELECT
+			A.ORDER_NO
+			, A.ORDER_GROUP_NO
+			, A.GOODS_ID
+			, A.ORDER_KND_CODE
+			, A.ORDER_SETLE_SE_CODE
+			, A.SBSCRPT_CYCLE_SE_CODE
+			, A.SBSCRPT_WEEK_CYCLE
+			, A.SBSCRPT_DLVY_WD
+			, A.SBSCRPT_USE_WEEK
+			, A.SBSCRPT_MT_CYCLE
+			, A.SBSCRPT_USE_MT
+			, A.SBSCRPT_DLVY_DAY                                                                   
+			, A.ORDER_CO                                                                           
+			, A.GOODS_AMOUNT                                                                       
+			, A.DSCNT_AMOUNT                                                                       
+			, A.DLVY_AMOUNT  
+			, A.ISLAND_DLVY_AMOUNT                                                                      
+			, A.RSRVMNEY                                                                           
+			, A.TOT_AMOUNT      
+			, A.EXPRN_USE_AT
+			, A.EXPRN_AMOUNT                                                                   
+			, A.DLVY_ADRES_NM                                                                      
+			, A.DLVY_USER_NM                                                                       
+			, A.TELNO                                                                              
+			, A.RECPTR_TELNO                                                                       
+			, A.ORDER_CANCL_RESN                                                                   
+			, A.DLVY_ZIP                                                                           
+			, A.DLVY_ADRES                                                                         
+			, A.DLVY_ADRES_DETAIL                                                                  
+			, A.DLVY_MSSAGE                                                                        
+			, A.ORDER_STTUS_CODE                                                                   
+			, A.ORDER_PNTTM                                                                        
+			, A.ORDER_CANCL_PNTTM                                                                  
+			, A.ORDRR_ID                                                                        
+			, A.ORDRR_NM                                                                           
+			, A.ORDRR_SEXDSTN                                                                      
+			, A.ORDRR_AGRDE                                                                        
+			, A.CARD_ID                                                                            
+			, A.BILL_KEY                                                                           
+			, A.NOW_ODR                                                                            
+			, A.NEXT_SETLEDE                                                                       
+			, A.INDVDLINFO_AGRE_AT                                                                 
+			, A.PURCHS_CND_AGRE_AT                                                                 
+			, A.FRST_REGIST_PNTTM                                                                  
+			, A.FRST_REGISTER_ID                                                                   
+			, A.LAST_UPDT_PNTTM                                                                    
+			, A.LAST_UPDUSR_ID                                                                     
+			, A.USE_AT
+		FROM stn_order A
+		WHERE A.ORDER_NO = #{orderNo}
+	</select>
+	
+	<!-- 주문 1개 옵션 정보 -->
+	<select id="selectOrderItemList" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="modoo.module.shop.goods.order.service.OrderItemVO">
+		SELECT
+			A.OITEM_NO       
+			, A.ORDER_NO       
+			, A.GITEM_ID       
+			, A.GITEM_NM       
+			, A.GISTEM_SE_CODE 
+			, A.GITEM_PC       
+			, A.GITEM_ANSWER
+			,(SELECT CODE_NM FROM dtc_cmmn_detail_code WHERE CODE_ID='CMS024' AND CODE = A.GISTEM_SE_CODE) AS GISTEM_SE_CODE_NM
+		FROM stn_order_item A
+		WHERE A.ORDER_NO = #{orderNo}
+		ORDER BY A.OITEM_NO
+	</select>
+	
+
+	<!-- 주문옵션 삭제 -->
+	<delete id="deleteOrderItem" parameterType="modoo.module.shop.goods.order.service.OrderItemVO">
+		DELETE FROM stn_order_item
+		WHERE ORDER_NO = #{orderNo}
+	</delete>
+
+	<!-- 주문 삭제 -->
+	<delete id="deleteOrder" parameterType="modoo.module.shop.goods.order.service.OrderVO">
+		DELETE FROM stn_order
+		WHERE ORDER_GROUP_NO = #{orderGroupNo}
+	</delete>
+
+	<!-- 주문그룹 삭제 -->
+	<delete id="deleteOrderGroup" parameterType="modoo.module.shop.goods.order.service.OrderVO">
+		DELETE FROM stn_order_group
+		WHERE ORDER_GROUP_NO = #{orderGroupNo}
+	</delete>
+
+	<!-- 주문 1개 업체요청정보-->
+	<select id="selectOrderQItemList" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="modoo.module.shop.goods.order.service.OrderItemVO">
+		SELECT
+			A.OITEM_NO       
+			, A.ORDER_NO       
+			, A.GITEM_ID       
+			, A.GITEM_NM       
+			, A.GISTEM_SE_CODE 
+			, A.GITEM_PC       
+			, A.GITEM_ANSWER
+			,(SELECT CODE_NM FROM dtc_cmmn_detail_code WHERE CODE_ID='CMS024' AND CODE = A.GISTEM_SE_CODE) AS GISTEM_SE_CODE_NM
+		FROM stn_order_item A
+		WHERE A.ORDER_NO = #{orderNo}
+		AND A.GISTEM_SE_CODE='Q'
+		ORDER BY A.OITEM_NO
+	</select>
+	
+	<!-- 주문 1개 배송 정보(SBS) -->
+	<select id="selectOrderDlvyList" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO">
+	    SELECT
+	         *
+	    FROM ( SELECT
+	                  A.ORDER_DLVY_NO
+	                  , A.ORDER_NO
+	                  , A.ORDER_SETLE_NO
+	                  , A.ORDER_KND_CODE
+	                  , A.SBSCRPT_CYCLE_SE_CODE
+	                  , A.SBSCRPT_WEEK_CYCLE
+	                  , A.SBSCRPT_DLVY_WD
+	                  , A.SBSCRPT_MT_CYCLE
+	                  , A.SBSCRPT_DLVY_DAY
+	                  , A.ORDER_ODR
+	                  , A.ORDER_CO
+	                  , A.SLE_AMOUNT
+	                  , A.DLVY_AMOUNT
+	                  , A.DLVY_USER_NM
+	                  , A.REQ_TY_CODE
+	                  , A.TELNO
+	                  , A.DLVY_ZIP
+	                  , A.DLVY_ADRES
+	                  , A.DLVY_ADRES_DETAIL
+	                  , A.DLVY_MSSAGE
+	                  , A.DLVY_STTUS_CODE
+	                  , (SELECT API_ID FROM stn_hdry_cmpny WHERE HDRY_ID = A.HDRY_ID) AS HDRY_ID
+	                  , A.HDRY_DLVY_DE
+	                  , A.INVC_NO
+	                  , A.REGIST_PNTTM
+	                  , B.SETLE_STTUS_CODE AS SEARCH_SETLE_STTUS_CODE
+	          FROM stn_order_dlvy A
+	          JOIN stn_order_setle B ON A.ORDER_SETLE_NO = B.ORDER_SETLE_NO
+	          WHERE A.ORDER_NO = #{orderNo}
+	                  AND A.ORDER_ODR   <![CDATA[ < ]]>   (SELECT
+                                                                   MAX(AA.ORDER_ODR)
+                                                           FROM stn_order_dlvy AA
+                                                           WHERE AA.ORDER_NO = #{orderNo})
+
+              UNION ALL
+
+              SELECT
+				A.ORDER_DLVY_NO
+				, A.ORDER_NO
+				, A.ORDER_SETLE_NO
+				, A.ORDER_KND_CODE
+				, A.SBSCRPT_CYCLE_SE_CODE
+				, A.SBSCRPT_WEEK_CYCLE
+				, A.SBSCRPT_DLVY_WD
+				, A.SBSCRPT_MT_CYCLE
+				, A.SBSCRPT_DLVY_DAY
+				, A.ORDER_ODR
+				, A.ORDER_CO
+				, A.SLE_AMOUNT
+				, A.DLVY_AMOUNT
+				, A.DLVY_USER_NM
+				, A.REQ_TY_CODE
+				, A.TELNO
+				, A.DLVY_ZIP
+				, A.DLVY_ADRES
+				, A.DLVY_ADRES_DETAIL
+				, A.DLVY_MSSAGE
+				, A.DLVY_STTUS_CODE
+				, (SELECT API_ID FROM stn_hdry_cmpny WHERE HDRY_ID = A.HDRY_ID) AS HDRY_ID
+				, A.HDRY_DLVY_DE
+				, A.INVC_NO
+				, A.REGIST_PNTTM
+				, B.SETLE_STTUS_CODE AS SEARCH_SETLE_STTUS_CODE
+             FROM stn_order_dlvy A
+             JOIN stn_order_setle B ON A.ORDER_SETLE_NO = B.ORDER_SETLE_NO
+             WHERE A.ORDER_NO = #{orderNo}
+              		AND A.ORDER_ODR = (SELECT
+                                             MAX(AA.ORDER_ODR)
+                                     FROM stn_order_dlvy AA
+                                     WHERE AA.ORDER_NO = #{orderNo})
+                    AND ((SELECT
+                               CC.DLVY_STTUS_CODE
+                       FROM stn_order_dlvy CC
+                       JOIN stn_order_setle DD ON CC.ORDER_SETLE_NO = DD.ORDER_SETLE_NO
+                       WHERE CC.ORDER_NO = #{orderNo}
+                       	AND CC.ORDER_ODR = (SELECT
+                                                    IFNULL(MAX(AA.ORDER_ODR), 0)-1
+                                            FROM stn_order_dlvy AA
+                                          WHERE AA.ORDER_NO = #{orderNo})) IN ('DLVY03')
+					OR (SELECT
+                            DD.SETLE_STTUS_CODE
+                    FROM stn_order_dlvy CC
+                    JOIN stn_order_setle DD ON CC.ORDER_SETLE_NO = DD.ORDER_SETLE_NO
+                    WHERE CC.ORDER_NO = #{orderNo}
+                    	AND CC.ORDER_ODR = (SELECT
+                                                 IFNULL(MAX(AA.ORDER_ODR), 0)-1
+                                         FROM stn_order_dlvy AA
+                                       WHERE AA.ORDER_NO = #{orderNo})) = 'P' )													
+		) X
+		ORDER BY X.ORDER_ODR DESC LIMIT 3
+	</select>
+	
+	<!--주문 1개  가장 최근 배송정보-->	
+	<select id="selectRecetOrderDlvy" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO">
+		SELECT
+			A.ORDER_DLVY_NO        
+			, A.ORDER_NO             
+			, A.ORDER_SETLE_NO       
+			, A.ORDER_KND_CODE       
+			, A.SBSCRPT_CYCLE_SE_CODE
+			, A.SBSCRPT_WEEK_CYCLE   
+			, A.SBSCRPT_DLVY_WD      
+			, A.SBSCRPT_MT_CYCLE     
+			, A.SBSCRPT_DLVY_DAY     
+			, A.ORDER_ODR            
+			, A.ORDER_CO    
+			, A.ORDER_INFO         
+			, A.SLE_AMOUNT           
+			, A.DLVY_AMOUNT          
+			, A.DLVY_USER_NM 
+			, A.REQ_TY_CODE       
+			, A.TELNO                
+			, A.DLVY_ZIP             
+			, A.DLVY_ADRES           
+			, A.DLVY_ADRES_DETAIL    
+			, A.DLVY_MSSAGE          
+			, A.DLVY_STTUS_CODE      
+			, A.HDRY_ID
+			, A.HDRY_DLVY_DE
+			, A.INVC_NO
+			, A.REGIST_PNTTM
+		FROM stn_order_dlvy A
+		WHERE A.ORDER_NO = #{orderNo}
+		ORDER BY ORDER_DLVY_NO DESC LIMIT 1
+	</select>
+	
+	<!--주문 이벤트 상품 목록-->
+	<select id="selectEvtGoodsOrderCnt" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="int">
+		SELECT 
+			COUNT(A.ORDER_NO)
+		FROM stn_order A
+		JOIN stn_goods B ON A.GOODS_ID = B.GOODS_ID
+		JOIN stn_goods_event_mapng C ON C.GOODS_ID = B.GOODS_ID AND C.EVENT_TY_CODE='EV01'
+		WHERE 
+	  	 	A.ORDRR_ID=#{ordrrId}
+	    AND
+	   		A.GOODS_ID=#{goodsId}
+	</select>
+	
+	
+	<!-- 주문 1개 주문상태 변경 -->
+	<update id="updateOrderStatus" parameterType="modoo.module.shop.goods.order.service.OrderVO">
+		UPDATE stn_order
+		SET 
+			ORDER_STTUS_CODE = #{orderSttusCode}
+			, LAST_UPDT_PNTTM = SYSDATE()
+			, LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE ORDER_NO = #{orderNo}
+	</update>
+	
+	<!-- 같은 주문그룹번호로 주문한 건 목록 -->
+	<select id="selectOrderListByOrderGroupNo" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="int">
+		SELECT
+			* <!-- 수정 예정 -->
+		FROM stn_order A
+		JOIN stn_order_dlvy B ON A.ORDER_NO = B.ORDER_NO
+		WHERE B.ORDER_DLVY_NO = #{orderDlvyNo}
+		GROUP BY A.ORDER_GROUP_NO
+	</select>
+	<!-- 주문배송건으로 주문정보 조회 -->
+	<select id="selectOrderByDlvy" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="modoo.module.shop.goods.order.service.OrderVO">
+		SELECT
+			A.*
+		FROM stn_order A
+		JOIN stn_order_dlvy B ON A.ORDER_NO = B.ORDER_NO
+		WHERE B.ORDER_DLVY_NO = #{orderDlvyNo}
+	</select>
+	<!-- 구독 이용 횟수 조회 -->
+	<select id="selectSbsCnt" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="int">
+		SELECT
+			IFNULL(COUNT(*), 0) AS CNT
+		FROM stn_order A
+		JOIN stn_goods D ON A.GOODS_ID = D.GOODS_ID
+		JOIN stn_order_dlvy B ON A.ORDER_NO = B.ORDER_NO
+		JOIN stn_order_setle C ON B.ORDER_SETLE_NO = C.ORDER_SETLE_NO
+		WHERE
+			A.USE_AT = 'Y'
+			AND C.SETLE_STTUS_CODE = 'S'
+			AND A.ORDER_NO = #{orderNo}
+	</select>
+	<!--1회체험 개수-->
+	<select id="selectExprnCnt" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="int">
+		SELECT 
+			COUNT(A.ORDER_NO) 
+		FROM stn_order A
+		JOIN stn_goods B ON A.GOODS_ID = B.GOODS_ID AND A.GOODS_ID = #{goodsId} AND A.ORDER_KND_CODE='GNR' AND A.EXPRN_USE_AT = 'Y'
+		JOIN stn_order_dlvy C ON A.ORDER_NO = C.ORDER_NO
+		JOIN stn_order_setle D ON C.ORDER_SETLE_NO = D.ORDER_SETLE_NO AND D.SETLE_STTUS_CODE='S'
+		WHERE
+			 A.ORDRR_ID=#{ordrrId}
+	</select>	
+	
+</mapper>

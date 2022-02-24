@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.info.service.impl.GoodsItemMapper">
+
+	<!-- 상품항목 목록 -->
+	<select id="selectGoodsItemList" parameterType="modoo.module.shop.goods.info.service.GoodsItemVO" resultType="modoo.module.shop.goods.info.service.GoodsItemVO">
+		SELECT
+			gi.GITEM_ID
+			,gi.GOODS_ID
+			,gi.GITEM_SE_CODE
+			,gi.GITEM_SN
+			,gi.GITEM_NM
+			,gi.GITEM_CO 
+			,gi.GITEM_PC
+			,gi.GITEM_STTUS_CODE
+			,(SELECT CODE_NM FROM dtc_cmmn_detail_code WHERE CODE_ID='CMS024' AND CODE = gi.GITEM_SE_CODE) AS GITEM_SE_CODE_NM
+		FROM	stn_goods_item gi
+		WHERE	gi.GOODS_ID = #{goodsId}
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(gitemSeCode)">
+			AND gi.GITEM_SE_CODE = #{gitemSeCode}
+		</if>
+	</select>
+	
+	<!-- 상품항목 목록 -->
+	<select id="selectGoodsItem" parameterType="modoo.module.shop.goods.info.service.GoodsItemVO" resultType="modoo.module.shop.goods.info.service.GoodsItemVO">
+		SELECT
+			gi.GITEM_ID
+			,gi.GOODS_ID
+			,gi.GITEM_SE_CODE
+			,gi.GITEM_SN
+			,gi.GITEM_NM
+			,gi.GITEM_CO 
+			,gi.GITEM_PC
+			,gi.GITEM_STTUS_CODE
+			,(SELECT CODE_NM FROM dtc_cmmn_detail_code WHERE CODE_ID='CMS024' AND CODE = gi.GITEM_SE_CODE) AS GITEM_SE_CODE_NM
+		FROM	stn_goods_item gi
+		WHERE	gi.GITEM_ID = #{gitemId}
+	</select>
+	<!-- 상품항목 저장 -->
+	<insert id="insertGoodsItem" parameterType="modoo.module.shop.goods.info.service.GoodsItemVO">
+		INSERT INTO stn_goods_item (
+			GITEM_ID
+			,GOODS_ID
+			,GITEM_SE_CODE
+			,GITEM_SN
+			,GITEM_NM
+			,GITEM_CO
+			,GITEM_PC
+			,GITEM_STTUS_CODE
+		) VALUES (
+			#{gitemId}
+			,#{goodsId}
+			,#{gitemSeCode}
+			,#{gitemSn}
+			,#{gitemNm}
+			,#{gitemCo}
+			,#{gitemPc}
+			,#{gitemSttusCode}
+		)
+	</insert>
+	
+	<!-- 상품항목 수정 -->
+	<update id="updateGoodsItem" parameterType="modoo.module.shop.goods.info.service.GoodsItemVO">
+		UPDATE stn_goods_item
+		SET
+			GOODS_ID = #{goodsId}
+			,GITEM_SE_CODE = #{gitemSeCode}
+			,GITEM_SN = #{gitemSn}
+			,GITEM_NM = #{gitemNm}
+			,GITEM_CO = #{gitemCo}
+			,GITEM_PC = #{gitemPc}
+			,GITEM_STTUS_CODE = #{gitemSttusCode}
+		WHERE	GITEM_ID = #{gitemId}
+	</update>
+	
+	<!-- 상품항목 삭제 -->
+	<delete id="deleteGoodsItem" parameterType="modoo.module.shop.goods.info.service.GoodsItemVO">
+		DELETE FROM stn_goods_item
+		WHERE	GITEM_ID = #{gitemId}
+	</delete>
+	
+	<!-- 상품항목 목록 삭제 -->
+	<delete id="deleteGoodsItemList" parameterType="modoo.module.shop.goods.info.service.GoodsItemVO">
+		DELETE FROM stn_goods_item
+		WHERE	GOODS_ID = #{goodsId}
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(gitemSeCode)">
+			AND GITEM_SE_CODE = #{gitemSeCode}
+		</if>
+	</delete>
+</mapper>

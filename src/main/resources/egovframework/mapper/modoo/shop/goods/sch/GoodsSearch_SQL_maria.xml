@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.sch.service.impl.GoodsSearchMapper">
+
+	<!-- 상품검색 목록 -->
+	<select id="selectGoodsSearchList" parameterType="modoo.module.shop.goods.sch.service.GoodsSearchVO" resultType="modoo.module.shop.goods.sch.service.GoodsSearchVO">
+		SELECT
+			GOODS_SEARCH_NO
+			,ESNTL_ID
+			,SESSION_ID
+			,SRCHWRD
+			,REGIST_PNTTM
+		FROM	stn_goods_search
+		<where>
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchEsntlId)">
+					AND ESNTL_ID = #{searchEsntlId}
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSessionId)">
+				</when>
+				<otherwise>
+					1 &lt;&gt; 1
+				</otherwise>
+			</choose>
+		</where>
+		ORDER BY REGIST_PNTTM DESC
+		LIMIT #{recordCountPerPage}
+	</select>
+	
+	<!-- 상품검색 저장 -->
+	<insert id="insertGoodsSearch" parameterType="modoo.module.shop.goods.sch.service.GoodsSearchVO">
+		INSERT INTO stn_goods_search (
+			ESNTL_ID
+			,SESSION_ID
+			,SRCHWRD
+			,REGIST_PNTTM
+		) VALUES (
+			#{esntlId}
+			,#{sessionId}
+			,#{srchwrd}
+			,SYSDATE()
+		)
+	</insert>
+
+	<!-- 사용자검색어 목록 -->
+	<select id="selectUserGoodsSearchWrdList" parameterType="modoo.module.shop.goods.sch.service.GoodsSearchVO" resultType="modoo.module.shop.goods.sch.service.GoodsSearchVO">
+		SELECT
+			SRCHWRD
+		FROM (
+			SELECT
+				SRCHWRD
+				,MAX(REGIST_PNTTM) REGIST_PNTTM
+			FROM	stn_goods_search
+			WHERE	ESNTL_ID = #{searchEsntlId}
+			GROUP BY SRCHWRD
+			LIMIT #{recordCountPerPage}
+		) t
+		ORDER BY REGIST_PNTTM DESC
+	</select>
+	
+	<!-- 사용자 검색어 기록 삭제 -->
+	<update id="deleteUserGoodsSearchList" parameterType="modoo.module.shop.goods.sch.service.GoodsSearchVO">
+		UPDATE stn_goods_search
+		SET		ESNTL_ID = NULL
+		WHERE	ESNTL_ID = #{searchEsntlId}
+	</update>
+	
+	<!-- 인기 검색어 카운트 목록 -->
+	<select id="selectHotGoodsSearchWrdList" parameterType="int" resultType="modoo.module.shop.goods.sch.service.GoodsSearchVO">
+		SELECT
+			SRCHWRD
+			,HIT_CO
+		FROM (
+			SELECT
+				SRCHWRD
+				,COUNT(*) HIT_CO
+			FROM	stn_goods_search
+			WHERE	REGIST_PNTTM BETWEEN SYSDATE() - INTERVAL #{value} DAY AND SYSDATE()
+			GROUP BY SRCHWRD
+		) t
+		ORDER BY HIT_CO DESC
+		LIMIT 10
+	</select>
+</mapper>

@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>GUIDE</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="Author" content="yanghyo">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link href="../../../resources/front/site/SITE_00000/css/style.css" rel="stylesheet" />
+
+    <style type="text/css">
+        body {
+            padding: 5em;
+            margin-bottom: 5em;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 2em;
+            padding-top: 10px;
+            position: relative;
+            font-family: 'DIN 2014';
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.6em;
+            font-weight: normal;
+            padding: 50px 0 20px;
+            font-family: 'DIN 2014';
+            font-weight: 700;
+        }
+
+        .popup h1 {
+            padding-top: 0;
+        }
+
+        .ui-datepicker {
+            z-index: 2 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Component Guide</h1>
+
+    <!--ui-dialog-->
+    <!--<h2>ui-dialog</h2>
+    <a href="#" id="dialog-link" class="btn spot" onclick="">Open Dialog</a>
+    <div id="dialog" title="웹페이지의 메세지">
+        <p><em>ABC 알파벳 공부 과정</em>은 사용중인 콘텐츠 입니다.<br />그래도 삭제 하시겠습니까? </p>
+    </div>-->
+
+    <h2>datepicker</h2>
+    <input type="text" class="datepicker" />
+
+    <h2>popup</h2>
+    <div>
+        <button type="button" class="btn spot" onclick="popOpen('popSample');">Open popup</button>
+        <div class="popup" data-popup="popSample">
+            <div class="pop-header">
+                <h1>popup</h1>
+                <button type="button" class="btn-pop-close" data-popup-close="popSample">닫기</button>
+            </div>
+            <div class="pop-body">
+                팝업<br />(popup-lg : width:500px)
+                <div class="btn-table-area">
+                    <button type="button" class="btn-lg" onclick="popClose('popSample');">취소</button>
+                    <button type="submit" class="btn-lg spot" onclick="popClose('popSample');">확인</button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn spot" onclick="popOpen('popSample2');">Open popup-lg</button>
+        <div class="popup-lg" data-popup="popSample2">
+            <div class="pop-header">
+                <h1>popup</h1>
+                <button type="button" class="btn-pop-close" data-popup-close="popSample2">닫기</button>
+            </div>
+            <div class="pop-body">
+                팝업<br />(popup-lg : width:700px)
+                <div class="btn-table-area">
+                    <button type="button" class="btn-lg" onclick="popClose('popSample2');">취소</button>
+                    <button type="submit" class="btn-lg spot" onclick="popClose('popSample2');">확인</button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn spot" onclick="popOpen('popSample3');">Open popup-alert</button>
+        <div class="popup-alert" data-popup="popSample3">
+            <div class="pop-header">
+                <h1>타이틀</h1>
+            </div>
+            <div class="pop-body">
+                타이틀 + 내용<br />
+                btn 취소, 확인
+            </div>
+            <div class="pop-footer">
+                <button type="button" onclick="popClose('popSample3');">취소</button>
+                <button type="button" class="spot" onclick="popClose('popSample3');">확인</button>
+                <!--<button type="button" class="spot2" data-popup-close="popSample3">중요</button>-->
+            </div>
+        </div>
+
+        <button type="button" class="btn spot" onclick="popOpen('popSample4');">Open popup-alert2</button>
+        <div class="popup-alert" data-popup="popSample4">
+            <!--<div class="pop-header">
+            <h1>타이틀</h1>
+        </div>-->
+            <div class="pop-body">
+                내용<br />
+                btn 취소, 중요
+            </div>
+            <div class="pop-footer">
+                <button type="button" onclick="popClose('popSample4');">취소</button>
+                <!--<button type="button" class="spot" data-popup-close="popSample4">확인</button>-->
+                <button type="button" class="spot2" onclick="popClose('popSample4');">중요</button>
+            </div>
+        </div>
+        <button type="button" class="btn spot" onclick="popOpen('popSample5');">이중팝업</button>
+        <div class="popup-lg" data-popup="popSample5">
+            <div class="pop-header">
+                <h1>이중팝업</h1>
+                <button type="button" class="btn-pop-close" data-popup-close="popSample5">닫기</button>
+            </div>
+            <div class="pop-body">
+                <button type="button" class="btn spot" onclick="popOpen2('popSample');">Open popup</button>
+                <div class="btn-table-area">
+                    <button type="button" class="btn-lg" onclick="popClose('popSample5');">취소</button>
+                    <button type="submit" class="btn-lg spot" onclick="popClose('popSample5');">확인1111</button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn spot" onclick="popOpen('popSample5-1');">이중팝업 alert</button>
+        <div class="popup-lg" data-popup="popSample5-1">
+            <div class="pop-header">
+                <h1>이중팝업 alert</h1>
+                <button type="button" class="btn-pop-close" data-popup-close="popSample5-1">닫기</button>
+            </div>
+            <div class="pop-body">
+                <button type="button" class="btn spot" onclick="popOpen2('popSample4');">Open popup</button>
+                <div class="btn-table-area">
+                    <button type="button" class="btn-lg" onclick="popClose('popSample5-1');">취소</button>
+                    <button type="submit" class="btn-lg spot" onclick="popClose('popSample5-1');">확인</button>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn spot" onclick="popWinOpen('../etc/terms.html','600','600')">윈도우팝업</button>
+    </div>
+
+    <!--ui-tabs-->
+    <h2>tabs jquery</h2>
+    <div>
+        <div class="tabs">
+            <ul>
+                <li><a href="#tab1">tab menu1</a></li>
+                <li><a href="#tab2">tab menu2</a></li>
+                <li><a href="#tab3">tab menu3</a></li>
+            </ul>
+
+            <div id="tab1">tab content1</div>
+            <div id="tab2">tab content2</div>
+            <div id="tab3">tab content3</div>
+        </div>
+    </div>
+
+    <!-- tabs noraml -->
+    <h2>tabs normal</h2>
+    <div class="tabs-normal">
+        <ul class="tabs-nav">
+            <li class="is-active"><a href="#normalmenu1">tabs-normal menu1</a></li>
+            <li><a href="#normalmenu2">tabs-normal menu2</a></li>
+        </ul>
+        <div id="normalmenu1" class="tabs-cont">
+            기본메뉴1
+        </div>
+        <div id="normalmenu2" class="tabs-cont">
+            기본메뉴2
+        </div>
+    </div>
+
+    <h2>nav class="tabs-nav"</h2>
+    <div>
+        <ul class="tabs-nav">
+            <li class="is-active"><a href="#none">tab menu1</a></li>
+            <li><a href="#none">tab menu2</a></li>
+            <li><a href="#none">tab menu3</a></li>
+            <li><a href="#none">tab menu4</a></li>
+        </ul>
+    </div>
+
+    <h2>paging</h2>
+    <div>
+        <ul class="paging">
+            <li class="ppv"><a href="#none" title="처음으로"><span class="txt-hide">처음으로</span></a></li>
+            <li class="pv"><a href="#none" title="이전"><span class="txt-hide">이전</span></a></li>
+            <li class="is-active"><a href="#none" title="to 1 page">1</a></li>
+            <li><a href="#none" title="to 2 page">2</a></li>
+            <li><a href="#none" title="to 3 page">3</a></li>
+            <li><a href="#none" title="to 4 page">4</a></li>
+            <li><a href="#none" title="to 5 page">5</a></li>
+            <!--<li><a href="#none" title="to 6 page">6</a></li>
+            <li><a href="#none" title="to 7 page">7</a></li>
+            <li><a href="#none" title="to 8 page">8</a></li>
+            <li><a href="#none" title="to 9 page">9</a></li>-->
+            <li class="fw"><a href="#none" title="다음"><span class="txt-hide">다음</span></a></li>
+            <li class="ffw"><a href="#none" title="끝으로"><span class="txt-hide">끝으로</span></a></li>
+        </ul>
+    </div>
+
+    <h2>콘텐츠 없음 none-txt</h2>
+    <div>
+        <p class="none-txt">등록 된 콘텐츠가 없습니다.</p>
+    </div>
+
+    <h2>콘텐츠 없음 none-txt-border</h2>
+    <div>
+        <p class="none-txt-border">botder 등록 된 콘텐츠가 없습니다.</p>
+    </div>
+
+    <div class="dim"></div>
+
+    <script src="../../../resources/lib/jquery/jquery.js"></script>
+    <script src="../../../resources/lib/jquery.easing/jquery.easing.js"></script>
+    <script src="../../../resources/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ssm.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/swiper.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ScrollMagic.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/TweenMax.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/common.js"></script>
+</body>
+</html>

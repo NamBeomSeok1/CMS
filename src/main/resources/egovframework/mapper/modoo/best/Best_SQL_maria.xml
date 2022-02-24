@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.best.service.impl.BestMapper">
+
+	<insert id="insertBest" parameterType="modoo.module.best.service.impl.BestVO">
+		INSERT INTO stn_best (
+			BEST_NO
+			,EXPSR_ORDR
+			,BEST_TY_CODE
+			,BEST_URL
+			,PRTNR_ID
+			,ACTVTY_AT
+			,REPRSNT_SJ
+			,REPRSNT_TEXT
+			,EXPSR_BEGIN_DE
+			,EXPSR_END_DE
+			,BEST_THUMBNAIL
+			,BEST_IMG_PC
+			,BEST_IMG_MOB
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+		)
+		VALUES	(
+			#{bestNo}
+			,#{expsrOrdr}
+			,#{bestTyCode}
+			,#{bestUrl}
+			,#{prtnrId}
+			,#{actvtyAt}
+			,#{reprsntSj}
+			,#{reprsntText}
+			,#{expsrBeginDe}
+			,#{expsrEndDe}
+			,#{bestThumbnail}
+			,#{bestImgPc}
+			,#{bestImgMob}
+			,SYSDATE()
+			,#{frstRegisterId}
+		)
+	</insert>
+	
+	<select id="selectNextBestNo" parameterType="modoo.module.best.service.impl.BestVO" resultType="int">
+		SELECT
+			IFNULL(MAX(BEST_NO), 0) + 1
+		FROM stn_best
+	</select>
+	
+	<update id="updateBest" parameterType="modoo.module.best.service.impl.BestVO">
+		UPDATE stn_best
+		SET
+			EXPSR_ORDR = #{expsrOrdr}
+			,BEST_TY_CODE = #{bestTyCode}
+			,BEST_URL = #{bestUrl}
+			,PRTNR_ID = #{prtnrId}
+			,ACTVTY_AT = #{actvtyAt}
+			,REPRSNT_SJ = #{reprsntSj}
+			,REPRSNT_TEXT = #{reprsntText}
+			,EXPSR_BEGIN_DE = #{expsrBeginDe}
+			,EXPSR_END_DE = #{expsrEndDe}
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(bestThumbnail)">
+			,BEST_THUMBNAIL = #{bestThumbnail}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(bestImgPc)">
+			,BEST_IMG_PC = #{bestImgPc}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(bestImgMob)">
+			,BEST_IMG_MOB = #{bestImgMob}
+			</if>
+		WHERE BEST_NO = #{bestNo}	
+	</update>
+	
+	<update id="deleteBestImg" parameterType="modoo.module.best.service.impl.BestVO">
+		UPDATE stn_best
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(imageType, 'bestThumbnail')">
+				SET BEST_THUMBNAIL = NULL
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(imageType, 'bestImgPc')">
+				SET BEST_IMG_PC = NULL
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(imageType, 'bestImgMob')">
+				SET BEST_IMG_MOB = NULL
+			</if>
+		WHERE BEST_NO = #{bestNo}
+	</update>
+
+	<delete id="deleteBestList" parameterType="modoo.module.best.service.impl.BestVO">
+		DELETE FROM stn_best
+		WHERE BEST_NO = #{bestNo}
+	</delete>
+
+	<select id="selectBestList" parameterType="modoo.module.best.service.impl.BestVO" resultType="egovMap">
+		SELECT
+			A.BEST_NO
+			, A.EXPSR_ORDR
+			, A.BEST_TY_CODE
+			, A.BEST_URL
+			, A.PRTNR_ID
+			, A.ACTVTY_AT	
+			, A.REPRSNT_SJ
+			, A.REPRSNT_TEXT
+			, A.EXPSR_BEGIN_DE
+			, A.EXPSR_END_DE
+			, A.BEST_THUMBNAIL
+			, A.BEST_IMG_PC
+			, A.BEST_IMG_MOB
+			, A.FRST_REGIST_PNTTM
+			, A.FRST_REGISTER_ID
+		FROM stn_best A
+		WHERE A.PRTNR_ID = #{searchPrtnrId}
+		ORDER BY A.EXPSR_ORDR
+	</select>
+	
+	<select id="selectBestListCnt" parameterType="modoo.module.best.service.impl.BestVO" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM stn_best A
+		WHERE A.PRTNR_ID = #{searchPrtnrId}
+	</select>
+	
+	<select id="selectBest" parameterType="modoo.module.best.service.impl.BestVO" resultType="modoo.module.best.service.impl.BestVO">
+		SELECT
+			A.BEST_NO
+			, A.EXPSR_ORDR
+			, A.BEST_TY_CODE
+			, A.BEST_URL
+			, A.PRTNR_ID
+			, A.ACTVTY_AT	
+			, A.REPRSNT_SJ
+			, A.REPRSNT_TEXT
+			, A.EXPSR_BEGIN_DE
+			, A.EXPSR_END_DE
+			, A.BEST_THUMBNAIL
+			, A.BEST_IMG_PC
+			, A.BEST_IMG_MOB
+			, A.FRST_REGIST_PNTTM
+			, A.FRST_REGISTER_ID
+		FROM stn_best A
+		WHERE A.BEST_NO = #{bestNo}
+	</select>
+</mapper>

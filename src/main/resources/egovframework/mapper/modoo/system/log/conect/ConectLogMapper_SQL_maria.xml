@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.system.log.conect.service.impl.ConectLogMapper">
+
+	<select id="selectConectLogList" parameterType="modoo.module.system.log.conect.service.ConectLogVO" resultType="modoo.module.system.log.conect.service.ConectLogVO">
+		SELECT
+			CONECT_ID
+			,SITE_ID
+			,SESSION_ID
+			,LOG_SE_CODE
+			,CREAT_PNTTM
+			,CREAT_YEAR
+			,CREAT_MONTH
+			,CREAT_DAY
+			,CREAT_HOUR
+			,USER_AGENT
+			,REFERER
+			,RQESTER_IP
+		FROM	dth_conect_log
+	</select>
+	
+	<!-- 접속로그 저장 -->
+	<insert id="insertConectLog" parameterType="modoo.module.system.log.conect.service.ConectLogVO">
+		INSERT INTO dth_conect_log (
+			CONECT_ID
+			,SITE_ID
+			,SESSION_ID
+			,LOG_SE_CODE
+			,CREAT_PNTTM
+			,CREAT_YEAR
+			,CREAT_MONTH
+			,CREAT_DAY
+			,CREAT_HOUR
+			,USER_AGENT
+			,REFERER
+			,RQESTER_IP
+		) VALUES (
+			#{conectId}
+			,#{siteId}
+			,#{sessionId}
+			,#{logSeCode}
+			,SYSDATE()
+			,DATE_FORMAT(SYSDATE(),'%Y')
+			,DATE_FORMAT(SYSDATE(),'%m')
+			,DATE_FORMAT(SYSDATE(),'%d')
+			,DATE_FORMAT(SYSDATE(),'%H')
+			,#{userAgent}
+			,#{referer}
+			,#{rqesterIp}
+		)
+	</insert>
+	
+	<!-- B2C접속카운트 목록 -->
+	 <select id="selectB2CConectCountList" parameterType="modoo.module.system.log.conect.service.ConectLogVO" resultType="modoo.module.system.log.conect.service.ConectLogVO">
+		SELECT
+			CASE GR WHEN 1 THEN CREAT_DT ELSE 'TOT' END CREAT_DT
+			,CASE GR WHEN 1 THEN SUM_COUNT ELSE SUM(SUM_COUNT) END SUM_COUNT
+		FROM (
+			SELECT
+				dcl.SITE_ID
+				,dcl.CREAT_YEAR 
+				,dcl.CREAT_MONTH 
+				,dcl.CREAT_DAY 
+				,CONCAT(dcl.CREAT_YEAR, '-', LPAD(dcl.CREAT_MONTH, 2, '0'), '-', LPAD(dcl.CREAT_DAY, 2, '0') ) CREAT_DT
+				,COUNT(*) SUM_COUNT
+			FROM	dth_conect_log dcl
+			<include refid="selectConectCountListWhere"></include>
+			  AND (REFERER NOT LIKE '%ezwel%' OR REFERER IS NULL)
+			GROUP BY dcl.SITE_ID, dcl.CREAT_YEAR, dcl.CREAT_MONTH, dcl.CREAT_DAY
+		) a,(
+			SELECT 1 AS GR FROM DUAL UNION ALL
+			SELECT 2 AS GR FROM DUAL
+		) b
+		GROUP BY SITE_ID, (CASE GR WHEN 1 THEN CREAT_DT ELSE GR END)
+		ORDER BY CREAT_DT ASC
+	</select> 
+	<!-- B2B접속카운트 목록 -->
+	 <select id="selectB2BConectCountList" parameterType="modoo.module.system.log.conect.service.ConectLogVO" resultType="modoo.module.system.log.conect.service.ConectLogVO">
+		SELECT
+			CASE GR WHEN 1 THEN CREAT_DT ELSE 'TOT' END CREAT_DT
+			,CASE GR WHEN 1 THEN SUM_COUNT ELSE SUM(SUM_COUNT) END SUM_COUNT
+		FROM (
+			SELECT
+				dcl.SITE_ID
+				,dcl.CREAT_YEAR 
+				,dcl.CREAT_MONTH 
+				,dcl.CREAT_DAY 
+				,CONCAT(dcl.CREAT_YEAR, '-', LPAD(dcl.CREAT_MONTH, 2, '0'), '-', LPAD(dcl.CREAT_DAY, 2, '0') ) CREAT_DT
+				,COUNT(*) SUM_COUNT
+			FROM	dth_conect_log dcl
+			<include refid="selectConectCountListWhere"></include>
+			AND REFERER LIKE '%ezwel%'
+			GROUP BY dcl.SITE_ID, dcl.CREAT_YEAR, dcl.CREAT_MONTH, dcl.CREAT_DAY
+		) a,(
+			SELECT 1 AS GR FROM DUAL UNION ALL
+			SELECT 2 AS GR FROM DUAL
+		) b
+		GROUP BY SITE_ID, (CASE GR WHEN 1 THEN CREAT_DT ELSE GR END)
+		ORDER BY CREAT_DT ASC
+	</select> 
+	<!-- <select id="selectConectCountList" parameterType="modoo.module.system.log.conect.service.ConectLogVO" resultType="modoo.module.system.log.conect.service.ConectLogVO">
+		SELECT
+		   CASE GR WHEN 1 THEN CREAT_DT ELSE 'TOT' END CREAT_DT
+		   ,CASE GR WHEN 1 THEN SUM_COUNT ELSE SUM(SUM_COUNT) END SUM_COUNT
+		   , a.REFERER
+		FROM (
+		SELECT
+		    dcl.SITE_ID
+		    ,dcl.CREAT_YEAR 
+		    ,dcl.CREAT_MONTH 
+		    ,dcl.CREAT_DAY
+			, CASE WHEN INSTR( dcl.REFERER, 'ezwel') IS NOT NULL THEN 'B2B'
+				ELSE 'B2C'
+				END AS REFERER
+		    ,CONCAT(dcl.CREAT_YEAR, '-', LPAD(dcl.CREAT_MONTH, 2, '0'), '-', LPAD(dcl.CREAT_DAY, 2, '0') ) CREAT_DT
+		    ,COUNT(*) SUM_COUNT
+		FROM    DTH_CONECT_LOG dcl 
+		<include refid="selectConectCountListWhere"></include>
+		   GROUP BY dcl.SITE_ID, dcl.CREAT_YEAR, dcl.CREAT_MONTH, dcl.CREAT_DAY
+			, CASE WHEN INSTR( dcl.REFERER, 'ezwel') IS NOT NULL THEN 'B2B'
+				ELSE 'B2C'
+				END
+		) a
+		,(
+		   SELECT 1 AS GR FROM DUAL UNION ALL
+		   SELECT 2 AS GR FROM DUAL
+		) b
+		GROUP BY SITE_ID, (CASE GR WHEN 1 THEN CREAT_DT ELSE GR END), a.REFERER
+		ORDER BY CREAT_DT ASC, a.REFERER
+	</select> -->
+	
+	<sql id="selectConectCountListWhere">
+		<where>
+			SITE_ID = #{searchSiteId}
+			AND CREAT_PNTTM BETWEEN DATE_FORMAT(#{searchBgnde},'%Y%m%d000000') AND DATE_FORMAT(#{searchEndde},'%Y%m%d235959')
+			AND LOG_SE_CODE = 'CREATE'
+		</where>
+	</sql>
+
+</mapper>

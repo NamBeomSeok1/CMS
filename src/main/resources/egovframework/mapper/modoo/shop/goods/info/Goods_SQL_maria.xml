@@ -1,0 +1,885 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.info.service.impl.GoodsMapper">
+
+	<!-- 상품 목록 -->
+	<select id="selectGoodsList" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="egovMap">
+		SELECT
+			g.GOODS_ID
+			,g.PCMAPNG_ID
+			,p.PRTNR_ID 
+			,(CASE WHEN p.PRTNR_ID = 'PRTNR_0000' THEN 'B2C' ELSE '이지웰' END) AS PRTNR_NM 
+			,p.PRTNR_NM 
+			,c.CMPNY_ID
+			,c.CMPNY_NM
+			,g.GOODS_CTGRY_ID
+			,CONCAT( IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','',sgc3.GOODS_CTGRY_NM), IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','','&gt;')
+					,IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','',sgc2.GOODS_CTGRY_NM),IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','','&gt;') 
+					,IF(ISNULL(sgc.GOODS_CTGRY_NM) or sgc.GOODS_CTGRY_NM = 'ROOT','',sgc.GOODS_CTGRY_NM)
+					) AS GOODS_CTGRY_NM
+			,g.GOODS_KND_CODE
+			,(SELECT GOODS_IMAGE_THUMB_PATH FROM stn_goods_image WHERE GOODS_ID = g.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' ORDER BY GOODS_IMAGE_SN ASC LIMIT 1 ) AS GOODS_TITLE_IMAGE_PATH
+			,(SELECT GOODS_LRGE_IMAGE_PATH FROM stn_goods_image WHERE GOODS_ID = g.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' ORDER BY GOODS_IMAGE_SN ASC LIMIT 1 ) AS GOODS_LRGE_IMAGE_PATH
+			,g.GOODS_NM
+			,g.MODEL_NM
+			,g.MAKR
+			,g.ORGPLCE
+			,g.BRAND_ID
+			,b.BRAND_NM
+			,g.CRTFC_MATTER
+			,g.CNSLT_TELNO
+			,g.GOODS_INTRCN
+			,g.EVNT_WORDS
+			,g.EVNT_WORDS AS EVT_TXT
+			,g.MNGR_MEMO
+			,g.MVP_SOURC_CN
+			,'' AS GOODS_CN -- ,g.GOODS_CN
+			,g.GOODS_PC
+			,g.GOODS_FEE_RATE
+			,g.GOODS_SPLPC
+			,g.GOODS_RSRVMNEY
+			,g.GOODS_RSRVMNEY_RATE_AT
+			,g.GOODS_RSRVMNEY_RATE
+			,g.MRKT_PC
+			,g.TAXT_SE_CODE
+			,g.DLVY_POLICY_SE_CODE
+			,g.DLVY_SE_CODE
+			,g.DLVY_PC
+			,g.ISLAND_DLVY_PC
+			,g.JEJU_DLVY_PC
+			,g.FREE_DLVY_PC
+			,g.EXPRN_PC
+			,g.EXPRN_USE_AT
+			,g.COMPNO_DSCNT_USE_AT
+			,g.COMPNO_DSCNT_PC
+			,g.SBSCRPT_CYCLE_SE_CODE
+			,g.VCH_CODE
+			,CASE WHEN g.VCH_CODE ='BSA00' THEN '베이직'
+				WHEN g.VCH_CODE ='WEK00' THEN '주말'
+				WHEN g.VCH_CODE = 'PRM00' THEN '프리미엄'
+				ELSE '' END AS VCH_CODE_NM
+			,CASE WHEN g.VCH_PD_TY ='MONTH' THEN '월단위'
+				WHEN g.VCH_PD_TY ='DAY' THEN '일단위'
+				ELSE '' END AS VCH_PD_TYNM
+			,g.VCH_VALID_PD
+			,g.VCH_PD_TY
+			,g.SBSCRPT_WEEK_CYCLE
+			,g.SBSCRPT_DLVY_WD
+			,g.SBSCRPT_MIN_USE_WEEK
+			,g.SBSCRPT_MT_CYCLE
+			,g.SBSCRPT_MIN_USE_MT
+			,g.SBSCRPT_DLVY_DAY
+			,g.SBSCRPT_SETLE_DAY
+			,g.BUNDLE_DLVY_AT
+			,g.BUNDLE_DLVY_CO
+			,g.RDCNT
+			,g.SLE_CO
+			,g.OPTN_USE_AT
+			,g.D_OPTN_USE_AT
+			,g.A_OPTN_USE_AT
+			,g.F_OPTN_USE_AT
+			,g.Q_OPTN_USE_AT
+			,g.FRST_OPTN_ESSNTL_AT
+			,g.SOLD_OUT_AT
+			, CASE g.SOLD_OUT_AT WHEN 'Y' THEN '품절'
+				ELSE '판매중'
+				END AS SOLD_OUT_AT_NM
+			,g.ADULT_CRT_AT
+			,g.MRKT_USE_AT
+			,g.BEST_ORDR
+			,g.REGIST_STTUS_CODE
+			, CASE g.REGIST_STTUS_CODE WHEN 'C' THEN '등록완료'
+				WHEN 'R' THEN '등록대기'
+				WHEN 'E' THEN '판매종료'
+				ELSE g.REGIST_STTUS_CODE
+				END AS REGIST_STTUS_CODE_NM
+			,g.FRST_REGIST_PNTTM
+			,g.FRST_REGISTER_ID
+			,g.LAST_UPDT_PNTTM
+			,g.LAST_UPDUSR_ID
+			,g.USE_AT
+			, CASE WHEN 
+				g.GOODS_ID IN (
+					SELECT
+						BB.GOODS_ID
+					FROM stn_goods_event AA
+					JOIN stn_goods_event_mapng BB ON AA.EVENT_NO = BB.EVENT_NO
+					WHERE AA.EVENT_BEGIN_DT <![CDATA[ <= ]]> SYSDATE()
+						AND AA.EVENT_END_DT <![CDATA[ >= ]]> SYSDATE()
+						<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+							AND AA.PRTNR_ID = #{searchPrtnrId}
+						</if>
+						AND AA.END_AT = 'N'
+					)
+			THEN 'Y'
+			ELSE 'N'
+			END AS EVENT_AT
+		FROM	stn_goods g
+		JOIN	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID AND pcm.USE_AT = 'Y'
+		JOIN	stn_prtnr p ON p.PRTNR_ID = pcm.PRTNR_ID
+		JOIN	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID AND c.USE_AT='Y'
+		JOIN	stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+		LEFT OUTER JOIN stn_goods_brand b ON b.BRAND_ID = g.BRAND_ID
+		LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+		<include refid="selectGoodsListWhere"></include>
+<!-- 		<choose> -->
+<!-- 			<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOrderField)"> -->
+				ORDER BY
+				<if test="!@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchManageAt, 'Y')">
+					EVENT_AT IS NULL DESC, EVENT_AT DESC,
+				</if>
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderField, 'RDCNT')">RDCNT</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderField, 'GNM')">GOODS_NM</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderField, 'MNM')">MODEL_NM</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderField, 'SEL')">SLE_CO</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderField, 'LAT')">FRST_REGIST_PNTTM</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderField, 'HPC')">GOODS_PC</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderField, 'LPC')">GOODS_PC</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderField, 'DPC')">DLVY_PC</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderField, 'SLC')">SLE_CO</when>
+					<otherwise>
+						GOODS_ID
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderType, 'DESC')">DESC</when>
+					<otherwise>ASC</otherwise>
+				</choose>
+<!-- 			</when> -->
+<!-- 			<otherwise> -->
+				, LAST_UPDT_PNTTM DESC
+<!-- 			</otherwise> -->
+<!-- 		</choose> --> 
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectGoodsListWhere">
+		<where>
+			AND g.USE_AT = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+				AND pcm.CMPNY_ID = #{searchCmpnyId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+				AND pcm.CMPNY_ID = #{searchCmpnyId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyNm)">
+				AND c.CMPNY_NM LIKE CONCAT('%', #{searchCmpnyNm}, '%')
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsId)">
+				AND g.GOODS_ID = #{searchGoodsId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'GNM')">
+						AND g.GOODS_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'MNM')">
+						AND g.MODEL_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'PDN')">
+						AND g.GOODS_ID = #{searchKeyword}
+					</when>
+				</choose>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsKeyword)">
+				AND (
+				<foreach collection="searchGoodsKeyword" item="item" separator="OR">
+					 (  g.MODEL_NM LIKE CONCAT('%', #{item}, '%') 
+							OR g.GOODS_NM LIKE CONCAT('%', #{item}, '%')
+							OR c.CMPNY_NM LIKE CONCAT('%', #{item}, '%')
+							OR b.BRAND_NM LIKE CONCAT('%', #{item}, '%')
+							OR g.GOODS_ID IN (
+									SELECT
+										GOODS_ID
+									FROM	stn_goods_keyword k
+									WHERE	k.KEYWORD_NM LIKE CONCAT('%', #{item}, '%')
+								)
+					 )
+				</foreach>
+					)
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchRegistSttusCode)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchRegistSttusCode, 'R')">
+						AND g.REGIST_STTUS_CODE = 'R'
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchRegistSttusCode, 'C')">
+						AND g.REGIST_STTUS_CODE = 'C'
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchRegistSttusCode, 'E')">
+						AND g.REGIST_STTUS_CODE = 'E'
+					</when>
+				</choose>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchNotGoodsId)">
+				AND g.GOODS_ID NOT IN (#{searchNotGoodsId})
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchRegistSttusCode)">
+				AND g.REGIST_STTUS_CODE = #{searchRegistSttusCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsCtgryId)">
+				AND g.GOODS_CTGRY_ID IN (
+					SELECT
+						#{searchGoodsCtgryId} AS GOODS_CTGRY_ID
+					FROM 	dual
+					UNION ALL
+					SELECT 
+						a.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry a
+					WHERE 	a.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						b.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry a
+					INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+					WHERE	a.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						c.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry a
+					INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry c ON c.UPPER_GOODS_CTGRY_ID = b.GOODS_CTGRY_ID
+					WHERE	a.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						d.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry a
+					INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry c ON c.UPPER_GOODS_CTGRY_ID = b.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry d ON d.UPPER_GOODS_CTGRY_ID = c.GOODS_CTGRY_ID
+					WHERE	a.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+				)
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSubCtgryId)">
+				AND g.GOODS_CTGRY_ID = #{searchSubCtgryId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsBrandId)">
+				AND g.BRAND_ID = #{searchGoodsBrandId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+				AND pcm.PRTNR_ID = #{searchPrtnrId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKndCode)">
+				AND g.GOODS_KND_CODE = #{searchKndCode}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 상품 목록 카운트 -->
+	<select id="selectGoodsListCnt" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	stn_goods g
+		JOIN	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID AND pcm.USE_AT = 'Y'
+		JOIN	stn_prtnr p ON p.PRTNR_ID = pcm.PRTNR_ID
+		JOIN	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID AND c.USE_AT='Y'
+		JOIN	stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+		LEFT OUTER JOIN stn_goods_brand b ON b.BRAND_ID = g.BRAND_ID
+		LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+		<include refid="selectGoodsListWhere"></include>
+	</select>
+	
+	<!-- 상품 저장 -->
+	<insert id="insertGoods" parameterType="modoo.module.shop.goods.info.service.GoodsVO">
+		INSERT INTO stn_goods (
+			GOODS_ID
+			,PCMAPNG_ID
+			,GOODS_CTGRY_ID
+			,GOODS_KND_CODE
+			,GOODS_NM
+			,MODEL_NM
+			,MAKR
+			,ORGPLCE
+			,BRAND_ID
+			,CRTFC_MATTER
+			,CNSLT_TELNO
+			,GOODS_INTRCN
+			,EVNT_WORDS
+			,MNGR_MEMO
+			,MVP_SOURC_CN
+			,GOODS_CN
+			,GOODS_PC
+			,GOODS_FEE_RATE
+			,GOODS_SPLPC
+			,GOODS_RSRVMNEY
+			,GOODS_RSRVMNEY_RATE_AT
+			,GOODS_RSRVMNEY_RATE
+			,MRKT_PC
+			,TAXT_SE_CODE
+			,DLVY_POLICY_SE_CODE
+			,DLVY_POLICY_CN
+			,DLVY_SE_CODE
+			,DLVY_PC
+			,ISLAND_DLVY_PC
+			,JEJU_DLVY_PC
+			,FREE_DLVY_PC
+			,EXPRN_USE_AT
+			,EXPRN_PC
+			,COMPNO_DSCNT_USE_AT
+			,COMPNO_DSCNT_PC
+			,SBSCRPT_CYCLE_SE_CODE
+			,SBSCRPT_WEEK_CYCLE
+			,SBSCRPT_DLVY_WD
+			,SBSCRPT_MIN_USE_WEEK
+			,SBSCRPT_MT_CYCLE
+			,SBSCRPT_MIN_USE_MT
+			,SBSCRPT_DLVY_DAY
+			,SBSCRPT_SETLE_DAY
+			,BUNDLE_DLVY_AT
+			,BUNDLE_DLVY_CO
+			,RDCNT
+			,SLE_CO
+			,OPTN_USE_AT
+			,D_OPTN_USE_AT
+			,A_OPTN_USE_AT
+			,F_OPTN_USE_AT
+			,Q_OPTN_USE_AT
+			,FRST_OPTN_ESSNTL_AT
+			,SOLD_OUT_AT
+			,ADULT_CRT_AT
+			,MRKT_USE_AT
+			,BEST_ORDR
+		  	,VCH_CODE
+		  	,VCH_VALID_PD
+		  	,VCH_PD_TY
+			,REGIST_STTUS_CODE
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSR_ID
+			,USE_AT
+			,HDRY_ID
+		) VALUES (
+			#{goodsId}
+			,#{pcmapngId}
+			,#{goodsCtgryId}
+			,#{goodsKndCode}
+			,#{goodsNm}
+			,#{modelNm}
+			,#{makr}
+			,#{orgplce}
+			,IF(#{brandId}='',NULL, #{brandId})
+			,#{crtfcMatter}
+			,#{cnsltTelno}
+			,#{goodsIntrcn}
+			,#{evntWords}
+			,#{mngrMemo}
+			,#{mvpSourcCn}
+			,#{goodsCn}
+			,#{goodsPc}
+			,#{goodsFeeRate}
+			,#{goodsSplpc}
+			,#{goodsRsrvmney}
+			,#{goodsRsrvmneyRateAt}
+			,#{goodsRsrvmneyRate}
+			,#{mrktPc}
+			,#{taxtSeCode}
+			,#{dlvyPolicySeCode}
+			,#{dlvyPolicyCn}
+			,#{dlvySeCode}
+			,IFNULL(#{dlvyPc},0)
+			,IFNULL(#{islandDlvyPc},0)
+			,IFNULL(#{jejuDlvyPc},0)
+			,#{freeDlvyPc}
+			,#{exprnUseAt}
+			,IFNULL(#{exprnPc},0)
+			,#{compnoDscntUseAt}
+			,IFNULL(-#{compnoDscntPc},0)
+			,#{sbscrptCycleSeCode}
+			,#{sbscrptWeekCycle}
+			,#{sbscrptDlvyWd}
+			,#{sbscrptMinUseWeek}
+			,#{sbscrptMtCycle}
+			,#{sbscrptMinUseMt}
+			,#{sbscrptDlvyDay}
+			,#{sbscrptSetleDay}
+			,#{bundleDlvyAt}
+			,#{bundleDlvyCo}
+			,0
+			,0
+			,#{optnUseAt}
+			,#{dOptnUseAt}
+			,#{aOptnUseAt}
+			,#{fOptnUseAt}
+			,#{qOptnUseAt}
+			,#{frstOptnEssntlAt}
+			,#{soldOutAt}
+			,IFNULL(#{adultCrtAt},'N')
+			,IFNULL(#{mrktUseAt},'N')
+			,#{bestOrdr}
+			,#{vchCode}
+			,#{registSttusCode}
+			,SYSDATE()
+			,#{frstRegisterId}
+			,SYSDATE()
+			,#{frstRegisterId}
+			,'Y'
+			,#{hdryId}
+		)
+	</insert>
+
+	<!-- 상품 상세 -->
+	<select id="selectGoods" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="modoo.module.shop.goods.info.service.GoodsVO">
+		SELECT
+			g.GOODS_ID
+			,g.PCMAPNG_ID
+			,p.PRTNR_ID
+			,c.CMPNY_ID
+			,c.CMPNY_NM
+			,c.CMPNY_TELNO
+			,g.GOODS_CTGRY_ID
+			,g.GOODS_KND_CODE
+			,(SELECT GOODS_IMAGE_PATH FROM stn_goods_image WHERE GOODS_ID = g.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' ORDER BY GOODS_IMAGE_SN ASC LIMIT 1 ) AS GOODS_TITLE_IMAGE_PATH
+			,(SELECT GOODS_IMAGE_THUMB_PATH FROM stn_goods_image WHERE GOODS_ID = g.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' ORDER BY GOODS_IMAGE_SN ASC LIMIT 1 ) AS GOODS_TITLE_IMAGE_THUMB_PATH
+			,g.GOODS_NM
+			,g.MODEL_NM
+			,g.MAKR
+			,g.ORGPLCE
+			,g.BRAND_ID
+			,b.BRAND_NM
+			,g.CRTFC_MATTER
+			,g.CNSLT_TELNO
+			,g.GOODS_INTRCN
+			,g.EVNT_WORDS
+			,g.MNGR_MEMO
+			,g.MVP_SOURC_CN
+			,g.GOODS_CN
+			,g.GOODS_PC
+			,g.GOODS_FEE_RATE
+			,g.GOODS_SPLPC
+			,g.GOODS_RSRVMNEY
+			,g.GOODS_RSRVMNEY_RATE_AT
+			,g.GOODS_RSRVMNEY_RATE
+			,g.MRKT_PC
+			,g.TAXT_SE_CODE
+			,g.DLVY_POLICY_SE_CODE
+			,CASE WHEN g.DLVY_POLICY_SE_CODE ='DP01' THEN c.CMPNY_DLVY_POLICY_CN
+			ELSE g.DLVY_POLICY_CN END AS DLVY_POLICY_CN
+			,g.DLVY_SE_CODE
+			,g.DLVY_PC
+			,g.ISLAND_DLVY_PC
+			,g.JEJU_DLVY_PC
+			,IFNULL(g.FREE_DLVY_PC,0) AS FREE_DLVY_PC
+			,IFNULL(g.EXPRN_PC,0) AS EXPRN_PC
+			,g.EXPRN_USE_AT
+			,g.COMPNO_DSCNT_USE_AT 
+			,IFNULL(g.COMPNO_DSCNT_PC,0) AS COMPNO_DSCNT_PC
+			,g.SBSCRPT_CYCLE_SE_CODE
+			,g.SBSCRPT_WEEK_CYCLE
+			,g.SBSCRPT_DLVY_WD
+			,g.SBSCRPT_MIN_USE_WEEK
+			,g.SBSCRPT_MT_CYCLE
+			,g.SBSCRPT_MIN_USE_MT
+			,g.SBSCRPT_DLVY_DAY
+			,g.SBSCRPT_SETLE_DAY
+			,g.BUNDLE_DLVY_AT
+			,g.BUNDLE_DLVY_CO
+			,g.RDCNT
+			,g.SLE_CO
+			,g.OPTN_USE_AT
+			,g.D_OPTN_USE_AT
+			,g.A_OPTN_USE_AT
+			,g.F_OPTN_USE_AT
+			,g.Q_OPTN_USE_AT
+			,g.FRST_OPTN_ESSNTL_AT
+			,g.SOLD_OUT_AT
+			,g.ADULT_CRT_AT
+			,g.BEST_ORDR
+			,g.MRKT_USE_AT
+			,g.VCH_CODE
+			,CASE WHEN g.VCH_CODE ='BAS00' THEN '베이직'
+				WHEN g.VCH_CODE ='WEK00' THEN '주말'
+				WHEN g.VCH_CODE = 'PRM00' THEN '프리미엄'
+			ELSE '' END AS VCH_CODE_NM
+			,CASE WHEN g.VCH_PD_TY ='MONTH' THEN '월단위'
+				WHEN g.VCH_PD_TY ='DAY' THEN '일단위'
+				ELSE '' END AS VCH_PD_TYNM
+			,g.VCH_VALID_PD
+			,g.VCH_PD_TY
+			,g.regist_sttus_code
+			,g.FRST_REGIST_PNTTM
+			,g.FRST_REGISTER_ID
+			,g.LAST_UPDT_PNTTM
+			,g.LAST_UPDUSR_ID
+			,g.USE_AT
+			,g.HDRY_ID
+			,h.HDRY_NM
+			, CASE WHEN 
+				g.GOODS_ID IN (
+					SELECT
+						BB.GOODS_ID
+					FROM stn_goods_event AA
+					JOIN stn_goods_event_mapng BB ON AA.EVENT_NO = BB.EVENT_NO
+					WHERE AA.EVENT_BEGIN_DT <![CDATA[ <= ]]> SYSDATE()
+						AND AA.EVENT_END_DT <![CDATA[ >= ]]> SYSDATE()
+						<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+							AND AA.PRTNR_ID = #{searchPrtnrId}
+						</if>
+						AND AA.END_AT = 'N'
+					)
+			THEN 'Y'
+			ELSE 'N'
+			END AS EVENT_AT
+		FROM	stn_goods g
+		JOIN	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID AND pcm.USE_AT = 'Y'
+		JOIN	stn_prtnr p ON p.PRTNR_ID = pcm.PRTNR_ID
+		JOIN	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID AND c.USE_AT='Y'
+		LEFT JOIN stn_goods_brand b ON b.BRAND_ID = g.BRAND_ID
+		LEFT JOIN stn_hdry_cmpny h ON g.HDRY_ID = h.HDRY_ID
+		WHERE	g.GOODS_ID = #{goodsId}
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+			AND pcm.PRTNR_ID = #{searchPrtnrId}
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchRegistSttusCode)">
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchRegistSttusCode, 'R')">
+					AND g.REGIST_STTUS_CODE = 'R'
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchRegistSttusCode, 'C')">
+					AND g.REGIST_STTUS_CODE = 'C'
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchRegistSttusCode, 'E')">
+					AND g.REGIST_STTUS_CODE = 'E'
+				</when>
+			</choose>
+		</if>
+	</select>
+	
+	<!-- 상품 수정 -->
+	<update id="updateGoods" parameterType="modoo.module.shop.goods.info.service.GoodsVO">
+		UPDATE stn_goods
+		SET
+			PCMAPNG_ID = #{pcmapngId}
+			,GOODS_CTGRY_ID = #{goodsCtgryId}
+			,GOODS_KND_CODE = #{goodsKndCode}
+			,GOODS_NM = #{goodsNm}
+			,MODEL_NM = #{modelNm}
+			,MAKR = #{makr}
+			,ORGPLCE = #{orgplce}
+			,BRAND_ID = IF(#{brandId}='',NULL, #{brandId})
+			,CRTFC_MATTER = #{crtfcMatter}
+			,CNSLT_TELNO = #{cnsltTelno}
+			,GOODS_INTRCN = #{goodsIntrcn}
+			,EVNT_WORDS = #{evntWords}
+			,MNGR_MEMO = #{mngrMemo}
+			,MVP_SOURC_CN = #{mvpSourcCn}
+			,GOODS_CN = #{goodsCn}
+			,GOODS_PC = #{goodsPc}
+			,GOODS_FEE_RATE = #{goodsFeeRate}
+			,GOODS_SPLPC = #{goodsSplpc}
+			,GOODS_RSRVMNEY = #{goodsRsrvmney}
+			,GOODS_RSRVMNEY_RATE_AT = #{goodsRsrvmneyRateAt}
+			,GOODS_RSRVMNEY_RATE = #{goodsRsrvmneyRate}
+			,MRKT_PC = #{mrktPc}
+			,TAXT_SE_CODE = #{taxtSeCode}
+			,DLVY_POLICY_SE_CODE = #{dlvyPolicySeCode}
+			,DLVY_POLICY_CN = #{dlvyPolicyCn}
+			,DLVY_SE_CODE = #{dlvySeCode}
+			,VCH_CODE = #{vchCode}
+			,VCH_PD_TY = #{vchPdTy}
+			,VCH_VALID_PD = #{vchValidPd}
+			,DLVY_PC = #{dlvyPc}
+			,ISLAND_DLVY_PC = #{islandDlvyPc}
+			,JEJU_DLVY_PC = #{jejuDlvyPc}
+			,FREE_DLVY_PC = #{freeDlvyPc}
+			,EXPRN_PC = #{exprnPc}
+			,EXPRN_USE_AT =IFNULL(#{exprnUseAt},'N')
+			,COMPNO_DSCNT_USE_AT = IFNULL(#{compnoDscntUseAt},'N')
+			,COMPNO_DSCNT_PC = IFNULL(-#{compnoDscntPc},0)
+			,SBSCRPT_CYCLE_SE_CODE = #{sbscrptCycleSeCode}
+			,SBSCRPT_WEEK_CYCLE = #{sbscrptWeekCycle}
+			,SBSCRPT_DLVY_WD = #{sbscrptDlvyWd}
+			,SBSCRPT_MIN_USE_WEEK = #{sbscrptMinUseWeek}
+			,SBSCRPT_MT_CYCLE = #{sbscrptMtCycle}
+			,SBSCRPT_MIN_USE_MT = #{sbscrptMinUseMt}
+			,SBSCRPT_DLVY_DAY = #{sbscrptDlvyDay}
+			,SBSCRPT_SETLE_DAY = #{sbscrptSetleDay}
+			,BUNDLE_DLVY_AT = #{bundleDlvyAt}
+			,BUNDLE_DLVY_CO = #{bundleDlvyCo}
+			,OPTN_USE_AT = #{optnUseAt}
+			,D_OPTN_USE_AT = #{dOptnUseAt}
+			,A_OPTN_USE_AT = #{aOptnUseAt}
+			,F_OPTN_USE_AT = #{fOptnUseAt}
+			,Q_OPTN_USE_AT = #{qOptnUseAt}
+			,FRST_OPTN_ESSNTL_AT = #{frstOptnEssntlAt}
+			,SOLD_OUT_AT = #{soldOutAt}
+			,ADULT_CRT_AT = IFNULL(#{adultCrtAt},'N')
+			,MRKT_USE_AT = IFNULL(#{mrktUseAt},'N')
+			,BEST_ORDR = #{bestOrdr}
+			,REGIST_STTUS_CODE = #{registSttusCode}
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+			,HDRY_ID=#{hdryId}
+		WHERE	GOODS_ID = #{goodsId}	
+	</update>
+	
+	<!-- 상품 조회수 증분 -->
+	<update id="updateGoodsRdcnt" parameterType="modoo.module.shop.goods.info.service.GoodsVO">
+		UPDATE stn_goods
+		SET
+			RDCNT = RDCNT + 1
+		WHERE	GOODS_ID = #{goodsId}	
+	</update>
+
+	<!-- 상품 판매수 수정  -->
+	<update id="updateGoodsSleCo" parameterType="modoo.module.shop.goods.info.service.GoodsVO">
+		UPDATE stn_goods
+		SET
+			SLE_CO = (SELECT COUNT(*) FROM STN_ORDER o WHERE o.GOODS_ID = #{goodsId} AND USE_AT='Y' )
+		WHERE	GOODS_ID = #{goodsId}	
+	</update>
+	
+	<!-- 상품 판매수 목록 수정 (orderGroupNo) -->
+	<update id="updateGoodsListSleCo" parameterType="java.math.BigDecimal">
+		UPDATE stn_goods g INNER JOIN (
+				SELECT
+					o.GOODS_ID
+					,COUNT(*) AS SLE_CO
+				FROM 	stn_order o
+				LEFT JOIN stn_order a ON a.GOODS_ID = o.GOODS_ID AND a.USE_AT = 'Y'
+				WHERE o.ORDER_GROUP_NO = #{value}
+					AND o.USE_AT = 'Y'
+				GROUP BY o.GOODS_ID
+				) c ON c.GOODS_ID = g.GOODS_ID
+		SET
+			g.SLE_CO = c.SLE_CO
+		WHERE
+			g.GOODS_ID IN (
+				SELECT GOODS_ID FROM stn_order WHERE ORDER_GROUP_NO = #{value}
+			)
+	</update>
+	
+	<!-- 상품 삭제 -->
+	<delete id="deleteGoods" parameterType="modoo.module.shop.goods.info.service.GoodsVO">
+		UPDATE stn_goods
+		SET
+			USE_AT = 'N'
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	GOODS_ID = #{goodsId}	
+	</delete>
+	
+	<!-- 상품 상태 카운트 -->
+	<select id="selectGoodsSttusCnt" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="egovMap">
+		SELECT
+			SUM(T_CNT) TCNT
+			,SUM(R_CNT) RCNT
+			,SUM(C_CNT) CCNT
+			,SUM(E_CNT) ECNT
+		FROM (
+			SELECT
+				1 AS T_CNT
+				,CASE sg.REGIST_STTUS_CODE WHEN 'R' THEN 1 ELSE 0 END R_CNT
+				,CASE sg.REGIST_STTUS_CODE WHEN 'C' THEN 1 ELSE 0 END C_CNT
+				,CASE sg.REGIST_STTUS_CODE WHEN 'E' THEN 1 ELSE 0 END E_CNT
+			FROM	stn_prtnr_cmpny_mapng pcm
+			INNER JOIN stn_goods sg  ON sg.PCMAPNG_ID = pcm.PCMAPNG_ID AND pcm.USE_AT = 'Y'
+			WHERE	sg.USE_AT  = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+				AND pcm.CMPNY_ID = #{searchCmpnyId}
+			</if>
+		) t1
+	</select>
+	
+	<!-- 베스트 상품 목록 : 결제 이력 테이블과 조인해야함. -->
+	<select id="selectBestGoodsList" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="egovMap">
+		SELECT
+			g.GOODS_ID
+			,p.PRTNR_ID 
+			,c.CMPNY_NM
+			,g.GOODS_CTGRY_ID
+			,g.GOODS_KND_CODE
+			,gi.GOODS_LRGE_IMAGE_PATH 
+			,gi.GOODS_MIDDL_IMAGE_PATH 
+			,gi.GOODS_SMALL_IMAGE_PATH 
+			,g.GOODS_NM
+			,g.MODEL_NM
+			,g.MAKR
+			,g.BRAND_ID
+			,gb.BRAND_NM 
+			,g.GOODS_INTRCN
+			,g.EVNT_WORDS
+			,g.GOODS_PC
+			,g.MRKT_PC
+			,g.DLVY_PC
+			,g.DLVY_SE_CODE
+			,g.MRKT_USE_AT
+			,g.SBSCRPT_CYCLE_SE_CODE
+			,g.SBSCRPT_WEEK_CYCLE
+			,g.SBSCRPT_DLVY_WD
+			,g.SBSCRPT_MIN_USE_WEEK
+			,g.SBSCRPT_MT_CYCLE
+			,g.SBSCRPT_MIN_USE_MT
+			,g.SBSCRPT_DLVY_DAY
+			,g.SBSCRPT_SETLE_DAY
+			,CASE WHEN 
+				g.GOODS_ID IN (
+					SELECT
+						BB.GOODS_ID
+					FROM stn_goods_event AA
+					JOIN stn_goods_event_mapng BB ON AA.EVENT_NO = BB.EVENT_NO
+					WHERE AA.EVENT_BEGIN_DT <![CDATA[ <= ]]> SYSDATE()
+						AND AA.EVENT_END_DT <![CDATA[ >= ]]> SYSDATE()
+						<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+							AND AA.PRTNR_ID = #{searchPrtnrId}
+						</if>
+						AND AA.END_AT = 'N'
+					)
+			THEN 'Y'
+			ELSE 'N'
+			END AS EVENT_AT
+		FROM	stn_goods g
+		JOIN	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID AND pcm.USE_AT = 'Y'
+		JOIN	stn_prtnr p ON p.PRTNR_ID = pcm.PRTNR_ID
+		JOIN	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID AND c.USE_AT='Y'
+		JOIN	stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+		LEFT JOIN	stn_goods_brand gb ON gb.BRAND_ID = g.BRAND_ID
+		LEFT JOIN	stn_goods_image gi ON gi.GOODS_ID  = g.GOODS_ID AND gi.GOODS_IMAGE_SE_CODE = 'GNR' AND gi.GOODS_IMAGE_NO = (SELECT MIN(GOODS_IMAGE_NO) FROM stn_goods_image WHERE GOODS_ID = g.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR')
+		<include refid="selectBestGoodsListWhere"></include>
+		<!-- ORDER BY EVENT_AT IS NULL DESC, EVENT_AT IS NULL DESC,gb.BRAND_BTC_GOODS_ID IS NULL ASC ,gb.BRAND_BTC_GOODS_ID ASC, gb.BRAND_BTB_GOODS_ID IS NULL ASC,gb.BRAND_BTB_GOODS_ID ASC,g.LAST_UPDT_PNTTM DESC -->
+		 ORDER BY g.BEST_ORDR DESC,g.LAST_UPDT_PNTTM DESC 
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectBestGoodsListWhere">
+		WHERE	g.USE_AT = 'Y'
+			AND g.SOLD_OUT_AT = 'N'
+			AND g.REGIST_STTUS_CODE = 'C'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+				AND pcm.PRTNR_ID = #{searchPrtnrId}
+			</if>
+			<!-- 
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchMainBestGoodsAt, 'Y')">
+				<![CDATA[ AND (g.GOODS_KND_CODE = 'SBS' OR g.GOODS_KND_CODE = 'CPN') AND g.BEST_ORDR > 0 ]]>
+			</if>
+			 -->
+			<!-- AND g.GOODS_ID IN (
+		    SELECT
+		          CASE WHEN CC.PRTNR_ID='PRTNR_0001' THEN IFNULL(AA.BRAND_BTB_GOODS_ID, MAX(BB.GOODS_ID))
+		          ELSE IFNULL(AA.BRAND_BTC_GOODS_ID, MAX(BB.GOODS_ID))
+		        END AS GOODS_ID
+		    FROM STN_GOODS_BRAND AA
+		    LEFT JOIN STN_GOODS BB ON AA.BRAND_ID = BB.BRAND_ID
+		    JOIN    STN_PRTNR_CMPNY_MAPNG CC ON CC.PCMAPNG_ID = BB.PCMAPNG_ID AND CC.USE_AT = 'Y'
+		    WHERE   BB.USE_AT = 'Y'
+		       AND BB.SOLD_OUT_AT = 'N'
+		       AND BB.REGIST_STTUS_CODE = 'C'
+		       AND BB.GOODS_KND_CODE ='SBS'
+		       <if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+					AND CC.PRTNR_ID = #{searchPrtnrId}
+				</if>
+		       GROUP BY AA.BRAND_ID
+		       ORDER BY AA.BRAND_BTC_GOODS_ID IS NULL ASC ,AA.BRAND_BTC_GOODS_ID ASC ,AA.BRAND_BTB_GOODS_ID IS NULL ASC,AA.BRAND_BTB_GOODS_ID ASC,BB.LAST_UPDT_PNTTM DESC
+		      ) -->
+			
+	</sql>
+	
+	<!-- 베스트 상품 목록 카운트 -->
+	<select id="selectBestGoodsListCnt" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="int">
+		SELECT	COUNT(*) CNT
+		FROM	stn_goods g
+		JOIN	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID AND pcm.USE_AT = 'Y'
+		LEFT JOIN	stn_goods_brand gb ON gb.BRAND_ID = g.BRAND_ID
+		LEFT JOIN	stn_goods_image gi ON gi.GOODS_ID  = g.GOODS_ID AND gi.GOODS_IMAGE_SE_CODE = 'GNR' AND gi.GOODS_IMAGE_SN = (SELECT MIN(GOODS_IMAGE_SN) FROM stn_goods_image WHERE GOODS_ID = g.GOODS_ID)
+		<include refid="selectBestGoodsListWhere"></include>
+	</select>
+	
+	<!-- 제휴사매핑에 연결된 상품 갯수 -->
+	<select id="selectPrtnrCmpnyGoodsListCnt" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="int">
+		SELECT	COUNT(*) CNT
+		FROM	stn_goods g
+		WHERE	g.USE_AT = 'Y'
+			AND g.PCMAPNG_ID = #{pcmapngId}
+	</select>
+	
+	<!-- 상품 등록 상태 일괄 변경 -->
+	<update id="updateGoodsRegistSttus" parameterType="modoo.module.shop.goods.info.service.GoodsVO">
+		UPDATE stn_goods
+		SET REGIST_STTUS_CODE = #{registSttusCode}
+		WHERE GOODS_ID = #{goodsId}
+	</update>
+	
+	<!-- 메인 상품 목록 -->
+	<select id="selectMainGoodsList" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="egovMap">
+		SELECT
+			g.GOODS_ID
+			,p.PRTNR_ID 
+			,c.CMPNY_NM
+			,g.GOODS_CTGRY_ID
+			,g.GOODS_KND_CODE
+			,gi.GOODS_LRGE_IMAGE_PATH 
+			,gi.GOODS_MIDDL_IMAGE_PATH 
+			,gi.GOODS_SMALL_IMAGE_PATH 
+			,g.GOODS_NM
+			,g.MODEL_NM
+			,g.MAKR
+			,g.BRAND_ID
+			,gb.BRAND_NM 
+			,g.GOODS_INTRCN
+			,g.EVNT_WORDS
+			,g.GOODS_PC
+			,g.MRKT_PC
+			,g.DLVY_PC
+			,g.DLVY_SE_CODE
+			,g.MRKT_USE_AT
+			,g.VCH_CODE
+			,g.SBSCRPT_CYCLE_SE_CODE
+			,g.SBSCRPT_WEEK_CYCLE
+			,g.SBSCRPT_DLVY_WD
+			,g.SBSCRPT_MIN_USE_WEEK
+			,g.SBSCRPT_MT_CYCLE
+			,g.SBSCRPT_MIN_USE_MT
+			,g.SBSCRPT_DLVY_DAY
+			,g.SBSCRPT_SETLE_DAY
+			,CASE WHEN 
+				g.GOODS_ID IN (
+					SELECT
+						BB.GOODS_ID
+					FROM stn_goods_event AA
+					JOIN stn_goods_event_mapng BB ON AA.EVENT_NO = BB.EVENT_NO
+					WHERE AA.EVENT_BEGIN_DT <![CDATA[ <= ]]> SYSDATE()
+						AND AA.EVENT_END_DT <![CDATA[ >= ]]> SYSDATE()
+						<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+							AND AA.PRTNR_ID = #{searchPrtnrId}
+						</if>
+						AND AA.END_AT = 'N'
+					)
+			THEN 'Y'
+			ELSE 'N'
+			END AS EVENT_AT
+		FROM	stn_goods g
+		JOIN	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID AND pcm.USE_AT = 'Y'
+		JOIN	stn_prtnr p ON p.PRTNR_ID = pcm.PRTNR_ID
+		JOIN	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID AND c.USE_AT='Y'
+		JOIN	stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+		LEFT JOIN	stn_goods_brand gb ON gb.BRAND_ID = g.BRAND_ID
+		LEFT JOIN	stn_goods_image gi ON gi.GOODS_ID  = g.GOODS_ID AND gi.GOODS_IMAGE_SE_CODE = 'GNR' AND gi.GOODS_IMAGE_NO = (SELECT MIN(GOODS_IMAGE_NO) FROM stn_goods_image WHERE GOODS_ID = g.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR')
+		<include refid="selectMainGoodsListWhere"></include>
+		 ORDER BY g.BEST_ORDR DESC,g.GOODS_ID DESC
+	</select>
+	
+	<sql id="selectMainGoodsListWhere">
+		WHERE	g.USE_AT = 'Y'
+			AND g.SOLD_OUT_AT = 'N'
+			AND g.REGIST_STTUS_CODE = 'C'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+				AND pcm.PRTNR_ID = #{searchPrtnrId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsCtgryId)">
+				AND g.GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+			</if> 
+	</sql>
+	
+	<!-- 베스트 상품 목록 카운트 -->
+	<select id="selectMainGoodsListCnt" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="int">
+		SELECT	COUNT(*) CNT
+		FROM	stn_goods g
+		JOIN	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID AND pcm.USE_AT = 'Y'
+		LEFT JOIN	stn_goods_brand gb ON gb.BRAND_ID = g.BRAND_ID
+		LEFT JOIN	stn_goods_image gi ON gi.GOODS_ID  = g.GOODS_ID AND gi.GOODS_IMAGE_SE_CODE = 'GNR' AND gi.GOODS_IMAGE_SN = (SELECT MIN(GOODS_IMAGE_SN) FROM stn_goods_image WHERE GOODS_ID = g.GOODS_ID)
+		<include refid="selectMainGoodsListWhere"></include>
+	</select>
+</mapper>

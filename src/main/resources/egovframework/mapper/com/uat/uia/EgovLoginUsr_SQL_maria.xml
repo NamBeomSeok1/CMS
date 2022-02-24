@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- 
+	수정일                 수정자                          수정내용
+  =========     =======    =================================================
+  2011.8.26   	서준식     	 	SSO 로그인을 위한 쿼리 추가
+  2011.09.27    서준식              컬럼 변경 SUB_DN 을  CRTFC_DN_VALUE 로 변경
+  2011.09.28    서준식              컬럼 변경 entrprsmber_id 을  ENTRPRS_MBER_ID 로 변경
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="LoginUsr">
+
+	<!-- 로그인 처리를 위한 resultMap -->
+	<resultMap id="login" type="egovframework.com.cmm.LoginVO">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="ihidNum" column="ihidNum"/>
+		<result property="email" column="email"/>
+		<result property="password" column="password"/>
+		<result property="userSe" column="userSe"/>
+		<result property="uniqId" column="uniqId"/>
+		<result property="agrde" column="agrde"/>
+		<result property="sexdstn" column="sexdstn"/>
+		<result property="userKey" column="userKey"/>
+		<result property="clientCd" column="clientCd"/>
+		<result property="brthdy" column="brthdy"/>
+		<result property="moblphon" column="moblphon"/>
+	</resultMap>
+	
+	<!-- 아이디 찾기를 위한 resultMap -->
+	<resultMap id="id" type="egovframework.com.cmm.LoginVO">
+		<result property="id" column="id"/>
+	</resultMap>
+	
+	<!-- 비밀번호 처리를 위한 resultMap -->
+	<resultMap id="password" type="egovframework.com.cmm.LoginVO">
+		<result property="password" column="password"/>
+	</resultMap>
+	
+	<!-- SSO용 ESNTL_ID를 이용한 로그인(2011.8.26) -->
+	
+	<select id="ssoLoginByEsntlId" resultMap="login">
+		SELECT m.MBER_ID AS id
+			 , m.MBER_NM AS name
+			 , m.PASSWORD AS password
+			 , m.EMAIL AS email
+			 , m.MBER_TY_CODE AS userSe
+			 , m.ESNTL_ID AS uniqId
+			 , m.AGRDE AS agrde
+			 , m.SEXDSTN AS sexdstn
+			 , m.GROUP_ID AS groupId
+			 , m.USER_KEY AS userKey
+			 , m.CLIENT_CD AS clientCd
+			 , m.BRTHDY AS brthdy
+			 , m.MOBLPHON AS moblphon
+		  FROM dtn_mber m
+		 WHERE m.ESNTL_ID = #{uniqId}
+		   AND m.MBER_STTUS = 'P'
+	</select>
+	
+	
+	<!-- 일반 로그인 -->
+	<select id="actionLogin" resultMap="login">
+		SELECT m.MBER_ID AS id
+			 , m.MBER_NM AS name
+			 , m.PASSWORD AS password
+			 , m.EMAIL AS email
+			 , m.MBER_TY_CODE AS userSe
+			 , m.ESNTL_ID AS uniqId
+			 , m.AGRDE AS agrde
+			 , m.SEXDSTN AS sexdstn
+			 , m.GROUP_ID AS groupId
+			 , m.USER_KEY AS userKey
+			 , m.CLIENT_CD AS clientCd
+			 , c.CMPNY_ID AS cmpnyId
+			 , m.BRTHDY AS brthdy
+			 , m.MOBLPHON AS moblphon
+		  FROM dtn_mber m
+	 LEFT JOIN stn_cmpny c ON c.CMPNY_USER_ESNTL_ID = m.ESNTL_ID AND c.USE_AT = 'Y'
+		 WHERE m.MBER_ID = #{id}
+		   AND m.PASSWORD = #{password}
+		   AND m.MBER_STTUS = 'P'
+	</select>
+	
+	<!-- 인증서 로그인 -->
+	<select id="actionCrtfctLogin" resultMap="login">
+		
+		SELECT emplyr_id AS id
+		     , user_nm AS name
+		     , password AS password
+		     , ihidnum AS ihidNum
+		     , email_adres AS email
+		     , 'USR' AS userSe
+		     , esntl_id AS uniqId
+		  FROM comtnemplyrinfo
+		 WHERE CRTFC_DN_VALUE = #{dn}
+		
+	</select>
+	
+	<!-- 아이디 찾기 -->
+	<select id="searchId" resultMap="id">
+		SELECT MBER_ID AS id
+		  FROM dtn_mber
+		 WHERE MBER_NM = #{name}
+		   AND EMAIL = #{email}
+		   AND MBER_STTUS = 'P'
+	</select>
+	
+	<!-- 비밀번호 찾기 -->
+	<select id="searchPassword" resultMap="password">
+		SELECT
+			PASSWORD
+		FROM	dtn_mber
+		WHERE	MBER_ID = #{id}
+		   AND MBER_NM = #{name}
+		   AND email = #{email}
+		   AND PASSWORD_HINT = #{passwordHint}
+		   AND PASSWORD_CNSR = #{passwordCnsr}
+		   AND MBER_STTUS = 'P'
+	</select>
+	
+	<!-- 변경된 비밀번호를 저장 -->
+	<update id="updatePassword">
+		UPDATE 	dtn_mber
+		SET 	PASSWORD = #{password}
+		WHERE	MBER_ID = #{id}
+	</update>
+	
+	<!-- 로그인인증제한 조회 -->
+	<select id="selectLoginIncorrect" resultType="egovMap">
+		SELECT 
+			A.MBER_ID AS USER_ID
+			 ,  A.PASSWORD AS USER_PW
+			 ,  A.MBER_NM AS USER_NM
+			 ,  A.ESNTL_ID AS UNIQ_ID
+			 ,  'N'
+			 ,  IFNULL(A.LOCK_CNT,0) AS LOCK_CNT
+			 , B.CMPNY_ID
+		FROM  dtn_mber A
+		LEFT JOIN stn_cmpny B ON A.ESNTL_ID = B.CMPNY_USER_ESNTL_ID
+		WHERE  MBER_ID = #{id}
+	</select>
+
+	<!-- 로그인인증제한 변경 > 일반회원 -->
+	<update id="updateLoginIncorrect">
+		<!-- LOCK 해제 -->
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(updateAt,'E')">
+			<![CDATA[
+			UPDATE  dtn_mber
+			   SET  LOCK_AT = NULL
+			     ,  LOCK_CNT  = NULL
+			     ,  LOCK_LAST_PNTTM = NULL     
+			   WHERE MBER_ID = #{id}
+			]]>
+		</if>
+		<!-- LOCK 설정 -->
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(updateAt,'L')">
+			<![CDATA[
+			UPDATE  dtn_mber
+			   SET  LOCK_AT = 'Y'
+			     ,  LOCK_CNT  = LOCK_CNT
+			     ,  LOCK_LAST_PNTTM = SYSDATE()
+		      WHERE MBER_ID = #{id}
+			]]>
+		</if>
+		<!-- LOCK 카운트 설정 -->
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(updateAt,'C')">
+			<![CDATA[
+			UPDATE  dtn_mber
+			   SET  LOCK_CNT  = IFNULL(LOCK_CNT,0)+1
+			     ,  LOCK_LAST_PNTTM = SYSDATE() 
+			   WHERE MBER_ID = #{id}
+			]]>
+		</if>
+	</update>
+	
+</mapper>

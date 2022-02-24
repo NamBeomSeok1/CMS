@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.bank.service.impl.BankMapper">
+
+	<!-- 은행목록 -->
+	<select id="selectBankList" parameterType="modoo.module.shop.bank.service.BankVO" resultType="modoo.module.shop.bank.service.BankVO">
+		SELECT
+			BANK_ID
+			,BANK_NM
+			,USE_AT
+		FROM	stn_bank
+		<include refid="selectBankListWhere"></include>
+		ORDER BY BANK_ID ASC
+	</select>
+	
+	<sql id="selectBankListWhere">
+		<where>
+			AND USE_AT = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'NM')">
+						AND BANK_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 은행목록 카운트 -->
+	<select id="selectBankListCnt" parameterType="modoo.module.shop.bank.service.BankVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	stn_bank
+		<include refid="selectBankListWhere"></include>
+	</select>
+	
+	<!-- 은행저장 -->
+	<insert id="insertBank" parameterType="modoo.module.shop.bank.service.BankVO">
+		INSERT INTO stn_bank (
+			BANK_ID
+			,BANK_NM
+			,USE_AT
+		) VALUES (
+			#{bankId}
+			,TRIM(#{bankNm})
+			,'Y'
+		)
+	</insert>
+
+	<!-- 은행상세 -->
+	<select id="selectBank" parameterType="modoo.module.shop.bank.service.BankVO" resultType="modoo.module.shop.bank.service.BankVO">
+		SELECT
+			BANK_ID
+			,BANK_NM
+			,USE_AT
+		FROM	stn_bank
+		WHERE	BANK_ID = #{bankId}
+	</select>
+
+	<!-- 은행수정 -->
+	<update id="updateBank" parameterType="modoo.module.shop.bank.service.BankVO">
+		UPDATE stn_bank
+		SET
+			BANK_ID = #{bankId}
+			,BANK_NM = #{bankNm}
+		WHERE	BANK_ID = #{bankId}
+	</update>
+	
+	<!-- 은행삭제 -->
+	<delete id="deleteBank" parameterType="modoo.module.shop.bank.service.BankVO">
+		UPDATE stn_bank
+		SET
+			USE_AT = 'N'
+		WHERE	BANK_ID = #{bankId}
+	</delete>
+	
+	<select id="selectBankNameCheckCnt" parameterType="modoo.module.shop.bank.service.BankVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM 	stn_bank
+		WHERE	BANK_NM = TRIM(#{bankNm})
+	</select>
+
+</mapper>

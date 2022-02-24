@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <title>모두의구독</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="Author" content="">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <!--[if lt IE 9]><script src="../../../resources/front/site/SITE_00000/js/html5.js"></script><![endif]-->
+    <link href="../../../resources/front/site/SITE_00000/css/swiper.css" rel="stylesheet" />
+    <link href="../../../resources/front/site/SITE_00000/css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div style="padding:50px; text-align:center;">
+        <button type="button" class="btn-lg spot" data-popup-open="reviewView">리뷰상세보기</button>
+    </div>
+
+    <div class="popup-review" data-popup="reviewView" style="display:block;">
+        <div class="review-img-area">
+            <figure class="img-area">
+                <img src="../../../resources/front/site/SITE_00000/image/temp2/review02.jpg" alt="이미지3 썸네일" />
+                <!--<img src="../../../resources/front/site/SITE_00000/image/common/img_none.svg" alt="이미지 없음" />-->
+            </figure>
+            <div class="img-list">
+                <div class="swiper-container">
+                    <ul class="swiper-wrapper">
+                        <li class="swiper-slide">
+                            <a href="#none">
+                                <img src="../../../resources/front/site/SITE_00000/image/temp2/review02.jpg" alt="이미지3 썸네일" />
+                            </a>
+                        </li>
+                       <li class="swiper-slide">
+                            <a href="#none">
+                                <img src="../../../resources/front/site/SITE_00000/image/temp2/review01.jpg" alt="이미지3 썸네일" />
+                            </a>
+                        </li>
+                        <!--<li class="swiper-slide">
+                            <a href="#none">
+                                <img src="../../../resources/front/site/SITE_00000/image/temp/thumb01.jpg" alt="이미지1 썸네일" />
+                            </a>
+                        </li>
+                        <li class="swiper-slide">
+                            <a href="#none">
+                                <img src="https://phinf.pstatic.net/checkout.phinf/20200809_130/1596955357847JeNFs_JPEG/review-attachment-538305be-97b1-4ba9-8745-f56674285794.jpeg?type=w640" />
+                            </a>
+                        </li>
+                        <li class="swiper-slide">
+                            <a href="#none">
+                                <img src="../../../resources/front/site/SITE_00000/image/temp2/review01.jpg" alt="이미지3 썸네일" />
+                            </a>
+                        </li>
+                        <li class="swiper-slide">
+                            <a href="#none">
+                                <img src="../../../resources/front/site/SITE_00000/image/temp/thumb04.jpg" alt="이미지4 썸네일" />
+                            </a>
+                        </li>-->
+                    </ul>
+                </div>
+                <button type="button" class="swiper-button-next"></button>
+                <button type="button" class="swiper-button-prev"></button>
+            </div>
+        </div>
+        <div class="pop-area">
+            <div class="pop-header">
+                <h1>포토리뷰</h1>
+                <button type="button" class="btn-pop-close" data-popup-close="reviewView">닫기</button>
+            </div>
+            <div class="pop-body">
+                <div class="review-txt-area">
+                    <span class="grade sm">
+                        <span class="grade-per" style="width:60%;"></span>
+                    </span>
+                    <span class="date">2020.08.24</span>
+                    <dl>
+                        <dt>옵션</dt>
+                        <dd>포크야미, 치킨야미</dd>
+                    </dl>
+                    <p>
+                        저희집 강아지가 너무 잘먹네요, 뜯자마자 5분만에 순삭
+                        했어요! 포장도 잘되어있고 앞으로도 계속 구독할 생각
+                        입니다 :)
+                    </p>
+                    <cite>j*****s</cite>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dim" style="display:block;"></div>
+
+    <script src="../../../resources/lib/jquery/jquery.js"></script>
+    <script src="../../../resources/lib/jquery.easing/jquery.easing.js"></script>
+    <script src="../../../resources/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ssm.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/swiper.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ScrollMagic.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/TweenMax.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/animation.gsap.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/common.js"></script>
+    <script>
+        $(document).ready(function () {
+            //퍼블리싱 리스트용
+            popPosition($('.popup-review'));
+            popReviewSwiper();
+        });
+    </script>
+</body>
+</html>

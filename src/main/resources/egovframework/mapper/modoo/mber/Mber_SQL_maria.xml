@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.mber.info.service.impl.MberMapper">
+
+	<!-- 회원 목록 -->
+	<select id="selectMberList" parameterType="modoo.module.mber.info.service.MberVO" resultType="egovMap">
+		SELECT
+			ESNTL_ID
+			,SITE_ID
+			,MBER_ID
+			,MBER_NM
+			,EMAIL
+			,MBER_STTUS
+			,MBER_TY_CODE
+			,CLIENT_CD
+			,USER_KEY
+			,POINT_YN
+			,EZMIL_YN
+			,SPECIAL_USE_YN
+			,RECEIPT_YN
+			,SBSCRB_DE
+			,LOCK_AT
+			,LOCK_CNT
+			,LOCK_LAST_PNTTM
+			,GROUP_ID
+			,AUTHOR_CODE
+			,BRTHDY
+			,MOBLPHON
+		FROM	dtn_mber dm
+		<include refid="selectMberListWhere"></include>
+		ORDER BY ESNTL_ID DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectMberListWhere">
+		<where>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSiteId)">
+				AND dm.SITE_ID = #{searchSiteId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchGroupId,'B2B')">
+				AND dm.GROUP_ID = "GROUP_00000000000001"
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchGroupId,'B2C')">
+				AND dm.GROUP_ID = "GROUP_00000000000002" OR dm.GROUP_ID = "GROUP_00000000000005" 
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'NM')">
+						AND dm.MBER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'ID')">
+						AND dm.MBER_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+				</choose>
+			</if>
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchUserType,'USER')">
+					AND dm.AUTHOR_CODE IN ('ROLE_USER')
+					AND dm.MBER_STTUS IN ('P','A')
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchUserType,'SHOP')">
+					AND dm.AUTHOR_CODE IN ('ROLE_SHOP')
+					AND dm.MBER_STTUS IN ('P','A')
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchUserType,'ADMIN')">
+					AND dm.AUTHOR_CODE IN ('ROLE_ADMIN')
+					AND dm.MBER_STTUS IN ('P','A')
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchUserType,'SECSN')">
+					AND dm.MBER_STTUS IN ('D')
+				</when>
+				<otherwise>
+					AND dm.AUTHOR_CODE = '1'
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+
+	<!-- 회원 목록 카운트 -->
+	<select id="selectMberListCnt" parameterType="modoo.module.mber.info.service.MberVO" resultType="Integer">
+		SELECT
+			COUNT(*) AS CNT
+		FROM	dtn_mber dm
+		<include refid="selectMberListWhere"></include>
+	</select>
+	
+	<!-- 회원 저장 -->
+	<insert id="insertMber" parameterType="modoo.module.mber.info.service.MberVO">
+		INSERT INTO dtn_mber (
+			ESNTL_ID
+			,SITE_ID
+			,MBER_ID
+			,PASSWORD
+			,MBER_NM
+			,EMAIL
+			,MBER_STTUS
+			,MBER_TY_CODE
+			,SBSCRB_DE
+			,LOCK_AT
+			,LOCK_CNT
+			,LOCK_LAST_PNTTM
+			,GROUP_ID
+			,AUTHOR_CODE
+			,BRTHDY
+			,MOBLPHON
+		) VALUES (
+			#{esntlId}
+			,#{siteId}
+			,#{mberId}
+			,#{password}
+			,#{mberNm}
+			,#{email}
+			,#{mberSttus}
+			,#{mberTyCode}
+			,SYSDATE()
+			,NULL
+			,NULL
+			,NULL
+			,#{groupId}
+			,#{authorCode}
+			,#{birthday}
+			,#{moblphon}
+		)
+	</insert>
+
+	<!-- SSO 회원 저장 -->
+	<insert id="insertSsoMber" parameterType="modoo.module.mber.info.service.MberVO">
+		INSERT INTO dtn_mber (
+			ESNTL_ID
+			,SITE_ID
+			,MBER_ID
+			,PASSWORD
+			,MBER_NM
+			,EMAIL
+			,SEXDSTN
+			,AGRDE
+			,MBER_STTUS
+			,MBER_TY_CODE
+			,CLIENT_CD
+			,USER_KEY
+			,POINT_YN
+			,EZMIL_YN
+			,SPECIAL_USE_YN
+			,RECEIPT_YN
+			,SBSCRB_DE
+			,LOCK_AT
+			,LOCK_CNT
+			,LOCK_LAST_PNTTM
+			,GROUP_ID
+			,AUTHOR_CODE
+			,BRTHDY
+			,MOBLPHON
+		) VALUES (
+			#{esntlId}
+			,#{siteId}
+			,#{mberId}
+			,#{password}
+			,#{mberNm}
+			,#{email}
+			,#{sexdstn}
+			,IF(#{agrde} = '', NULL, #{agrde})
+			,#{mberSttus}
+			,#{mberTyCode}
+			,#{clientCd}
+			,#{userKey}
+			,#{pointYn}
+			,#{ezmilYn}
+			,#{specialUseYn}
+			,#{receiptYn}
+			,SYSDATE()
+			,NULL
+			,NULL
+			,NULL
+			,#{groupId}
+			,#{authorCode}
+			,#{birthday}
+			,#{moblphon}
+		)
+	</insert>
+	
+	<!-- 통합회원 저장 -->
+	<insert id="insertPortalMber" parameterType="modoo.module.mber.info.service.MberVO">
+		INSERT INTO dtn_mber (
+			ESNTL_ID
+			,SITE_ID
+			,MBER_ID
+			,PASSWORD
+			,MBER_NM
+			,EMAIL
+			,MBER_STTUS
+			,MBER_TY_CODE
+			,SBSCRB_DE
+			,LOCK_AT
+			,LOCK_CNT
+			,LOCK_LAST_PNTTM
+			,GROUP_ID
+			,AUTHOR_CODE
+			,BRTHDY
+			,MOBLPHON
+			,PROFILE_IMG
+		) VALUES (
+			#{esntlId}
+			,#{siteId}
+			,#{mberId}
+			,""
+			,#{mberNm}
+			,#{email}
+			,#{mberSttus}
+			,#{mberTyCode}
+			,SYSDATE()
+			,NULL
+			,NULL
+			,NULL
+			,#{groupId}
+			,#{authorCode}
+			,#{birthday}
+			,#{moblphon}
+			,#{profileImg}
+		)
+	</insert>
+	
+	<!-- 회원 상세 -->
+	<select id="selectMber" parameterType="modoo.module.mber.info.service.MberVO" resultType="modoo.module.mber.info.service.MberVO">
+		SELECT
+			ESNTL_ID
+			,MBER_ID
+			,SITE_ID
+			,MBER_ID
+			,MBER_NM
+			,EMAIL
+			,SEXDSTN
+			,AGRDE
+			,MBER_STTUS
+			,MBER_TY_CODE
+			,SBSCRB_DE
+			,LOCK_AT
+			,LOCK_CNT
+			,LOCK_LAST_PNTTM
+			,GROUP_ID
+			,POINT_YN
+			,AUTHOR_CODE
+			,ADULT_CRT_YN
+			,BRTHDY
+			,MOBLPHON
+		FROM	dtn_mber dm
+		WHERE	dm.ESNTL_ID = #{esntlId}
+	</select>
+
+	<!-- 회원 수정 -->
+	<update id="updateMber" parameterType="modoo.module.mber.info.service.MberVO">
+		UPDATE dtn_mber
+		SET
+			
+			SITE_ID = IFNULL(NULLIF(#{siteId},''), 'SITE_00000')
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(mberNm)">
+				,MBER_NM = #{mberNm}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(email)">
+				,EMAIL = #{email}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(mberSttus)">
+				,MBER_STTUS = #{mberSttus}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(mberTyCode)">
+				,MBER_TY_CODE = #{mberTyCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(authorCode)">
+				,AUTHOR_CODE = #{authorCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(sexdstn)">
+				,SEXDSTN = #{sexdstn}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(agrde)">
+				,AGRDE = #{agrde}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(adultCrtYn)">
+				,ADULT_CRT_YN = #{adultCrtYn}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(birthday)">
+				,BRTHDY = #{birthday}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(moblphon)">
+				,MOBLPHON = #{moblphon}
+			</if>
+			
+		WHERE	ESNTL_ID = #{esntlId}
+	</update>
+
+	<update id="updateMberSttus" parameterType="modoo.module.mber.info.service.MberVO">
+		UPDATE dtn_mber
+		SET	
+			MBER_STTUS = #{mberSttus}
+		WHERE	ESNTL_ID = #{esntlId}
+	</update>
+
+	<!-- 회원 삭제 -->
+	<delete id="deleteMber" parameterType="modoo.module.mber.info.service.MberVO">
+		DELETE FROM dtn_mber
+		WHERE	ESNTL_ID = #{esntlId}
+	</delete>
+	
+	<!-- 회원 ID 중복 카운트  -->
+	<select id="selectCheckDuplMberIdCnt" parameterType="modoo.module.mber.info.service.MberVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	dtn_mber dm
+		WHERE	dm.MBER_ID = #{mberId}
+	</select>
+	
+	<!-- 비밀번호 변경 -->
+	<update id="updatePassword" parameterType="modoo.module.mber.info.service.MberVO">
+		UPDATE	dtn_mber
+		SET
+			PASSWORD = #{password}
+		WHERE	MBER_ID = #{mberId}
+	</update>
+	
+	<!-- 잠김 해제 -->
+	<update id="updateLockIncorrect" parameterType="modoo.module.mber.info.service.MberVO">
+		UPDATE dtn_mber
+		SET  
+			LOCK_AT = NULL 
+			 ,LOCK_CNT  = NULL 
+			 ,LOCK_LAST_PNTTM = NULL 
+		WHERE  ESNTL_ID  = #{esntlId}
+	</update>
+	
+	<!-- SSO 회원가입체크 -->
+	<select id="selectSsoMemberCheck" parameterType="modoo.module.mber.info.service.MberVO" resultType="int">
+		SELECT
+			COUNT(*) AS CNT
+		FROM	dtn_mber
+		WHERE	CLIENT_CD = #{clientCd}
+			AND USER_KEY = #{userKey}
+	</select>
+	
+	<!-- SSO 회원상세 -->
+	<select id="selectSsoMember" parameterType="modoo.module.mber.info.service.MberVO" resultType="modoo.module.mber.info.service.MberVO">
+		SELECT
+			ESNTL_ID
+			,MBER_ID
+			,SITE_ID
+			,MBER_ID
+			,MBER_NM
+			,EMAIL
+			,SEXDSTN
+			,AGRDE
+			,MBER_STTUS
+			,MBER_TY_CODE
+			,SBSCRB_DE
+			,LOCK_AT
+			,LOCK_CNT
+			,LOCK_LAST_PNTTM
+			,GROUP_ID
+			,AUTHOR_CODE
+			,ADULT_CRT_YN
+			,BRTHDY
+			,MOBLPHON
+		FROM	dtn_mber dm
+		WHERE	CLIENT_CD = #{clientCd}
+			AND USER_KEY = #{userKey}
+	</select>
+	
+	<!-- 회원권한 목록 -->
+	<select id="selectMberAuthList" resultType="modoo.module.mber.info.service.MberVO">
+		SELECT 
+			CONCAT(dm.MBER_TY_CODE, dm.MBER_ID) AS MBER_ID
+			,dm.AUTHOR_CODE
+		FROM 	dtn_mber dm
+	</select>
+	
+	<update id="updateEzwelMember" parameterType="modoo.module.mber.info.service.MberVO">
+		UPDATE dtn_mber
+		SET
+			POINT_YN = #{pointYn}
+			,EZMIL_YN = #{ezmilYn}
+			,SPECIAL_USE_YN = #{specialUseYn}
+			,RECEIPT_YN = #{receiptYn}
+		WHERE	CLIENT_CD = #{clientCd}
+			AND USER_KEY = #{userKey}
+	</update>
+
+
+</mapper>

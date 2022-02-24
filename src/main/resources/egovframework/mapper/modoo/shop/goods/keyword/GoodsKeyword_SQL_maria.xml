@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.keyword.service.impl.GoodsKeywordMapper">
+
+	<!-- 상품키원드 목록 -->
+	<select id="selectGoodsKeywordList" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="modoo.module.shop.goods.keyword.service.GoodsKeywordVO">
+		SELECT
+			GOODS_KEYWORD_NO
+			,GOODS_ID
+			,KEYWORD_NM
+		FROM	stn_goods_keyword
+		WHERE	GOODS_ID = #{goodsId}
+	</select>
+	
+	<!-- 상품키워드 저장 -->
+	<insert id="insertGoodsKeyword" parameterType="modoo.module.shop.goods.keyword.service.GoodsKeywordVO">
+		INSERT INTO stn_goods_keyword (
+			GOODS_KEYWORD_NO
+			,GOODS_ID
+			,KEYWORD_NM
+		) VALUES (
+			#{goodsKeywordNo}
+			,#{goodsId}
+			,#{keywordNm}
+		)
+	</insert>
+	
+	<!-- 상품키워드 수정 -->
+	<update id="updateGoodsKeyword" parameterType="modoo.module.shop.goods.keyword.service.GoodsKeywordVO">
+		UPDATE stn_goods_keyword
+		SET
+			GOODS_ID = #{goodsId}
+			,KEYWORD_NM = #{keywordNm}
+		WHERE 	GOODS_KEYWORD_NO = #{goodsKeywordNo}	
+	</update>
+
+	<!-- 상품키워드 삭제 -->
+	<delete id="deleteGoodsKeyword" parameterType="modoo.module.shop.goods.keyword.service.GoodsKeywordVO">
+		DELETE FROM stn_goods_keyword
+		WHERE 	GOODS_KEYWORD_NO = #{goodsKeywordNo}
+	</delete>
+
+	<!-- 상품연관 키워드 목록 -->
+	<select id="selectRelationGoodsKeywordList" parameterType="modoo.module.shop.goods.keyword.service.GoodsKeywordVO" resultType="modoo.module.shop.goods.keyword.service.GoodsKeywordVO">
+		SELECT
+			KEYWORD_NM
+			,CNT
+		FROM (
+			SELECT
+				k.KEYWORD_NM
+				,COUNT(*) AS CNT
+			FROM	stn_goods g
+			JOIN	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID AND pcm.USE_AT = 'Y'
+			JOIN	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID AND c.USE_AT='Y'
+			JOIN	stn_goods_keyword k ON k.GOODS_ID = g.GOODS_ID
+			<where>
+				<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsKeyword)">
+				AND (
+					<foreach collection="searchGoodsKeyword" item="item" separator="OR">
+					(
+						g.MODEL_NM LIKE CONCAT('%', #{item}, '%') 
+						OR g.GOODS_NM LIKE CONCAT('%', #{item}, '%')
+						OR c.CMPNY_NM LIKE CONCAT('%', #{item}, '%')
+					)
+					</foreach>
+				)
+				</when>
+				<otherwise>AND 1 = 2</otherwise>
+				</choose>
+			</where>
+			GROUP BY KEYWORD_NM
+		) t
+		ORDER BY CNT DESC
+		LIMIT 5
+	</select>
+</mapper>

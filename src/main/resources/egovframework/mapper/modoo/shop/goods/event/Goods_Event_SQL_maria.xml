@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.event.service.impl.GoodsEventMapper">
+
+	<select id="selectGoodsEventList" parameterType="modoo.module.event.service.impl.GoodsEventVO" resultType="egovMap">
+		SELECT
+			A.EVENT_NO
+			, A.CMPNY_ID
+			, A.EVENT_SJ
+			, DATE_FORMAT(A.EVENT_BEGIN_DT, '%Y-%m-%d') AS EVENT_BEGIN_DT
+			, DATE_FORMAT(A.EVENT_END_DT, '%Y-%m-%d') AS EVENT_END_DT
+			, A.EVENT_CN
+			, A.PRTNR_ID
+			, A.EVENT_THUMBNAIL
+			, A.EVENT_BANNER_IMG
+			, A.EVENT_MAIN_IMG_PC
+			, A.EVENT_MAIN_IMG_MOB
+			, A.EVENT_DETAIL_IMG
+			, A.EVENT_URL
+			, A.EVENT_BRAND_IMG_PC
+			, A.EVENT_BRAND_IMG_MOBILE
+			, A.EVENT_CNT
+			, A.END_AT
+			, DATE_FORMAT(A.FRST_REGIST_PNTTM, '%Y-%m-%d') AS FRST_REGIST_PNTTM
+			, A.FRST_REGISTER_ID
+			, A.LAST_UPDT_PNTTM
+			, A.LAST_UPDUSR_ID
+			, B.CMPNY_NM
+		<include refid="selectGoodsEventFrom"></include>
+		<include refid="selectGoodsEventWhere"></include>
+		ORDER BY A.EVENT_NO DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectGoodsEventFrom">
+		FROM stn_goods_event A
+		LEFT JOIN stn_cmpny B ON A.CMPNY_ID = B.CMPNY_ID
+	</sql>
+	
+	<sql id="selectGoodsEventWhere">
+		<where>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+				AND A.PRTNR_ID = #{searchPrtnrId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchEndAt)">
+				AND A.END_AT = #{searchEndAt}
+			</if>
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'SJ')">
+					AND A.EVENT_SJ LIKE CONCAT( '%', #{searchKeyword}, '%' )
+				</when>
+				<otherwise>
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+
+	<select id="selectGoodsEventListCnt" parameterType="modoo.module.event.service.impl.GoodsEventVO" resultType="int">
+		SELECT
+			IFNULL(COUNT(*), 0)
+		<include refid="selectGoodsEventFrom"></include>
+		<include refid="selectGoodsEventWhere"></include>
+	</select>
+	
+	<insert id="insertGoodsEvent" parameterType="modoo.module.event.service.impl.GoodsEventVO">
+		INSERT INTO stn_goods_event
+		(
+			EVENT_NO
+			, CMPNY_ID
+			, EVENT_SJ
+			, EVENT_BEGIN_DT
+			, EVENT_END_DT
+			, EVENT_CN
+			, PRTNR_ID
+			, EVENT_THUMBNAIL
+			, EVENT_BANNER_IMG
+			, EVENT_MAIN_IMG_PC
+			, EVENT_MAIN_IMG_MOB
+			, EVENT_DETAIL_IMG
+			, EVENT_URL
+			, EVENT_BRAND_IMG_PC
+			, EVENT_BRAND_IMG_MOBILE
+			, EVENT_CNT
+			, END_AT
+			, FRST_REGIST_PNTTM
+			, FRST_REGISTER_ID
+			, LAST_UPDT_PNTTM
+			, LAST_UPDUSR_ID
+		)
+		VALUES(
+			#{eventNo}
+			, #{cmpnyId}
+			, #{eventSj}
+			, #{eventBeginDt}
+			, #{eventEndDt}
+			, #{eventCn}
+			, #{prtnrId}
+			, #{eventThumbnail}
+			, #{eventBannerImg}
+			, #{eventMainImgPc}
+			, #{eventMainImgMob}
+			, #{eventDetailImg}
+			, #{eventUrl}
+			, #{eventBrandImgPc}
+			, #{eventBrandImgMobile}
+			, #{eventCnt}
+			, #{endAt}
+			, SYSDATE()
+			, #{frstRegisterId}
+			, NULL
+			, NULL
+		)
+	</insert>
+	
+	<update id="updateGoodsEvent"  parameterType="modoo.module.event.service.impl.GoodsEventVO">
+		UPDATE stn_goods_event
+		SET 
+			CMPNY_ID = #{cmpnyId}
+			, EVENT_SJ = #{eventSj}
+			, EVENT_BEGIN_DT = #{eventBeginDt}
+			, EVENT_END_DT = #{eventEndDt}
+			, EVENT_CN = #{eventCn}
+			, PRTNR_ID = #{prtnrId}
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(eventThumbnail)">
+			, EVENT_THUMBNAIL = #{eventThumbnail}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(eventMainImgPc)">
+			, EVENT_MAIN_IMG_PC = #{eventMainImgPc}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(eventMainImgMob)">
+			, EVENT_MAIN_IMG_MOB = #{eventMainImgMob}
+			</if>
+			, EVENT_URL = #{eventUrl}
+			, EVENT_CNT = #{eventCnt}
+			, END_AT = #{endAt}
+			, LAST_UPDT_PNTTM = SYSDATE()
+			, LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE EVENT_NO = #{eventNo}
+	</update>
+	
+	<update id="deleteGoodsEvent"  parameterType="modoo.module.event.service.impl.GoodsEventVO">
+		DELETE FROM stn_goods_event
+		WHERE EVENT_NO = #{eventNo}
+	</update>
+	
+	<select id="selectNextEventNo" parameterType="modoo.module.event.service.impl.GoodsEventVO" resultType="int">
+		SELECT
+			IFNULL(MAX(EVENT_NO), 0) + 1
+		FROM stn_goods_event
+	</select>
+
+	<select id="selectGoodsEventMapngList" parameterType="modoo.module.event.service.impl.GoodsEventVO" resultType="egovMap">
+		SELECT
+			A.EVENT_NO
+			, A.GOODS_ID
+			, A.EVENT_RANGE_SE_CODE
+			, B.GOODS_NM
+		FROM stn_goods_event_mapng A
+		JOIN stn_goods B ON A.GOODS_ID = B.GOODS_ID
+		WHERE A.EVENT_NO = #{eventNo}
+	</select>
+	
+	<insert id="insertGoodsEventMapng" parameterType="modoo.module.event.service.impl.GoodsEventMapngVO">
+		INSERT INTO stn_goods_event_mapng(
+			EVENT_NO
+			, GOODS_ID
+			, EVENT_RANGE_SE_CODE
+		)
+		VALUES(
+			#{eventNo}
+			, #{goodsId}
+			, #{eventRangeSeCode}
+		)
+	</insert>
+	
+	<select id="selectGoodsEvent" parameterType="modoo.module.event.service.impl.GoodsEventVO" resultType="modoo.module.event.service.impl.GoodsEventVO">
+		SELECT
+			A.EVENT_NO
+			, A.CMPNY_ID
+			, A.EVENT_SJ
+<!-- 			, DATE_FORMAT(A.EVENT_BEGIN_DT, '%Y-%m-%d') AS EVENT_BEGIN_DT -->
+<!-- 			, DATE_FORMAT(A.EVENT_END_DT, '%Y-%m-%d') AS EVENT_END_DT -->
+			, A.EVENT_BEGIN_DT
+			, A.EVENT_END_DT
+			, A.EVENT_CN
+			, A.PRTNR_ID
+			, A.EVENT_THUMBNAIL
+			, A.EVENT_BANNER_IMG
+			, A.EVENT_MAIN_IMG_PC
+			, A.EVENT_MAIN_IMG_MOB
+			, A.EVENT_DETAIL_IMG
+			, A.EVENT_URL
+			, A.EVENT_BRAND_IMG_PC
+			, A.EVENT_BRAND_IMG_MOBILE
+			, A.EVENT_CNT
+			, A.END_AT
+			, DATE_FORMAT(A.FRST_REGIST_PNTTM, '%Y-%m-%d') AS FRST_REGIST_PNTTM
+			, A.FRST_REGISTER_ID
+			, A.LAST_UPDT_PNTTM
+			, A.LAST_UPDUSR_ID
+			, B.CMPNY_NM
+		FROM stn_goods_event A
+		LEFT JOIN stn_cmpny B ON A.CMPNY_ID = B.CMPNY_ID
+		WHERE A.EVENT_NO = #{eventNo}
+	</select>
+	
+	<select id="selectFrontGoodsEventList" parameterType="modoo.module.event.service.impl.GoodsEventVO" resultType="egovMap">
+		SELECT
+			A.EVENT_NO
+			, B.CMPNY_ID
+			, A.EVENT_SJ
+			, DATE_FORMAT(A.EVENT_BEGIN_DT, '%Y-%m-%d') AS EVENT_BEGIN_DT
+			, DATE_FORMAT(A.EVENT_END_DT, '%Y-%m-%d') AS EVENT_END_DT
+			, A.EVENT_CN
+			, A.PRTNR_ID
+			, A.EVENT_THUMBNAIL
+			, A.EVENT_BANNER_IMG
+			, A.EVENT_MAIN_IMG_PC
+			, A.EVENT_MAIN_IMG_MOB
+			, A.EVENT_DETAIL_IMG
+			, A.EVENT_URL
+			, A.EVENT_BRAND_IMG_PC
+			, A.EVENT_BRAND_IMG_MOBILE
+			, A.EVENT_CNT
+<!-- 			, A.END_AT -->
+			, CASE WHEN A.EVENT_END_DT <![CDATA[ < ]]> SYSDATE() OR A.END_AT = 'Y' THEN 'Y'
+				ELSE 'N' END AS END_AT
+			, DATE_FORMAT(A.FRST_REGIST_PNTTM, '%Y-%m-%d') AS FRST_REGIST_PNTTM
+			, A.FRST_REGISTER_ID
+			, A.LAST_UPDT_PNTTM
+			, A.LAST_UPDUSR_ID
+			, B.CMPNY_NM
+		<include refid="selectFrontGoodsEventListFrom"></include>
+		<include refid="selectFrontGoodsEventListWhere"></include>
+		<choose>
+			<when test="searchOrder == 1">
+				ORDER BY A.FRST_REGIST_PNTTM DESC
+			</when>
+			<when test="searchOrder == 2">
+				ORDER BY DATEDIFF(A.EVENT_END_DT, SYSDATE()) ASC
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<select id="selectFrontGoodsEventListCnt" parameterType="modoo.module.event.service.impl.GoodsEventVO" resultType="int">
+		SELECT
+			IFNULL(COUNT(*), 0)
+		<include refid="selectFrontGoodsEventListFrom"></include>
+		<include refid="selectFrontGoodsEventListWhere"></include>
+	</select>
+	
+	<sql id="selectFrontGoodsEventListFrom">
+		FROM stn_goods_event A
+		LEFT JOIN stn_prtnr_cmpny_mapng CM ON A.PCMAPNG_ID = CM.PCMAPNG_ID
+		LEFT JOIN stn_cmpny B ON CM.CMPNY_ID = B.CMPNY_ID
+	</sql>
+	
+	<sql id="selectFrontGoodsEventListWhere">
+		WHERE 1=1
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+				AND A.PRTNR_ID = #{searchPrtnrId}
+			</if>
+	</sql>
+	
+	<update id="deleteEventImg" parameterType="modoo.module.event.service.impl.GoodsEventVO">
+		UPDATE STN_GOODS_EVENT
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(imageType, 'eventThumbnail')">
+				SET EVENT_THUMBNAIL = NULL
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(imageType, 'eventMainImgPc')">
+				SET EVENT_MAIN_IMG_PC = NULL
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(imageType, 'eventMainImgMob')">
+				SET EVENT_MAIN_IMG_MOB = NULL
+			</if>
+		WHERE EVENT_NO = #{eventNo}
+	</update>
+	
+	<select id="selectMainEventList" parameterType="modoo.module.event.service.impl.GoodsEventVO" resultType="egovMap">
+		SELECT
+			A.GOODS_NM
+			, A.GOODS_ID
+			, A.MRKT_PC
+			, A.MRKT_USE_AT
+			, A.GOODS_PC
+			, D.BRAND_NM
+			, E.GOODS_IMAGE_THUMB_PATH
+			, (SELECT GOODS_LRGE_IMAGE_PATH FROM stn_goods_image WHERE GOODS_ID = A.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' ORDER BY GOODS_IMAGE_SN ASC LIMIT 1 ) AS GOODS_LRGE_IMAGE_PATH
+			, A.DLVY_SE_CODE
+		FROM stn_goods A
+		JOIN stn_goods_event_mapng B ON A.GOODS_ID = B.GOODS_ID
+		JOIN stn_goods_event C ON B.EVENT_NO = C.EVENT_NO
+		JOIN stn_goods_brand D ON A.BRAND_ID = D.BRAND_ID
+		JOIN stn_goods_image E ON A.GOODS_ID = E.GOODS_ID
+		WHERE C.EVENT_BEGIN_DT <![CDATA[ <= ]]> SYSDATE()
+			AND C.EVENT_END_DT <![CDATA[ >= ]]> SYSDATE()
+			AND C.END_AT = 'N'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+				AND C.PRTNR_ID = #{searchPrtnrId}
+			</if>
+			AND A.REGIST_STTUS_CODE = 'C' 
+		GROUP BY A.GOODS_ID
+		ORDER BY RAND()
+	</select>
+</mapper>

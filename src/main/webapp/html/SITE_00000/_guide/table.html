@@ -1,0 +1,278 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<title>GUIDE</title>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="Author" content="yanghyo">
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<link href="../../../resources/front/site/SITE_00000/css/style.css" rel="stylesheet" />
+
+	<style type="text/css">
+		body {
+			padding: 5em;
+			margin-bottom: 5em;
+			box-sizing: border-box;
+		}
+
+		h1 {
+			font-size: 2em;
+			padding-top: 10px;
+			position: relative;
+			font-family: 'DIN 2014';
+			font-weight: 700;
+		}
+
+		h2 {
+			font-size: 1.6em;
+			font-weight: normal;
+			padding: 50px 0 20px;
+			font-family: 'DIN 2014';
+			font-weight: 700;
+		}
+	</style>
+</head>
+<body>
+	<h1>Table Guide</h1>
+
+	<h2>table-type (DIV)</h2>
+	<div class="table-type">
+		<div class="thead">
+			<cite class="col-w150">주문번호</cite>
+			<cite>상품정보</cite>
+			<cite class="col-w100">수량</cite>
+			<cite class="col-w150">판매금액</cite>
+			<cite class="col-w150">접수</cite>
+			<cite class="col-w150">처리</cite>
+			<cite class="col-w150">상태</cite>
+		</div>
+		<div class="tbody">
+			<div class="col-w150">
+				2020072201234<br class="m-none" />
+				<a href="#none" class="fc-gr sm">상세보기 <i class="ico-arr-r sm back gr" aria-hidden="true"></i></a>
+			</div>
+			<div class="al m-col-block">
+				<a href="#none">
+					<div class="thumb-area lg">
+						<figure><img src="../../../resources/front/site/SITE_00000/image/temp/thumb11.jpg" alt="델몬트 허니글로우 패키지 01" /></figure>
+						<div class="txt-area">
+							<cite>델몬트</cite>
+							<h2 class="tit">[구독중] 델몬트 허니글로우 패키지 01</h2>
+						</div>
+					</div>
+				</a>
+			</div>
+			<div class="col-w100">1개</div>
+			<div class="col-w150">
+				<div class="price">
+					<strong><span>29,000</span>원</strong>
+				</div>
+			</div>
+			<div class="col-w150">
+				<span class="fc-gr block">교환접수</span>
+				2020-09-01
+			</div>
+			<div class="col-w150">
+				<span class="fc-gr block">교환접수</span>
+				2020-09-01
+			</div>
+			<div class="col-w150">
+				<em>교환완료</em>
+			</div>
+		</div>
+		<div class="tbody">
+			<div class="col-w150">
+				2020072201234<br class="m-none" />
+				<a href="#none" class="fc-gr sm">상세보기 <i class="ico-arr-r sm back gr" aria-hidden="true"></i></a>
+			</div>
+			<div class="al m-col-block">
+				<a href="#none">
+					<div class="thumb-area lg">
+						<figure><img src="../../../resources/front/site/SITE_00000/image/temp/thumb11.jpg" alt="델몬트 허니글로우 패키지 01" /></figure>
+						<div class="txt-area">
+							<cite>델몬트</cite>
+							<h2 class="tit">[구독중] 델몬트 허니글로우 패키지 01</h2>
+						</div>
+					</div>
+				</a>
+			</div>
+			<div class="col-w100">1개</div>
+			<div class="col-w150">
+				<div class="price">
+					<strong><span>29,000</span>원</strong>
+				</div>
+			</div>
+			<div class="col-w150">
+				<span class="fc-gr block">교환접수</span>
+				2020-09-01
+			</div>
+			<div class="col-w150">
+				<span class="fc-gr block">교환접수</span>
+				2020-09-01
+			</div>
+			<div class="col-w150">
+				<em>교환완료</em>
+			</div>
+		</div>
+	</div>
+	<ul class="paging">
+		<li class="ppv"><a href="#none" title="처음으로"><span class="txt-hide">처음으로</span></a></li>
+		<li class="pv"><a href="#none" title="이전"><span class="txt-hide">이전</span></a></li>
+		<li class="is-active"><a href="#none" title="to 1 page">1</a></li>
+		<li><a href="#none" title="to 2 page">2</a></li>
+		<li><a href="#none" title="to 3 page">3</a></li>
+		<li><a href="#none" title="to 4 page">4</a></li>
+		<li><a href="#none" title="to 5 page">5</a></li>
+		<li><a href="#none" title="to 6 page">6</a></li>
+		<li><a href="#none" title="to 7 page">7</a></li>
+		<li><a href="#none" title="to 8 page">8</a></li>
+		<li><a href="#none" title="to 9 page">9</a></li>
+		<li class="fw"><a href="#none" title="다음"><span class="txt-hide">다음</span></a></li>
+		<li class="ffw"><a href="#none" title="끝으로"><span class="txt-hide">끝으로</span></a></li>
+	</ul>
+
+	<h2>list-type</h2>
+	<div class="list-type">
+		<table>
+			<caption>리스트 타입 테이블</caption>
+			<colgroup>
+				<col style="width:80px" />
+				<col style="width:*" />
+				<col style="width:200px" />
+				<col style="width:200px" />
+				<col style="width:200px" />
+				<col style="width:100px" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><label><input type="checkbox" /></label></th>
+					<th scope="col">제목</th>
+					<th scope="col">ac : align-center</th>
+					<th scope="col">al : align-left</th>
+					<th scope="col">ar : align-right</th>
+					<th scope="col">DATE</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><label><input type="checkbox" /></label></td>
+					<td class="al"><a href="#none">내용이 길어지면 ...으로 표시됩니다. 내용이 길어지면 ...으로 표시됩니다. 내용이 길어지면 ...으로 표시됩니다. 내용이 길어지면 ...으로 표시됩니다</a></td>
+					<td>기본</td>
+					<td class="al">좌측</td>
+					<td class="ar">우측</td>
+					<td class="date">2017-05-16</td>
+				</tr>
+				<tr>
+					<td><label><input type="checkbox" /></label></td>
+					<td class="al"><a href="#none">내용이 길어지면 ...으로 표시됩니다</a></td>
+					<td>기본</td>
+					<td class="al">좌측</td>
+					<td class="ar">우측</td>
+					<td class="date">2017-05-16</td>
+				</tr>
+				<tr>
+					<td><label><input type="checkbox" /></label></td>
+					<td class="al"><a href="#none">내용이 길어지면 ...으로 표시됩니다</a></td>
+					<td>기본</td>
+					<td class="al">좌측</td>
+					<td class="ar">우측</td>
+					<td class="date">2017-05-16</td>
+				</tr>
+				<tr>
+					<td><label><input type="checkbox" /></label></td>
+					<td class="al"><a href="#none">내용이 길어지면 ...으로 표시됩니다</a></td>
+					<td>기본</td>
+					<td class="al">좌측</td>
+					<td class="ar">우측</td>
+					<td class="date">2017-05-16</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<ul class="paging">
+		<li class="ppv"><a href="#none" title="처음으로"><span class="txt-hide">처음으로</span></a></li>
+		<li class="pv"><a href="#none" title="이전"><span class="txt-hide">이전</span></a></li>
+		<li class="is-active"><a href="#none" title="to 1 page">1</a></li>
+		<li><a href="#none" title="to 2 page">2</a></li>
+		<li><a href="#none" title="to 3 page">3</a></li>
+		<li><a href="#none" title="to 4 page">4</a></li>
+		<li><a href="#none" title="to 5 page">5</a></li>
+		<li><a href="#none" title="to 6 page">6</a></li>
+		<li><a href="#none" title="to 7 page">7</a></li>
+		<li><a href="#none" title="to 8 page">8</a></li>
+		<li><a href="#none" title="to 9 page">9</a></li>
+		<li class="fw"><a href="#none" title="다음"><span class="txt-hide">다음</span></a></li>
+		<li class="ffw"><a href="#none" title="끝으로"><span class="txt-hide">끝으로</span></a></li>
+	</ul>
+
+	<h2>write-type</h2>
+	<div class="write-type">
+		<table>
+			<caption>시대</caption>
+			<colgroup>
+				<col style="width:180px" />
+				<col style="width:*" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col">분류</th>
+					<th scope="col">제목</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th scope="row">제목</th>
+					<td>
+						<input type="text" class="p10 error" />
+						<div class="msg-error">이미 사용중인 코드입니다.</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" class="required">필수입력</th>
+					<td>
+						<input type="text" class="p5" required />
+						<div class="msg-error gm">사용할 수 있는 값 입니다.</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">주소</th>
+					<td>
+						<input type="text" class="p5" /><a href="#none" class="btn spot2">테이블 안 버튼</a>
+						<input type="text" class="p10" />
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">휴대폰 번호</th>
+					<td>
+						<input type="number" class="p0" />
+						<input type="number" class="p0" />
+						<input type="number" class="p0" />
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">제목</th>
+					<td><input type="text" class="p10" /></td>
+				</tr>
+				<tr>
+					<th scope="row">제목</th>
+					<td><input type="text" class="p10" /></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<script src="../../../resources/lib/jquery/jquery.js"></script>
+	<script src="../../../resources/lib/jquery.easing/jquery.easing.js"></script>
+	<script src="../../../resources/lib/jquery-ui/jquery-ui.min.js"></script>
+	<script src="../../../resources/front/site/SITE_00000/js/ssm.min.js"></script>
+	<script src="../../../resources/front/site/SITE_00000/js/swiper.min.js"></script>
+	<script src="../../../resources/front/site/SITE_00000/js/ScrollMagic.min.js"></script>
+	<script src="../../../resources/front/site/SITE_00000/js/TweenMax.min.js"></script>
+	<script src="../../../resources/front/site/SITE_00000/js/animation.gsap.min.js"></script>
+	<script src="../../../resources/front/site/SITE_00000/js/common.js"></script>
+
+</body>
+</html>

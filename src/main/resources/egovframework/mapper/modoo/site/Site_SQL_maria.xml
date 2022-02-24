@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.site.service.impl.SiteMapper">
+	
+	<!-- 사이트 목록 -->
+	<select id="selectSiteList" parameterType="modoo.module.site.service.SiteVO" resultType="modoo.module.site.service.SiteVO">
+		SELECT 
+			SITE_ID
+			,SITE_NM
+			,SITE_MNGR_NM
+			,SITE_EMAIL
+			,SITE_ADRES
+			,SITE_TELNO
+			,SITE_FAXNO
+			,SITE_COPYRIGHT
+			,SITE_LOGO_PATH
+			,SITE_SN
+			,TERMS_COND
+			,PRIV_INFO
+			,EVENT_MARKT
+			,REGIST_PNTTM
+			,REGISTER_ID
+			,ACTVTY_AT
+		FROM dtn_site
+	</select>
+	
+	<!-- 사이트목록 카운트 -->
+	<select id="selectSiteListCnt" parameterType="modoo.module.site.service.SiteVO" resultType="modoo.module.site.service.SiteVO">
+		SELECT
+			COUNT(*) AS CNT
+		FROM dtn_site
+	</select>
+
+	<!-- 사이트 저장 -->
+	<insert id="insertSite" parameterType="modoo.module.site.service.SiteVO">
+		INSERT INTO dtn_site (
+			SITE_ID
+			,SITE_NM
+			,SITE_MNGR_NM
+			,SITE_EMAIL
+			,SITE_ADRES
+			,SITE_TELNO
+			,SITE_FAXNO
+			,SITE_COPYRIGHT
+			,SITE_LOGO_PATH
+			,SITE_SN
+			,TERMS_COND
+			,PRIV_INFO
+			,EVENT_MARKT
+			,REGIST_PNTTM
+			,REGISTER_ID
+			,ACTVTY_AT
+		) VALUES (
+			#{siteId}
+			,#{siteNm}
+			,#{siteMngrNm}
+			,#{siteEmail}
+			,#{siteAdres}
+			,#{siteTelno}
+			,#{siteFaxno}
+			,#{siteCopyright}
+			,#{siteLogoPath}
+			,#{siteSn}
+			,#{termsCond}
+			,#{privInfo}
+			,#{eventMarkt}
+			,SYSDATE()
+			,#{registerId}
+			,#{actvtyAt}
+		)
+	</insert>
+
+	<!-- 사이트 상세 -->
+	<select id="selectSite" parameterType="modoo.module.site.service.SiteVO" resultType="modoo.module.site.service.SiteVO">
+		SELECT 
+			SITE_ID
+			,SITE_NM
+			,SITE_MNGR_NM
+			,SITE_EMAIL
+			,SITE_ADRES
+			,SITE_TELNO
+			,SITE_FAXNO
+			,SITE_COPYRIGHT
+			,SITE_LOGO_PATH
+			,SITE_SN
+			,TERMS_COND
+			,PRIV_INFO
+			,EVENT_MARKT
+			,REGIST_PNTTM
+			,REGISTER_ID
+			,ACTVTY_AT
+		FROM dtn_site
+		WHERE	SITE_ID = #{siteId}
+	</select>
+	
+	<!-- 사이트 수정 -->
+	<update id="updateSite" parameterType="modoo.module.site.service.SiteVO">
+		UPDATE dtn_site
+		SET
+			SITE_NM = #{siteNm}
+			,SITE_MNGR_NM = #{siteMngrNm}
+			,SITE_EMAIL = #{siteEmail}
+			,SITE_ADRES = #{siteAdres}
+			,SITE_TELNO = #{siteTelno}
+			,SITE_FAXNO = #{siteFaxno}
+			,SITE_COPYRIGHT = #{siteCopyright}
+			,SITE_LOGO_PATH = #{siteLogoPath}
+			,SITE_SN = #{siteSn}
+			,TERMS_COND = #{termsCond}
+			,PRIV_INFO = #{privInfo}
+			,EVENT_MARKT= #{eventMarkt}
+			,ACTVTY_AT = #{actvtyAt}
+		WHERE	SITE_ID = #{siteId}
+	</update>
+	
+	<!-- 사이트 삭제 -->
+	<delete id="deleteSite" parameterType="modoo.module.site.service.SiteVO">
+		DELETE FROM dtn_site
+		WHERE	SITE_ID = #{siteId}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.hist.service.impl.OrderReqHistMapper">
+
+	<!-- 취소, 교환, 반품 목록 -->
+    <select id="selectOrderReqList" parameterType="modoo.module.shop.goods.hist.service.OrderReqHistVO" resultType="egovMap">
+        SELECT
+        C.ORDER_NO
+        , DATE_FORMAT(C.ORDER_PNTTM, '%Y-%c-%e') AS ORDER_PNTTM
+        , D.GOODS_NM
+        ,CONCAT(
+        IF(ISNULL(C3.GOODS_CTGRY_NM) or C3.GOODS_CTGRY_NM = 'ROOT','',C1.GOODS_CTGRY_NM),
+        IF(ISNULL(C3.GOODS_CTGRY_NM) or C3.GOODS_CTGRY_NM = 'ROOT','','&gt;'),
+        IF(ISNULL(C2.GOODS_CTGRY_NM) or C2.GOODS_CTGRY_NM = 'ROOT','',C2.GOODS_CTGRY_NM),
+        IF(ISNULL(C2.GOODS_CTGRY_NM) or C2.GOODS_CTGRY_NM = 'ROOT','','&gt;'),
+        IF(ISNULL(C1.GOODS_CTGRY_NM) or C1.GOODS_CTGRY_NM = 'ROOT','',C1.GOODS_CTGRY_NM)
+        ) AS GOODS_CTGRY_NM
+        , D.MODEL_NM
+        , G.BRAND_NM
+        , D.GOODS_PC
+        , D.DLVY_PC
+        , A.REQ_TY_CODE
+        , IFNULL((SELECT AA.REQ_TY_CODE FROM sth_order_req_hist AA
+        JOIN stn_order_dlvy BB ON AA.ORDER_DLVY_NO = BB.ORDER_DLVY_NO
+        WHERE AA.ORDER_DLVY_NO = A.ORDER_DLVY_NO
+        AND AA.ORDER_REQ_HIST_NO != A.ORDER_REQ_HIST_NO
+        ), A.REQ_TY_CODE) AS RESP_TYPE_CODE
+        , E.SETLE_STTUS_CODE
+        , C.ORDRR_ID
+        , B.DLVY_ADRES
+        , B.DLVY_AMOUNT
+        , A.ORDER_REQ_HIST_NO
+        , B.ORDER_DLVY_NO
+        FROM sth_order_req_hist A
+        JOIN stn_order_dlvy B ON A.ORDER_DLVY_NO = B.ORDER_DLVY_NO
+        JOIN stn_order C ON B.ORDER_NO = C.ORDER_NO
+        JOIN stn_goods D ON C.GOODS_ID = D.GOODS_ID
+        JOIN stn_order_setle E ON B.ORDER_SETLE_NO = E.ORDER_SETLE_NO
+        JOIN stn_prtnr_cmpny_mapng F ON D.PCMAPNG_ID = F.PCMAPNG_ID
+        LEFT JOIN stn_goods_brand G ON D.BRAND_ID = G.BRAND_ID
+        JOIN stn_goods_ctgry C1 ON C1.GOODS_CTGRY_ID = D.GOODS_CTGRY_ID AND C1.USE_AT = 'Y'
+        LEFT JOIN stn_goods_ctgry C2 ON C2.GOODS_CTGRY_ID = C1.UPPER_GOODS_CTGRY_ID AND C2.USE_AT = 'Y'
+        LEFT JOIN stn_goods_ctgry C3 ON C3.GOODS_CTGRY_ID = C2.UPPER_GOODS_CTGRY_ID AND C3.USE_AT = 'Y'
+        <include refid="selectOrderReqListWhere"></include>
+        ORDER BY A.ORDER_REQ_HIST_NO DESC
+        LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+    </select>
+
+    <sql id="selectOrderReqListWhere">
+        <where>
+            A.ORDER_REQ_HIST_NO = (
+            SELECT MAX(ORDER_REQ_HIST_NO)
+            FROM sth_order_req_hist
+            GROUP BY ORDER_DLVY_NO
+            )
+            <if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+                AND F.CMPNY_ID = #{searchCmpnyId}
+            </if>
+            <choose>
+                <when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'CANCEL')">
+                    AND A.REQ_TY_CODE IN ('C01', 'C02', 'C04')
+                </when>
+                <when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'EXCHANGE')">
+                    AND A.REQ_TY_CODE IN ('E01', 'E02', 'E04')
+                </when>
+                <when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'RECALL')">
+                    AND A.REQ_TY_CODE IN ('R01', 'R02', 'R04')
+                </when>
+                <otherwise>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <!-- 취소, 교환, 반품 갯수 -->
+    <select id="selectOrderReqListCnt" parameterType="modoo.module.shop.goods.hist.service.OrderReqHistVO" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM sth_order_req_hist A
+        JOIN stn_order_dlvy B ON A.ORDER_DLVY_NO = B.ORDER_DLVY_NO
+        JOIN stn_order C ON B.ORDER_NO = C.ORDER_NO
+        JOIN stn_goods D ON C.GOODS_ID = D.GOODS_ID
+        JOIN stn_order_setle E ON B.ORDER_SETLE_NO = E.ORDER_SETLE_NO
+        JOIN stn_prtnr_cmpny_mapng F ON D.PCMAPNG_ID = F.PCMAPNG_ID
+        LEFT JOIN stn_goods_brand G ON D.BRAND_ID = G.BRAND_ID
+        JOIN stn_goods_ctgry C1 ON C1.GOODS_CTGRY_ID = D.GOODS_CTGRY_ID AND C1.USE_AT = 'Y'
+        LEFT JOIN stn_goods_ctgry C2 ON C2.GOODS_CTGRY_ID = C1.UPPER_GOODS_CTGRY_ID AND C2.USE_AT = 'Y'
+        LEFT JOIN stn_goods_ctgry C3 ON C3.GOODS_CTGRY_ID = C2.UPPER_GOODS_CTGRY_ID AND C3.USE_AT = 'Y'
+        <include refid="selectOrderReqListWhere"></include>
+    </select>
+
+	<insert id="insertOrderReqHist" parameterType="modoo.module.shop.goods.hist.service.OrderReqHistVO">
+		INSERT INTO sth_order_req_hist
+			(ORDER_DLVY_NO
+			, REQ_TY_CODE
+			, REQ_PNTTM
+			, REASON_CN)
+		VALUES
+			(#{orderDlvyNo}
+			, #{reqTyCode}
+			, SYSDATE()
+			, #{reasonCn})
+	</insert>
+</mapper>

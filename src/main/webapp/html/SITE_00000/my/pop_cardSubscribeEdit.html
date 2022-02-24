@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <title>모두의구독</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="Author" content="">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <!--[if lt IE 9]><script src="../../../resources/front/site/SITE_00000/js/html5.js"></script><![endif]-->
+    <link href="../../../resources/front/site/SITE_00000/css/swiper.css" rel="stylesheet" />
+    <link href="../../../resources/front/site/SITE_00000/css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div style="padding:50px; text-align:center;">
+        <button type="button" class="btn-lg spot" onclick="popOpen('cardSubscribeEdit')">정기결제 카드변경​</button>
+    </div>
+
+    <div class="popup w1200" data-popup="cardSubscribeEdit" style="display:block;">
+        <div class="pop-header">
+            <h1>정기결제 카드변경​</h1>
+            <button type="button" class="btn-pop-close" data-popup-close="cardSubscribeEdit">닫기</button>
+        </div>
+        <div class="pop-body">
+            <p class="mb20"><strong>결제카드</strong>: 신한카드(1123)</p>
+            <div class="pop-tit-area">
+                <h3 class="pop-tit">정기결제 카드 변경</h3>
+                <div class="fnc-area">
+                    <button type="button" class="btn">카드 등록하기</button>
+                </div>
+            </div>
+            <div class="list-type">
+                <table>
+                    <caption>정기결제 카드 변경</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">카드(카드번호)</th>
+                            <th scope="col">카드 이름</th>
+                            <th scope="col">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="ac">삼성카드(1230)</td>
+                            <td class="ac"><em class="spot">삼성카드 2 V2 [기본 카드]</em></td>
+                            <td>
+                                <button type="button" class="btn">선택하기</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ac">삼성카드(1230)</td>
+                            <td class="ac"><em class="spot">삼성카드 2 V2 [기본 카드]</em></td>
+                            <td>
+                                <button type="button" class="btn">선택하기</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="dim" style="display:block;"></div>
+    <script src="../../../resources/lib/jquery/jquery.js"></script>
+    <script src="../../../resources/lib/jquery.easing/jquery.easing.js"></script>
+    <script src="../../../resources/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ssm.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/swiper.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ScrollMagic.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/TweenMax.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/animation.gsap.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/common.js"></script>
+    <script>
+        $(document).ready(function () {
+            //퍼블리싱 리스트용
+            popPosition($('.popup'));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,978 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.dlvy.service.impl.OrderDlvyMapper">
+
+	<!-- 주문배송목록(SBS) -->
+	<select id="selectOrderDlvyList" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="egovMap">
+		SELECT
+			*
+		FROM
+		(SELECT
+			a.ORDER_DLVY_NO
+			,a.ORDER_NO
+			,a.ORDER_SETLE_NO
+			,a.ORDER_KND_CODE
+			,a.SBSCRPT_CYCLE_SE_CODE
+			,a.SBSCRPT_WEEK_CYCLE
+			,a.SBSCRPT_DLVY_WD
+			,cw.CODE_NM AS SBSCRPT_DLVY_WD_NM
+			,a.SBSCRPT_MT_CYCLE
+			,a.SBSCRPT_DLVY_DAY
+			,b.ORDRR_ID
+			,b.ORDER_GROUP_NO
+			,b.ORDRR_NM
+			,b.ORDER_STTUS_CODE
+			,a.ORDER_ODR
+			,a.ORDER_CO
+			,a.SLE_AMOUNT
+			,a.DLVY_AMOUNT
+			,a.DLVY_USER_NM
+			,a.DSCNT_AMOUNT
+			,a.TELNO
+			,a.DLVY_ZIP
+			,a.DLVY_ADRES
+			,a.DLVY_ADRES_DETAIL
+			,a.DLVY_MSSAGE
+			,a.DLVY_STTUS_CODE
+			,cd.CODE_NM AS DLVY_STTUS_CODE_NM
+			,a.HDRY_ID
+			,a.HDRY_DLVY_DE
+			,IFNULL(a.INVC_NO, '') AS INVC_NO
+			,a.ORDER_REQ_STTUS_CODE
+			,a.REQ_TY_CODE
+			,ce.CODE_NM AS REQ_TY_CODE_NM
+			,a.REGIST_PNTTM
+			,b.ORDER_PNTTM
+			,b.GOODS_AMOUNT
+			,a.LAST_UPDT_PNTTM
+			,a.LAST_UPDUSR_ID
+			,s.SETLE_PNTTM
+<!-- 			, CASE SETLE_STTUS_CODE WHEN 'R' THEN DATE_FORMAT(STR_TO_DATE(s.SETLE_PRARNDE, '%Y%m%d'),'%Y-%m-%d') -->
+<!-- 				ELSE s.SETLE_PNTTM -->
+<!-- 				END AS SETLE_PNTTM -->
+			,s.SETLE_STTUS_CODE
+			,s.SETLE_TOT_AMOUNT
+			, IFNULL(s.SETLE_POINT, 0) AS SETLE_POINT
+			, IFNULL(s.SETLE_CARD_AMOUNT, 0) AS SETLE_CARD_AMOUNT
+			,cs.CODE_NM AS SETLE_STTUS_CODE_NM
+			,g.GOODS_ID
+			,g.GOODS_NM
+			,g.GOODS_PC
+			,g.MODEL_NM
+			,g.GOODS_KND_CODE
+			,c.CMPNY_NM
+			,CONCAT( IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','',sgc3.GOODS_CTGRY_NM), IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','','&gt;')
+					,IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','',sgc2.GOODS_CTGRY_NM),IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','','&gt;') 
+					,IF(ISNULL(sgc.GOODS_CTGRY_NM) or sgc.GOODS_CTGRY_NM = 'ROOT','',sgc.GOODS_CTGRY_NM)
+					) AS GOODS_CTGRY_NM
+			, CASE WHEN b.EXPRN_USE_AT = 'Y' THEN '체험구독'
+				ELSE co.CODE_NM
+				END AS ORDER_STTUS_CODE_NM
+<!-- 			,co.CODE_NM AS ORDER_STTUS_CODE_NM -->
+			,e.API_ID
+			,p.PRTNR_ID
+			,p.PRTNR_NM
+			,(SELECT GROUP_CONCAT(GITEM_NM SEPARATOR '/') FROM stn_order_item WHERE ORDER_NO = b.ORDER_NO GROUP BY ORDER_NO) AS ORDER_ITEM
+			,b.EXPRN_USE_AT
+			, e.HDRY_NM
+		<include refid="selectOrderDlvyListFrom"></include>
+		<include refid="selectOrderDlvyListWhere"></include>
+		) X
+		ORDER BY X.SETLE_PNTTM DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectOrderDlvyListFrom">
+		FROM 	stn_order_dlvy a
+		JOIN	stn_order b ON b.ORDER_NO = a.ORDER_NO AND b.USE_AT = 'Y'
+		JOIN	stn_order_setle s ON s.ORDER_SETLE_NO = a.ORDER_SETLE_NO
+		JOIN	stn_goods g ON g.GOODS_ID = b.GOODS_ID
+		JOIN	stn_prtnr_cmpny_mapng m ON m.PCMAPNG_ID = g.PCMAPNG_ID
+		JOIN	stn_prtnr p ON p.PRTNR_ID = m.PRTNR_ID
+		JOIN	stn_cmpny c ON c.CMPNY_ID = m.CMPNY_ID AND c.USE_AT = 'Y'
+		LEFT JOIN stn_hdry_cmpny e ON a.HDRY_ID = e.HDRY_ID AND e.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+		LEFT JOIN dtc_cmmn_detail_code cw ON cw.CODE = a.SBSCRPT_DLVY_WD AND cw.CODE_ID = 'CMS023'
+		LEFT JOIN dtc_cmmn_detail_code cs ON cs.CODE = s.SETLE_STTUS_CODE AND cs.CODE_ID = 'CMS026'
+		LEFT JOIN dtc_cmmn_detail_code co ON co.CODE = b.ORDER_STTUS_CODE AND co.CODE_ID = 'CMS021'
+		LEFT JOIN dtc_cmmn_detail_code cd ON cd.CODE = a.DLVY_STTUS_CODE AND cd.CODE_ID = 'CMS022'
+		LEFT JOIN dtc_cmmn_detail_code ce ON ce.CODE = a.REQ_TY_CODE AND ce.CODE_ID = 'CMS027'
+	</sql>
+	
+	<sql id="selectOrderDlvyListWhere">
+		<where>
+			(b.ORDER_STTUS_CODE = 'ST02' AND ((a.REQ_TY_CODE IN ('C03', 'E03', 'R03') OR a.REQ_TY_CODE IS NULL)))
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+				AND c.CMPNY_ID = #{searchCmpnyId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOrderReqSttusCode)">
+				AND a.ORDER_REQ_STTUS_CODE = #{searchOrderReqSttusCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchReqTyCode)">
+				AND a.REQ_TY_CODE = #{searchReqTyCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSetleSttusCode)">
+				AND s.SETLE_STTUS_CODE = #{searchSetleSttusCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchDlvySttusCode)">
+				AND a.DLVY_STTUS_CODE = #{searchDlvySttusCode}
+			</if>
+			<if test="!@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderSttusCode, 'ST02') and @egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOrderSttusCode)">
+				AND b.ORDER_STTUS_CODE = #{searchOrderSttusCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchBgnde)">
+				AND s.SETLE_PNTTM <![CDATA[ >= ]]> STR_TO_DATE(CONCAT(#{searchBgnde}, ' 00:00:00'), '%Y-%m-%d %H:%i:%s')
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchEndde)">
+				AND s.SETLE_PNTTM <![CDATA[ < ]]> STR_TO_DATE(CONCAT(#{searchEndde},' 00:00:00'), '%Y-%m-%d') + INTERVAL 1 DAY
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOrderNo)">
+				AND b.ORDER_NO LIKE CONCAT( '%' , #{searchOrderNo} , '%' )
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsNm)">
+				AND g.GOODS_NM LIKE CONCAT( '%' , #{searchGoodsNm} , '%' )
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOrdrrId)">
+				AND b.ORDRR_NM LIKE CONCAT( '%' , #{searchOrdrrId} , '%' )
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsId)">
+				AND g.GOODS_ID LIKE CONCAT( '%' , #{searchGoodsId} , '%' )
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsCtgryId)">
+				AND sgc.GOODS_CTGRY_ID IN (
+					SELECT
+						#{searchGoodsCtgryId} AS GOODS_CTGRY_ID
+					FROM 	dual
+					UNION ALL
+					SELECT 
+						AA.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry AA
+					WHERE 	AA.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						BB.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry AA
+					INNER JOIN stn_goods_ctgry BB ON BB.UPPER_GOODS_CTGRY_ID = AA.GOODS_CTGRY_ID
+					WHERE	AA.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						CC.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry AA
+					INNER JOIN stn_goods_ctgry BB ON BB.UPPER_GOODS_CTGRY_ID = AA.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry CC ON CC.UPPER_GOODS_CTGRY_ID = BB.GOODS_CTGRY_ID
+					WHERE	AA.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						DD.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry AA
+					INNER JOIN stn_goods_ctgry BB ON BB.UPPER_GOODS_CTGRY_ID = AA.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry CC ON CC.UPPER_GOODS_CTGRY_ID = BB.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry DD ON DD.UPPER_GOODS_CTGRY_ID = CC.GOODS_CTGRY_ID
+					WHERE	AA.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+				)
+			</if>	
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyNm)">
+				AND c.CMPNY_NM LIKE CONCAT('%', #{searchCmpnyNm}, '%')
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOrderKndCode)">
+				AND b.ORDER_KND_CODE = #{searchOrderKndCode}
+			</if>
+		</where>
+	</sql>
+	<!--주문배송목록(GNR)-->
+	<select id="selectGnrOrderDlvy" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="egovMap">
+		SELECT
+	                  A.ORDER_DLVY_NO
+	                  , A.ORDER_NO
+	                  , A.ORDER_SETLE_NO
+	                  , A.ORDER_KND_CODE
+	                  , A.SBSCRPT_CYCLE_SE_CODE
+	                  , A.SBSCRPT_WEEK_CYCLE
+	                  , A.SBSCRPT_DLVY_WD
+	                  , A.SBSCRPT_MT_CYCLE
+	                  , A.SBSCRPT_DLVY_DAY
+	                  , A.ORDER_ODR
+	                  , A.ORDER_CO
+	                  , A.SLE_AMOUNT
+	                  , A.DLVY_AMOUNT
+	                  , A.DLVY_USER_NM
+	                  , A.REQ_TY_CODE
+	                  , A.TELNO
+	                  , A.DLVY_ZIP
+	                  , A.DLVY_ADRES
+	                  , A.DLVY_ADRES_DETAIL
+	                  , A.DLVY_MSSAGE
+	                  , A.DLVY_STTUS_CODE
+	                  , (SELECT API_ID FROM stn_hdry_cmpny WHERE HDRY_ID = A.HDRY_ID) AS HDRY_ID
+	                  , A.HDRY_DLVY_DE
+	                  , A.INVC_NO
+	                  , A.REGIST_PNTTM
+	                  , B.SETLE_STTUS_CODE AS SEARCH_SETLE_STTUS_CODE
+	          FROM stn_order_dlvy A
+	          JOIN stn_order_setle B ON A.ORDER_SETLE_NO = B.ORDER_SETLE_NO
+	          WHERE A.ORDER_NO = #{orderNo} 
+	          AND A.ORDER_REQ_STTUS_CODE != 'C'
+	</select>
+	
+	<!-- 주문배송목록 카운트 -->
+	<select id="selectOrderDlvyListCnt" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="int">
+		SELECT
+			IFNULL(COUNT(*), 0) AS CNT
+		<include refid="selectOrderDlvyListFrom"></include>
+		<include refid="selectOrderDlvyListWhere"></include>
+	</select>
+	
+	<select id="selectOrderDlvyListTotAmount" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="int">
+		SELECT
+			IFNULL(SUM(SETLE_TOT_AMOUNT), 0) AS TOT_AMOUNT
+		<include refid="selectOrderDlvyListFrom"></include>
+		<include refid="selectOrderDlvyListWhere"></include>
+	</select>
+	
+	<!-- 배송 내역 1개 -->
+	<select id="selectOrderDlvy" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO">
+		SELECT
+			A.ORDER_DLVY_NO
+			, A.ORDER_NO
+			, A.ORDER_SETLE_NO
+			, A.ORDER_KND_CODE
+			, A.SBSCRPT_CYCLE_SE_CODE
+			, A.SBSCRPT_WEEK_CYCLE
+			, A.SBSCRPT_DLVY_WD
+			, A.SBSCRPT_MT_CYCLE
+			, A.SBSCRPT_DLVY_DAY
+			, A.ORDER_ODR
+			, A.ORDER_CO
+			, A.SLE_AMOUNT
+			, A.DLVY_AMOUNT
+			, A.DLVY_USER_NM
+			, A.TELNO
+			, A.DLVY_ZIP
+			, A.DLVY_ADRES
+			, A.DLVY_ADRES_DETAIL
+			, A.DLVY_MSSAGE
+			, A.DLVY_STTUS_CODE
+			, A.HDRY_ID
+			, A.HDRY_DLVY_DE
+			, A.INVC_NO
+			, A.REGIST_PNTTM
+		FROM stn_order_dlvy A
+		<include refid="selectOrderDlvyWhere"></include>
+	</select>
+	
+	<sql id="selectOrderDlvyWhere">
+		<where>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(orderSetleNo)">
+			 A.ORDER_SETLE_NO = #{orderSetleNo}
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOrderDlvyNo)">
+			 A.ORDER_DLVY_NO = #{searchOrderDlvyNo}
+		</if>
+		</where>
+	</sql>
+
+	<!-- 배송 내역 수정-->
+	<update id="updateOrderDlvy" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO">
+		UPDATE stn_order_dlvy d
+			<set>
+			LAST_UPDT_PNTTM=SYSDATE()
+			,LAST_UPDUSR_ID=#{lastUpdusrId}
+				<if test="orderCo != null">
+					,ORDER_CO=#{orderCo}
+				</if>
+				<if test="sbscrptWeekCycle != null">
+					,SBSCRPT_WEEK_CYCLE=#{sbscrptWeekCycle}	
+				</if>
+				<if test="sbscrptDlvyWd != null">
+					,SBSCRPT_DLVY_WD=#{sbscrptDlvyWd}
+				</if>
+				<if test="sbscrptMtCycle != null">
+					,SBSCRPT_MT_CYCLE=#{sbscrptMtCycle}		
+				</if>
+				<if test="sbscrptDlvyDay != null">
+					,SBSCRPT_DLVY_DAY=#{sbscrptDlvyDay}
+				</if>
+				<if test="dlvyMssage != null">
+					,DLVY_MSSAGE=#{dlvyMssage}
+				</if>
+				<if test="dlvyUserNm != null">
+					,DLVY_USER_NM=#{dlvyUserNm}
+				</if>
+				<if test="telno != null">
+					,TELNO=#{telno}
+				</if>
+				<if test="dlvyZip != null">
+					,DLVY_ZIP=#{dlvyZip}
+				</if>
+				<if test="dlvyAdres != null">
+					,DLVY_ADRES=#{dlvyAdres}
+				</if>
+				<if test="dlvyAdresDetail != null">
+					,DLVY_ADRES_DETAIL=#{dlvyAdresDetail}
+				</if>
+				<if test="dscntAmount != null">
+					,DSCNT_AMOUNT=#{dscntAmount}
+				</if>
+				,GOODS_AMOUNT = (SELECT o.TOT_AMOUNT FROM stn_order o WHERE o.ORDER_NO = d.ORDER_NO)
+				,DSCNT_AMOUNT = (SELECT -o.DSCNT_AMOUNT FROM stn_order o WHERE o.ORDER_NO = d.ORDER_NO)
+				,DLVY_AMOUNT = (SELECT o.DLVY_AMOUNT+o.ISLAND_DLVY_AMOUNT FROM stn_order o WHERE o.ORDER_NO = d.ORDER_NO)
+				,SETLE_AMOUNT= 
+				 (SELECT o.TOT_AMOUNT+o.DSCNT_AMOUNT FROM stn_order o WHERE o.ORDER_NO = d.ORDER_NO)
+				 <!--  (o.GOODS_AMOUNT * o.ORDER_CO) + o.DLVY_AMOUNT
+				FROM STN_ORDER o
+				WHERE o.ORDER_NO = d.ORDER_NO)
+				+
+				(SELECT
+				  IFNULL(SUM(i.GITEM_PC),0)
+				FROM STN_ORDER_ITEM i
+				WHERE i.ORDER_NO = d.ORDER_NO) 
+				-->
+				, ORDER_INFO=#{orderInfo} 
+				
+				, SLE_AMOUNT=(SELECT o.TOT_AMOUNT FROM stn_order o WHERE o.ORDER_NO = d.ORDER_NO)
+				 <!-- (SELECT
+				  (o.GOODS_AMOUNT * o.ORDER_CO) + o.DLVY_AMOUNT
+				FROM STN_ORDER o
+				WHERE o.ORDER_NO = d.ORDER_NO)
+				+
+				(SELECT
+				  IFNULL(SUM(i.GITEM_PC),0)
+				FROM STN_ORDER_ITEM i
+				WHERE i.ORDER_NO = d.ORDER_NO) 
+				, ORDER_INFO=#{orderInfo}
+ -->			</set>
+		WHERE d.ORDER_DLVY_NO = #{orderDlvyNo}
+	</update>
+	
+	<!--구독 상품 배송 가격 수정-->
+	<update id="updateSbsOrderDlvy" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO">
+		UPDATE stn_order_dlvy d
+			<set>
+				SETLE_AMOUNT= 
+				(SELECT o.TOT_AMOUNT+
+				 (o.DSCNT_AMOUNT-(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_order_item WHERE ORDER_NO = o.ORDER_NO AND GISTEM_SE_CODE  = 'F' AND GITEM_PC <![CDATA[<]]> 0))
+				 -(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_order_item WHERE ORDER_NO = o.ORDER_NO AND GISTEM_SE_CODE  = 'F' AND GITEM_PC <![CDATA[>]]> 0) FROM stn_order o WHERE o.ORDER_NO = d.ORDER_NO)
+				, SLE_AMOUNT=
+				 (SELECT o.TOT_AMOUNT+
+				 -(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_order_item WHERE ORDER_NO = o.ORDER_NO AND GISTEM_SE_CODE  = 'F') FROM stn_order o WHERE o.ORDER_NO = d.ORDER_NO)
+				,OPTN_AMOUNT
+				=(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_order_item WHERE ORDER_NO = d.ORDER_NO AND GISTEM_SE_CODE IN ('A','D'))
+				,DSCNT_AMOUNT
+				= -(SELECT o.DSCNT_AMOUNT-(SELECT IFNULL(SUM(GITEM_PC),0) FROM stn_order_item WHERE ORDER_NO = o.ORDER_NO AND GISTEM_SE_CODE  = 'F' AND GITEM_PC <![CDATA[<]]> 0 ) FROM stn_order o WHERE o.ORDER_NO = d.ORDER_NO)
+		</set>
+			WHERE d.ORDER_DLVY_NO = (SELECT MAX(ORDER_DLVY_NO) FROM stn_order_dlvy WHERE ORDER_NO = #{orderNo});
+	</update>
+	
+	<!-- 송장번호 등록 -->
+	<update id="updateInvcNo" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO">
+		UPDATE stn_order_dlvy
+		SET INVC_NO = #{invcNo}
+			, DLVY_STTUS_CODE = #{dlvySttusCode}
+			, LAST_UPDT_PNTTM = SYSDATE()
+			, LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE ORDER_DLVY_NO = #{orderDlvyNo}
+	</update>
+
+	<!-- 배송상태 변경 (상품준비중 -> 배송준비중)-->
+	<update id="updateDlvySttusCode" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO">
+		UPDATE stn_order_dlvy
+		SET 	
+			LAST_UPDT_PNTTM = SYSDATE()	
+			, LAST_UPDUSR_ID = #{lastUpdusrId}	
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(dlvySttusCode)">	
+			, DLVY_STTUS_CODE = #{dlvySttusCode}	
+			</if>	
+		WHERE ORDER_DLVY_NO = #{orderDlvyNo}
+	</update>
+	
+	<!-- 주문 취소 - -->
+	<update id="updateOrderDlvyStatus" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO">
+		UPDATE stn_order_dlvy
+		SET REQ_TY_CODE = #{reqTyCode}
+			, LAST_UPDT_PNTTM = SYSDATE()
+			, LAST_UPDUSR_ID = #{lastUpdusrId}
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(orderReqSttusCode)">
+				, ORDER_REQ_STTUS_CODE = #{orderReqSttusCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(dlvySttusCode)">
+				, DLVY_STTUS_CODE = #{dlvySttusCode}
+			</if>
+			, CANCEL_USR_ID = #{cancelUsrId}
+			, CANCEL_PNTTM = SYSDATE()
+			, CANCEL_AMOUNT = #{cancelAmount}
+		WHERE
+			1=1
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(orderNo)">
+				AND ORDER_NO = #{orderNo}
+				AND ORDER_ODR = (SELECT
+									MAX(ORDER_ODR)
+								FROM stn_order_dlvy A
+								JOIN stn_order_setle B ON A.ORDER_SETLE_NO = B.ORDER_SETLE_NO AND B.SETLE_STTUS_CODE = 'S'
+								WHERE ORDER_NO = #{orderNo})
+			</if> 
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(orderDlvyNo)">
+				AND ORDER_DLVY_NO = #{orderDlvyNo}	
+			</if>
+	</update>
+	
+	<!-- 주문취소 시 이력에 FK로 추가할 ORDER_DLVY_NO 조회 -->
+	<select id="selectMaxOrderDlvyNoByOrderNo" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="java.math.BigDecimal">
+		SELECT MAX(A.ORDER_DLVY_NO) AS ORDER_DLVY_NO
+		FROM stn_order_dlvy A
+		JOIN stn_order_setle B ON A.ORDER_SETLE_NO = B.ORDER_SETLE_NO AND B.SETLE_STTUS_CODE = 'S'
+		WHERE ORDER_NO = #{orderNo}	
+	</select>
+	
+	<!-- 마이구독 > 교환/환불 목록 -->
+	<select id="selectMyRefundList" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="egovMap">
+		SELECT
+			A.ORDER_NO
+			, D.GOODS_ID
+			, D.GOODS_NM
+			, A.ORDER_ODR
+			, A.DLVY_STTUS_CODE
+			, CODE1.CODE_NM AS DLVY_STTUS_CODE_NM
+			, CASE B.SBSCRPT_CYCLE_SE_CODE WHEN 'WEEK' THEN CODE2.CODE_DC
+				WHEN 'MONTH' THEN CONCAT(B.SBSCRPT_DLVY_DAY, '일')
+				END AS SBSCRPT_DLVY_DAY
+			, CASE B.SBSCRPT_CYCLE_SE_CODE WHEN 'WEEK' THEN CONCAT(B.SBSCRPT_WEEK_CYCLE, '주')
+				WHEN 'MONTH' THEN CONCAT(B.SBSCRPT_MT_CYCLE, '개월')
+				END AS SBSCRPT_CYCLE_SE_CODE_NM
+			, CASE WHEN B.ORDER_KND_CODE = 'SBS' THEN CODE3.CODE_NM
+				ELSE '체험구독'
+				END AS ORDER_KND_CODE_NM
+			, B.ORDER_CO
+			, B.FRST_REGIST_PNTTM
+			, A.REQ_TY_CODE
+			, CODE4.CODE_NM AS REQ_TY_CODE_NM
+			, A.ORDER_REQ_STTUS_CODE
+			, CASE WHEN A.REQ_TY_CODE IN ('C04', 'E05', 'R05') THEN A.LAST_UPDT_PNTTM
+				ELSE NULL
+				END AS LAST_UPDT_PNTTM
+			, CODE5.CODE_NM AS ORDER_STTUS_CODE_NM
+			, (SELECT GOODS_IMAGE_THUMB_PATH FROM stn_goods_image WHERE GOODS_ID = D.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' LIMIT 1) AS GOODS_IMAGE_THUMB_PATH
+		<include refid="selectMyRefundListFrom"></include>
+		<include refid="selectMyRefundListWhere"></include>
+		ORDER BY A.ORDER_DLVY_NO DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectMyRefundListFrom">
+		FROM stn_order_dlvy A
+		JOIN stn_order B ON A.ORDER_NO = B.ORDER_NO
+		JOIN stn_order_setle C ON A.ORDER_SETLE_NO = C.ORDER_SETLE_NO
+		JOIN stn_goods D ON B.GOODS_ID = D.GOODS_ID
+		LEFT JOIN ( SELECT
+						*
+					FROM dtc_cmmn_detail_code
+					WHERE CODE_ID='CMS022' ) CODE1 ON CODE1.CODE = A.DLVY_STTUS_CODE
+		LEFT JOIN ( SELECT
+						*
+					FROM dtc_cmmn_detail_code
+					WHERE CODE_ID='CMS023' ) CODE2 ON CODE2.CODE = B.SBSCRPT_DLVY_WD
+		LEFT JOIN ( SELECT
+                        *
+                    FROM dtc_cmmn_detail_code
+                    WHERE CODE_ID='CMS009' ) CODE3 ON CODE3.CODE = B.ORDER_KND_CODE
+		LEFT JOIN ( SELECT
+						*
+					FROM dtc_cmmn_detail_code
+					WHERE CODE_ID='CMS027' ) CODE4 ON CODE4.CODE = A.REQ_TY_CODE
+		LEFT JOIN ( SELECT
+					*
+				FROM dtc_cmmn_detail_code
+				WHERE CODE_ID='CMS021' ) CODE5 ON CODE5.CODE = B.ORDER_STTUS_CODE
+	</sql>
+	
+	<sql id="selectMyRefundListWhere">
+		WHERE B.USE_AT = 'Y'
+		AND A.ORDER_REQ_STTUS_CODE IN ('E', 'R')
+		AND B.ORDRR_ID = #{ordrrId}
+	</sql>
+	
+	<!-- 마이구독 > 교환/환불 목록 갯수 -->
+	<select id="selectMyRefundListCnt"  parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="int">
+		SELECT COUNT(*)
+		<include refid="selectMyRefundListFrom"></include>
+		<include refid="selectMyRefundListWhere"></include>
+	</select>
+	
+	<!-- 회차별 상세보기 목록 -->
+	<select id="selectSubscribeDetail" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="egovMap">
+		SELECT
+			A.ORDER_ODR
+			, CASE WHEN B.SBSCRPT_CYCLE_SE_CODE = 'WEEK' THEN CONCAT(B.SBSCRPT_WEEK_CYCLE, '주')
+				WHEN B.SBSCRPT_CYCLE_SE_CODE = 'MONTH' THEN CONCAT(B.SBSCRPT_MT_CYCLE, '개월')
+				END AS SBSCRPT_CYCLE
+			, CASE WHEN B.SBSCRPT_CYCLE_SE_CODE = 'WEEK' THEN CONCAT(CODE1.CODE_NM, '요일')
+				WHEN B.SBSCRPT_CYCLE_SE_CODE = 'MONTH' THEN CONCAT(B.SBSCRPT_DLVY_DAY, '일')
+				END AS SBSCRPT_DLVY_DAY
+			, C.GOODS_NM
+			, A.ORDER_CO
+			, A.DLVY_ADRES
+			, A.ORDER_INFO
+			, D.SETLE_STTUS_CODE
+			, A.SETLE_AMOUNT
+			, CASE WHEN D.SETLE_STTUS_CODE = 'R' THEN DATE_FORMAT(D.SETLE_PRARNDE, '%Y-%m-%d')
+				ELSE D.SETLE_PNTTM
+			END AS SETLE_PNTTM
+		<include refid="selectSubscribeDetailFrom"></include>
+		<include refid="selectSubscribeDetailWhere"></include>
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectSubscribeDetailFrom">
+		FROM stn_order_dlvy A
+		JOIN stn_order B ON A.ORDER_NO = B.ORDER_NO
+		JOIN stn_goods C ON B.GOODS_ID = C.GOODS_ID
+		JOIN stn_order_setle D ON A.ORDER_SETLE_NO = D.ORDER_SETLE_NO
+		LEFT JOIN dtc_cmmn_detail_code CODE1 ON B.SBSCRPT_DLVY_WD = CODE1.CODE AND CODE1.CODE_ID='CMS023'
+	</sql>
+	
+	<sql id="selectSubscribeDetailWhere">
+		WHERE A.ORDER_NO = #{orderNo}
+			AND A.ORDER_REQ_STTUS_CODE NOT IN ('W', 'C', 'T')
+	</sql>
+	
+	<!-- 회차별 상세보기 목록 갯수 -->
+	<select id="selectSubscribeDetailCnt" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="int">
+		SELECT
+			COUNT(*)
+		<include refid="selectSubscribeDetailFrom"></include>
+		<include refid="selectSubscribeDetailWhere"></include>
+	</select>
+	
+	<!-- 해지, 취소, 교환, 환불 목록 -->
+	<select id="selectOrderReqList" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="egovMap">
+		SELECT
+			a.ORDER_DLVY_NO
+			,a.ORDER_NO
+			,a.ORDER_SETLE_NO
+			,a.ORDER_KND_CODE
+			,a.SBSCRPT_CYCLE_SE_CODE
+			,a.SBSCRPT_WEEK_CYCLE
+			,a.SBSCRPT_DLVY_WD
+			,cw.CODE_NM AS SBSCRPT_DLVY_WD_NM
+			,a.SBSCRPT_MT_CYCLE
+			,a.SBSCRPT_DLVY_DAY
+			,b.ORDRR_ID
+			,b.ORDER_GROUP_NO
+			,b.ORDRR_NM
+			,b.ORDER_STTUS_CODE
+			,a.ORDER_CO
+			,a.SLE_AMOUNT
+			,a.DLVY_AMOUNT
+			,a.DLVY_USER_NM
+			,a.TELNO
+			,a.DLVY_ZIP
+			,a.DLVY_ADRES
+			,a.DLVY_ADRES_DETAIL
+			,a.DLVY_MSSAGE
+			,a.DLVY_STTUS_CODE
+			,cd.CODE_NM AS DLVY_STTUS_CODE_NM
+			,a.HDRY_ID
+			,a.HDRY_DLVY_DE
+			,a.INVC_NO
+			,a.ORDER_REQ_STTUS_CODE
+			,a.REQ_TY_CODE
+			,ce.CODE_NM AS REQ_TY_CODE_NM
+			,a.REGIST_PNTTM
+			,b.ORDER_PNTTM
+			,a.LAST_UPDT_PNTTM
+			,a.LAST_UPDUSR_ID
+			,a.ORDER_ODR
+			,a.CANCEL_PNTTM
+			,IFNULL(a.CANCEL_AMOUNT, 0) AS CANCEL_AMOUNT
+			, CASE SETLE_STTUS_CODE WHEN 'R' THEN DATE_FORMAT(STR_TO_DATE(s.SETLE_PRARNDE, '%Y%m%d'),'%Y-%m-%d')
+				ELSE s.SETLE_PNTTM
+				END AS SETLE_PNTTM
+			,s.SETLE_STTUS_CODE
+			,s.SETLE_TOT_AMOUNT
+			,cs.CODE_NM AS SETLE_STTUS_CODE_NM
+			,g.GOODS_ID
+			,g.GOODS_NM
+			,g.GOODS_PC
+			,g.MODEL_NM
+			,g.GOODS_KND_CODE
+			,c.CMPNY_NM
+			,CONCAT( IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','',sgc3.GOODS_CTGRY_NM), IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','','&gt;')
+					,IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','',sgc2.GOODS_CTGRY_NM),IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','','&gt;') 
+					,IF(ISNULL(sgc.GOODS_CTGRY_NM) or sgc.GOODS_CTGRY_NM = 'ROOT','',sgc.GOODS_CTGRY_NM)
+					) AS GOODS_CTGRY_NM
+			,co.CODE_NM AS ORDER_STTUS_CODE_NM
+			, e.API_ID
+			, m.PRTNR_ID
+			, p.PRTNR_NM
+			, f.MBER_NM AS CANCEL_USR_ID
+		<include refid="selectOrderReqListFrom"></include>
+		<include refid="selectOrderReqListWhere"></include>
+		ORDER BY
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'CANCEL')">
+			a.CANCEL_PNTTM DESC, 
+		</if>
+		a.ORDER_DLVY_NO DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectOrderReqListFrom">
+		FROM     stn_order_dlvy a
+        JOIN    stn_order b ON b.ORDER_NO = a.ORDER_NO AND b.USE_AT = 'Y'
+        JOIN    stn_order_setle s ON s.ORDER_SETLE_NO = a.ORDER_SETLE_NO
+        JOIN    stn_goods g ON g.GOODS_ID = b.GOODS_ID
+        JOIN    stn_prtnr_cmpny_mapng m ON m.PCMAPNG_ID = g.PCMAPNG_ID
+        JOIN    stn_prtnr p ON m.PRTNR_ID = p.PRTNR_ID
+        JOIN    stn_cmpny c ON c.CMPNY_ID = m.CMPNY_ID AND c.USE_AT = 'Y'
+        LEFT JOIN stn_hdry_cmpny e ON g.HDRY_ID = e.HDRY_ID AND e.USE_AT = 'Y'
+        LEFT JOIN dtn_mber f ON a.CANCEL_USR_ID = f.ESNTL_ID
+        LEFT JOIN stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+        LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+        LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+        LEFT JOIN (
+                SELECT     CODE, CODE_NM
+                FROM    dtc_cmmn_detail_code
+                WHERE    CODE_ID  = 'CMS023'
+            ) cw ON cw.CODE = a.SBSCRPT_DLVY_WD
+        LEFT JOIN (
+                SELECT     CODE, CODE_NM
+                FROM    dtc_cmmn_detail_code
+                WHERE    CODE_ID  = 'CMS026'
+            ) cs ON cs.CODE = s.SETLE_STTUS_CODE
+        LEFT JOIN (
+                SELECT     CODE, CODE_NM
+                FROM    dtc_cmmn_detail_code
+                WHERE    CODE_ID  = 'CMS021'
+            ) co ON co.CODE = b.ORDER_STTUS_CODE
+        LEFT JOIN (
+                SELECT     CODE, CODE_NM
+                FROM    dtc_cmmn_detail_code
+                WHERE    CODE_ID  = 'CMS022'
+            ) cd ON cd.CODE = a.DLVY_STTUS_CODE
+        LEFT JOIN (
+                SELECT     CODE, CODE_NM
+                FROM    dtc_cmmn_detail_code
+                WHERE    CODE_ID  = 'CMS027'
+            ) ce ON ce.CODE = a.REQ_TY_CODE
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'STOP')">
+			LEFT JOIN (
+					SELECT MAX(ORDER_DLVY_NO) AS ORDER_DLVY_NO
+					FROM stn_order_dlvy
+					GROUP BY ORDER_NO
+			) stat ON a.ORDER_DLVY_NO = stat.ORDER_DLVY_NO
+		</if>
+	</sql>
+	
+	<sql id="selectOrderReqListWhere">
+		WHERE 1=1
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'STOP') == false and @egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'CANCEL') == false">
+			AND s.SETLE_STTUS_CODE = 'S'
+		</if>		
+		<choose>
+			<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'CANCEL')">
+				AND a.REQ_TY_CODE IN ('C01', 'C02', 'C04')
+			</when>
+			<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'EXCHANGE')">
+				AND a.REQ_TY_CODE IN ('E01', 'E02', 'E04', 'E05')
+			</when>
+			<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'RECALL')">
+				AND a.REQ_TY_CODE IN ('R01', 'R02', 'R04', 'R05')
+			</when>
+			<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'STOP')">
+				AND b.ORDER_STTUS_CODE IN ('ST01', 'ST04', 'ST99')
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+			AND c.CMPNY_ID = #{searchCmpnyId}
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOrderNo)">
+			AND b.ORDER_NO LIKE CONCAT( '%' , #{searchOrderNo} , '%' )
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOrdrrNm)">
+			AND b.ORDRR_NM LIKE CONCAT( '%' , #{searchOrdrrNm} , '%' )
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsNm)">
+			AND g.GOODS_NM LIKE CONCAT( '%' , #{searchGoodsNm} , '%' )
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsId)">
+			AND g.GOODS_ID LIKE CONCAT( '%' , #{searchGoodsId} , '%' )
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchReqTyCode)">
+			AND a.REQ_TY_CODE = #{searchReqTyCode}
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'STOP')">
+			GROUP BY b.ORDER_NO
+		</if>
+	</sql>
+	
+	<select id="selectOrderReqListCnt" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM (
+			SELECT
+			a.ORDER_DLVY_NO
+			,a.ORDER_NO
+			,a.ORDER_SETLE_NO
+			,a.ORDER_KND_CODE
+			,a.SBSCRPT_CYCLE_SE_CODE
+			,a.SBSCRPT_WEEK_CYCLE
+			,a.SBSCRPT_DLVY_WD
+			,cw.CODE_NM AS SBSCRPT_DLVY_WD_NM
+			,a.SBSCRPT_MT_CYCLE
+			,a.SBSCRPT_DLVY_DAY
+			,b.ORDRR_ID
+			,b.ORDER_GROUP_NO
+			,b.ORDRR_NM
+			,b.ORDER_STTUS_CODE
+			,a.ORDER_ODR
+			,a.ORDER_CO
+			,a.SLE_AMOUNT
+			,a.DLVY_AMOUNT
+			,a.DLVY_USER_NM
+			,a.TELNO
+			,a.DLVY_ZIP
+			,a.DLVY_ADRES
+			,a.DLVY_ADRES_DETAIL
+			,a.DLVY_MSSAGE
+			,a.DLVY_STTUS_CODE
+			,cd.CODE_NM AS DLVY_STTUS_CODE_NM
+			,a.HDRY_ID
+			,a.HDRY_DLVY_DE
+			,a.INVC_NO
+			,a.ORDER_REQ_STTUS_CODE
+			,a.REQ_TY_CODE
+			,ce.CODE_NM AS REQ_TY_CODE_NM
+			,a.REGIST_PNTTM
+			,b.ORDER_PNTTM
+			,a.LAST_UPDT_PNTTM
+			,a.LAST_UPDUSR_ID
+			, CASE SETLE_STTUS_CODE WHEN 'R' THEN DATE_FORMAT(STR_TO_DATE(s.SETLE_PRARNDE, '%Y%m%d'),'%Y-%m-%d')
+				ELSE s.SETLE_PNTTM
+				END AS SETLE_PNTTM
+			,s.SETLE_STTUS_CODE
+			,s.SETLE_TOT_AMOUNT
+			,cs.CODE_NM AS SETLE_STTUS_CODE_NM
+			,g.GOODS_ID
+			,g.GOODS_NM
+			,g.GOODS_PC
+			,g.MODEL_NM
+			,g.GOODS_KND_CODE
+			,c.CMPNY_NM
+			,CONCAT( IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','',sgc3.GOODS_CTGRY_NM), IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','','>')
+					,IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','',sgc2.GOODS_CTGRY_NM),IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','','>') 
+					,IF(ISNULL(sgc.GOODS_CTGRY_NM) or sgc.GOODS_CTGRY_NM = 'ROOT','',sgc.GOODS_CTGRY_NM)
+					) AS GOODS_CTGRY_NM
+			,co.CODE_NM AS ORDER_STTUS_CODE_NM
+			, e.API_ID
+			<include refid="selectOrderReqListFrom"></include>
+			<include refid="selectOrderReqListWhere"></include>
+		) X
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'STOP')">
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchReqTyCode, 'T01')">
+					WHERE X.REQ_TY_CODE IN ('C01', 'T01')
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchReqTyCode, 'T02')">
+					WHERE X.REQ_TY_CODE IN ('C04', 'T02')
+				</when>
+				<otherwise></otherwise>
+			</choose>
+		</if>
+	</select>
+
+	<!-- 회차별 구독현황 -->
+	<select id="selectOrderDlvyHist" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="egovMap">
+		SELECT
+			a.ORDER_DLVY_NO
+			,a.ORDER_NO
+			,a.ORDER_SETLE_NO
+			,a.ORDER_KND_CODE
+			,a.SBSCRPT_CYCLE_SE_CODE
+			,a.SBSCRPT_WEEK_CYCLE
+			,a.SBSCRPT_DLVY_WD
+			,cw.CODE_NM AS SBSCRPT_DLVY_WD_NM
+			,a.SBSCRPT_MT_CYCLE
+			,a.SBSCRPT_DLVY_DAY
+			,b.ORDRR_ID
+			,b.ORDER_GROUP_NO
+			,b.ORDRR_NM
+			,b.ORDER_STTUS_CODE
+			,a.ORDER_ODR
+			,a.ORDER_CO
+			,a.SLE_AMOUNT
+			,a.DLVY_AMOUNT
+			,a.DLVY_USER_NM
+			,a.TELNO
+			,a.DLVY_ZIP
+			,a.DLVY_ADRES
+			,a.DLVY_ADRES_DETAIL
+			,a.DLVY_MSSAGE
+			,a.DLVY_STTUS_CODE
+			,cd.CODE_NM AS DLVY_STTUS_CODE_NM
+			,a.HDRY_ID
+			,a.HDRY_DLVY_DE
+			,a.INVC_NO
+			,a.ORDER_REQ_STTUS_CODE
+			,a.REQ_TY_CODE
+			,ce.CODE_NM AS REQ_TY_CODE_NM
+			,a.REGIST_PNTTM
+			,b.ORDER_PNTTM
+			,b.GOODS_AMOUNT
+			,a.LAST_UPDT_PNTTM
+			,a.LAST_UPDUSR_ID
+			,a.ORDER_ODR
+			, CASE SETLE_STTUS_CODE WHEN 'R' THEN DATE_FORMAT(STR_TO_DATE(s.SETLE_PRARNDE, '%Y%m%d'),'%Y-%m-%d')
+				ELSE s.SETLE_PNTTM
+				END AS SETLE_PNTTM
+			,s.SETLE_STTUS_CODE
+			,s.SETLE_TOT_AMOUNT
+			,cs.CODE_NM AS SETLE_STTUS_CODE_NM
+			,g.GOODS_ID
+			,g.GOODS_NM
+			,g.GOODS_PC
+			,g.MODEL_NM
+			,g.GOODS_KND_CODE
+			,c.CMPNY_NM
+			,CONCAT( IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','',sgc3.GOODS_CTGRY_NM), IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','','>')
+					,IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','',sgc2.GOODS_CTGRY_NM),IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','','>') 
+					,IF(ISNULL(sgc.GOODS_CTGRY_NM) or sgc.GOODS_CTGRY_NM = 'ROOT','',sgc.GOODS_CTGRY_NM)
+					) AS GOODS_CTGRY_NM
+			,co.CODE_NM AS ORDER_STTUS_CODE_NM
+			, e.API_ID
+			, a.ORDER_INFO
+			, IFNULL(s.SETLE_POINT, 0) AS SETLE_POINT
+			, IFNULL(s.SETLE_CARD_AMOUNT, 0) AS SETLE_CARD_AMOUNT
+		<include refid="selectOrderDlvyHistFrom"></include>
+		<include refid="selectOrderDlvyHistWhere"></include>
+		ORDER BY a.ORDER_DLVY_NO DESC
+<!-- 		LIMIT #{recordCountPerPage} OFFSET #{firstIndex} -->
+	</select>
+
+	<sql id="selectOrderDlvyHistFrom">
+		FROM 	stn_order_dlvy a
+		JOIN	stn_order b ON b.ORDER_NO = a.ORDER_NO AND b.USE_AT = 'Y'
+		JOIN	stn_order_setle s ON s.ORDER_SETLE_NO = a.ORDER_SETLE_NO
+		JOIN	stn_goods g ON g.GOODS_ID = b.GOODS_ID <!-- AND g.USE_AT = 'Y'  -->
+		JOIN	stn_prtnr_cmpny_mapng m ON m.PCMAPNG_ID = g.PCMAPNG_ID
+		JOIN	stn_cmpny c ON c.CMPNY_ID = m.CMPNY_ID AND c.USE_AT = 'Y'
+		LEFT JOIN stn_hdry_cmpny e ON a.HDRY_ID = e.HDRY_ID AND e.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+		LEFT JOIN (
+				SELECT 	CODE, CODE_NM
+				FROM	dtc_cmmn_detail_code
+				WHERE	CODE_ID  = 'CMS023'
+			) cw ON cw.CODE = a.SBSCRPT_DLVY_WD
+		LEFT JOIN (
+				SELECT 	CODE, CODE_NM
+				FROM	dtc_cmmn_detail_code
+				WHERE	CODE_ID  = 'CMS026'
+			) cs ON cs.CODE = s.SETLE_STTUS_CODE
+		LEFT JOIN (
+				SELECT 	CODE, CODE_NM
+				FROM	dtc_cmmn_detail_code
+				WHERE	CODE_ID  = 'CMS021'
+			) co ON co.CODE = b.ORDER_STTUS_CODE
+		LEFT JOIN (
+				SELECT 	CODE, CODE_NM
+				FROM	dtc_cmmn_detail_code
+				WHERE	CODE_ID  = 'CMS022'
+			) cd ON cd.CODE = a.DLVY_STTUS_CODE
+		LEFT JOIN (
+				SELECT 	CODE, CODE_NM
+				FROM	dtc_cmmn_detail_code
+				WHERE	CODE_ID  = 'CMS027'
+			) ce ON ce.CODE = a.REQ_TY_CODE
+	</sql>
+	
+	<sql id="selectOrderDlvyHistWhere">
+		WHERE a.ORDER_NO = #{orderNo} 
+			AND s.SETLE_STTUS_CODE = 'S'
+	</sql>
+	
+	<select id="selectOrderDlvyHistCnt" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="int">
+		SELECT COUNT(*)
+		<include refid="selectOrderDlvyHistFrom"></include>
+		<include refid="selectOrderDlvyHistWhere"></include>
+	</select>
+	
+	<update id="updateOrderDlvyStatusReady" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO">
+		UPDATE stn_order_dlvy
+		SET REQ_TY_CODE=#{reqTyCode}
+			, ORDER_REQ_STTUS_CODE=#{orderReqSttusCode}
+		WHERE ORDER_SETLE_NO = (SELECT
+				MAX(B.ORDER_SETLE_NO)
+			FROM stn_order A
+			JOIN stn_order_dlvy B ON A.ORDER_NO = B.ORDER_NO
+			WHERE A.ORDER_NO=#{orderNo})
+	</update>
+	
+	<!-- 주문현황 > 주문 건수, 판매 금액 -->
+	<select id="selectOrderStat" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="egovMap">
+		SELECT
+			IFNULL(COUNT(*),0) AS CNT
+			, IFNULL(SUM(s.SETLE_TOT_AMOUNT),0) AS SETLE_TOT_AMOUNT
+		FROM 	stn_order_dlvy a
+		JOIN	stn_order b ON b.ORDER_NO = a.ORDER_NO AND b.USE_AT = 'Y'
+		JOIN	stn_order_setle s ON s.ORDER_SETLE_NO = a.ORDER_SETLE_NO
+		JOIN	stn_goods g ON g.GOODS_ID = b.GOODS_ID AND g.USE_AT = 'Y'
+		JOIN	stn_prtnr_cmpny_mapng m ON m.PCMAPNG_ID = g.PCMAPNG_ID
+		JOIN	stn_prtnr p ON p.PRTNR_ID = m.PRTNR_ID
+		JOIN	stn_cmpny c ON c.CMPNY_ID = m.CMPNY_ID AND c.USE_AT = 'Y'
+		LEFT JOIN stn_hdry_cmpny e ON a.HDRY_ID = e.HDRY_ID AND e.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+		LEFT JOIN dtc_cmmn_detail_code cw ON cw.CODE = a.SBSCRPT_DLVY_WD AND cw.CODE_ID = 'CMS023'
+		LEFT JOIN dtc_cmmn_detail_code cs ON cs.CODE = s.SETLE_STTUS_CODE AND cs.CODE_ID = 'CMS026'
+		LEFT JOIN dtc_cmmn_detail_code co ON co.CODE = b.ORDER_STTUS_CODE AND co.CODE_ID = 'CMS021'
+		LEFT JOIN dtc_cmmn_detail_code cd ON cd.CODE = a.DLVY_STTUS_CODE AND cd.CODE_ID = 'CMS022'
+		LEFT JOIN dtc_cmmn_detail_code ce ON ce.CODE = a.REQ_TY_CODE AND ce.CODE_ID = 'CMS027'
+		<include refid="selectOrderDlvyListWhere"></include>
+	</select>
+	
+	<select id="selectOrderDlvyByDlvyNo" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO">
+		SELECT
+			A.ORDER_DLVY_NO
+			, A.ORDER_NO
+			, A.ORDER_SETLE_NO
+			, A.ORDER_KND_CODE
+			, A.SBSCRPT_CYCLE_SE_CODE
+			, A.SBSCRPT_WEEK_CYCLE
+			, A.SBSCRPT_DLVY_WD
+			, A.SBSCRPT_MT_CYCLE
+			, A.SBSCRPT_DLVY_DAY
+			, A.ORDER_ODR
+			, A.ORDER_CO
+			, A.SLE_AMOUNT
+			, A.DSCNT_AMOUNT
+			, A.GOODS_AMOUNT
+			, A.OPTN_AMOUNT
+			, A.SETLE_AMOUNT
+			, A.DLVY_AMOUNT
+			, A.DLVY_USER_NM
+			, A.TELNO
+			, A.DLVY_ZIP
+			, A.DLVY_ADRES
+			, A.DLVY_ADRES_DETAIL
+			, A.DLVY_MSSAGE
+			, A.DLVY_STTUS_CODE
+			, A.HDRY_ID
+			, A.HDRY_DLVY_DE
+			, A.INVC_NO
+			, A.ORDER_INFO
+			, A.ORDER_REQ_STTUS_CODE
+			, A.DLVY_PRARNDE
+			, A.REQ_TY_CODE
+			, A.REGIST_PNTTM
+			, A.LAST_UPDT_PNTTM
+			, A.LAST_UPDUSR_ID
+			, A.CANCEL_PNTTM
+			, A.CANCEL_AMOUNT
+		FROM stn_order_dlvy A
+		WHERE A.ORDER_DLVY_NO = #{orderDlvyNo}
+	</select>
+</mapper>

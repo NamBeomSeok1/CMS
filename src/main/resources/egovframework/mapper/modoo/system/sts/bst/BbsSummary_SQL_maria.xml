@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.system.sts.bst.service.impl.BbsSummaryMapper">
+	
+	<!-- 게시물 통계 집계 -->
+	<insert id="insertBbsSummaryStats" parameterType="modoo.module.system.sts.bst.service.BbsSummaryVO">
+		INSERT INTO dts_bbs_summary (
+			OCCRRNC_DE
+			,STATS_SE
+			,CREAT_CO
+			,TOT_RDCNT
+			,AVRG_RDCNT
+			,TOT_ATCH_FILE_CO
+			,TOT_ATCH_FILE_SIZE
+		)
+		SELECT
+			DATE_FORMAT(DATE_ADD(SYSDATE(),INTERVAL -1 DAY), '%Y%m%d') OCCRRNC_DE
+			,#{statsSe}
+			,CREAT_CO
+			,TOT_RDCNT
+			,AVRG_RDCNT
+			,TOT_ATCH_FILE_CO
+			,TOT_ATCH_FILE_SIZE
+		FROM (
+			SELECT
+				COUNT(*) CREAT_CO
+				,NVL(SUM(INQIRE_CO),0) TOT_RDCNT
+				,NVL(AVG(INQIRE_CO),0) AVRG_RDCNT
+			FROM dtn_bbs bbs
+			WHERE	bbs.USE_AT = 'Y'
+				AND bbs.FRST_REGIST_PNTTM BETWEEN STR_TO_DATE(DATE_FORMAT(DATE_ADD(SYSDATE(),INTERVAL -1 DAY), '%Y%m%d000000'),'%Y%m%d%H%i%s')
+											AND STR_TO_DATE(DATE_FORMAT(DATE_ADD(SYSDATE(),INTERVAL -1 DAY), '%Y%m%d235959'),'%Y%m%d%H%i%s')
+		) tb1, (
+			SELECT
+				NVL(SUM(fd.FILE_SN), 0) TOT_ATCH_FILE_CO
+				,NVL(SUM(fd.FILE_SIZE) ,0) TOT_ATCH_FILE_SIZE
+			FROM dtn_bbs bbs
+			LEFT OUTER JOIN dtn_file_detail fd
+				ON fd.ATCH_FILE_ID = bbs.ATCH_FILE_ID 
+			WHERE	bbs.USE_AT = 'Y'
+				AND bbs.FRST_REGIST_PNTTM BETWEEN STR_TO_DATE(DATE_FORMAT(DATE_ADD(SYSDATE(),INTERVAL -1 DAY), '%Y%m%d000000'),'%Y%m%d%H%i%s')
+											AND STR_TO_DATE(DATE_FORMAT(DATE_ADD(SYSDATE(),INTERVAL -1 DAY), '%Y%m%d235959'),'%Y%m%d%H%i%s')
+		) tb2
+	</insert>
+	
+	<!-- 게시물통계 날짜별 카운트 -->
+	<select id="selectBbsSummaryCheckDateCnt" parameterType="modoo.module.system.sts.bst.service.BbsSummaryVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM 	dts_bbs_summary
+		WHERE	OCCRRNC_DE = DATE_FORMAT(DATE_ADD(SYSDATE(),INTERVAL -1 DAY), '%Y%m%d')
+			AND STATS_SE = #{statsSe}
+	</select>
+	
+
+	<!-- 게시물 통계 목록 -->
+	<select id="selectBbsSummaryStats" parameterType="modoo.module.system.sts.bst.service.BbsSummaryVO" resultType="modoo.module.system.sts.bst.service.BbsSummaryVO">
+		SELECT
+			OCCRRNC_DE
+			,STATS_SE
+			,CREAT_CO
+			,TOT_RDCNT
+			,AVRG_RDCNT
+			,TOT_ATCH_FILE_CO
+			,TOT_ATCH_FILE_SIZE
+		FROM	dts_bbs_summary
+		WHERE	STATS_SE = #{statsSe}
+			AND OCCRRNC_DE BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'), '%Y%m%d%H%i%s')
+		ORDER BY OCCRRNC_DE DESC
+	</select>
+</mapper>

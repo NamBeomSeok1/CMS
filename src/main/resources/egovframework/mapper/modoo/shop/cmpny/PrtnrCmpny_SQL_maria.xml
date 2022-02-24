@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.cmpny.service.impl.PrtnrCmpnyMapper">
+
+	<!-- 제휴사매핑 목록 -->
+	<select id="selectPrtnrCmpnyList" parameterType="modoo.module.shop.cmpny.service.PrtnrCmpnyVO" resultType="modoo.module.shop.cmpny.service.PrtnrCmpnyVO">
+		SELECT
+			pcm.PCMAPNG_ID
+			,p.PRTNR_ID
+			,p.PRTNR_NM
+			,pcm.CMPNY_ID
+			,IF(pcm.PCMAPNG_ID IS NULL, 'N', pcm.USE_AT) AS USE_AT
+		FROM 		stn_prtnr p
+		LEFT JOIN	stn_prtnr_cmpny_mapng pcm ON pcm.PRTNR_ID = p.PRTNR_ID
+						AND pcm.CMPNY_ID = #{cmpnyId}
+	</select>
+
+	<!-- 재휴사매핑 체크 카운 -->
+	<select id="selectPrtnrCmpnyCheckCnt" parameterType="modoo.module.shop.cmpny.service.PrtnrCmpnyVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	stn_prtnr_cmpny_mapng
+		WHERE	PRTNR_ID = #{prtnrId}
+			AND CMPNY_ID = #{cmpnyId}
+			AND g.USE_AT = 'Y'
+	</select>
+
+	<!-- 제휴사매핑 저장 -->
+	<insert id="insertPrtnrCmpny" parameterType="modoo.module.shop.cmpny.service.PrtnrCmpnyVO">
+		INSERT INTO stn_prtnr_cmpny_mapng (
+			PCMAPNG_ID
+			,PRTNR_ID
+			,CMPNY_ID
+			,USE_AT
+		) VALUES (
+			#{pcmapngId}
+			,#{prtnrId}
+			,#{cmpnyId}
+			,'Y'
+		)
+	</insert>
+	
+	<!-- 제휴사매핑 수정 -->
+	<update id="updatePrtnrCmpny" parameterType="modoo.module.shop.cmpny.service.PrtnrCmpnyVO">
+		UPDATE stn_prtnr_cmpny_mapng
+		SET
+			PRTNR_ID = #{prtnrId}
+			,CMPNY_ID = #{cmpnyId}
+			,USE_AT = #{useAt}
+		WHERE	PCMAPNG_ID = #{pcmapngId}	
+	</update>
+	
+	<!-- 제휴사매핑 삭제 -->
+	<delete id="deletePrtnrCmpny" parameterType="modoo.module.shop.cmpny.service.PrtnrCmpnyVO">
+		UPDATE stn_prtnr_cmpny_mapng
+		SET
+			USE_AT = 'N'
+		WHERE	PCMAPNG_ID = #{pcmapngId}	
+	</delete>
+
+	<!--
+	<delete id="deletePrtnrCmpny" parameterType="modoo.module.shop.cmpny.service.PrtnrCmpnyVO">
+		DELETE FROM STN_PRTNR_CMPNY_MAPNG
+		WHERE	PCMAPNG_ID = #{pcmapngId}	
+	</delete>
+	-->
+
+</mapper>

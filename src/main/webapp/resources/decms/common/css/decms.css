@@ -1,0 +1,151 @@
+@charset "UTF-8";
+
+@font-face {font-family: 'Noto Sans KR';font-style: normal;font-weight: 100;src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Thin.woff2) format('woff2'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Thin.woff) format('woff'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Thin.otf) format('opentype');}
+@font-face {font-family: 'Noto Sans KR';font-style: normal;font-weight: 300;src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Light.woff2) format('woff2'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Light.woff) format('woff'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Light.otf) format('opentype');}
+@font-face {font-family: 'Noto Sans KR';font-style: normal;font-weight: 400;src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Regular.woff2) format('woff2'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Regular.woff) format('woff'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Regular.otf) format('opentype');}
+@font-face {font-family: 'Noto Sans KR';font-style: normal;font-weight: 500;src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Medium.woff2) format('woff2'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Medium.woff) format('woff'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Medium.otf) format('opentype');}
+@font-face {font-family: 'Noto Sans KR';font-style: normal;font-weight: 700;src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Bold.woff2) format('woff2'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Bold.woff) format('woff'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Bold.otf) format('opentype');}
+@font-face {font-family: 'Noto Sans KR';font-style: normal;font-weight: 900;src: url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.woff2) format('woff2'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.woff) format('woff'),url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.otf) format('opentype');}
+
+html, body {font-family:'Noto Sans KR';}
+hr.sm { margin:0.1rem 0;}
+.form-control::-webkit-input-placeholder {
+	color:#c0d0e1;
+	opacity:1
+}
+.form-control::-moz-placeholder {
+	color:#c0d0e1;
+	opacity:1
+}
+.form-control:-ms-input-placeholder {
+	color:#c0d0e1;
+	opacity:1
+}
+.form-control::-ms-input-placeholder {
+	color:#c0d0e1;
+	opacity:1
+}
+.form-control::placeholder {
+	color:#c0d0e1;
+	opacity:1
+}
+
+.bg-gradient-primary {
+	background-color:#333;
+	background-image: linear-gradient(180deg,#333 10%,#415180 100%);
+}
+.bg-gradient-cmpny {
+	background-color:#333;
+	background-image: linear-gradient(180deg,#333 10%,#335f64 100%);
+}
+
+.f-s-1 {font-size:1rem;}
+.f-s-2 {font-size:1.1rem;}
+.f-s-3 {font-size:1.2rem;}
+
+#decms-logo img {width:50px;}
+
+#accordionSidebar {z-index:11;}
+#accordionSidebar .collapse-item {padding:0.3rem 1rem;}
+
+#content {display: flex; flex-direction: column;}
+#content .navbar {flex: 0 0 auto; }
+
+#content-view {flex:1 0 auto;}
+#content-page {height:100%;}
+
+#content-view {padding:10px; }
+
+.page-wrapper {width:100%; height:100%;}
+
+.code-box {border:1px solid #c0d0e1;}
+.code-box .CodeMirror {font-family: Consolas, monaco, monospace; font-size:0.8rem;}
+
+form label.required:after { content:' \f005'; font-family:"Font Awesome 5 Free"; font-style:normal;font-weight:600; font-size:0.7rem; color:#dc3545;}
+form input.required,
+form textarea.required {border:1px solid #dc3545!important;}
+
+form.popupForm .form-group {margin:0;}
+form.embedForm .form-group {margin:0;}
+form.embedForm .col-form-label {background:#efefef; text-align:center;}
+form.embedForm .custom-control-label small {font-size:0.875rem; vertical-align:top;}
+form.embedForm .text {padding-top: calc(.25rem + 1px); padding-bottom: calc(.25rem + 1px); font-size: .875rem; line-height: 1.5; padding-left:0.75rem; padding-right:0.75rem;}
+form.embedForm .custom-radio {vertical-align:middle;}
+
+.text-sm {padding-top: calc(.25rem + 1px); padding-bottom: calc(.25rem + 1px); font-size: .875rem; line-height: 1.5; padding-left:0.75rem; padding-right:0.75rem;}
+
+.modal .modal-dark {}
+.modal .modal-dark .modal-header {padding:0.5rem 0.7rem; background:#333; color: white;}
+.modal .modal-dark .modal-header h5 {}
+
+/* bootbox */
+.bootbox .modal-header {background:#555; padding:0.5rem 1rem;}
+.bootbox .modal-header .modal-title {font-size:1rem; color:#aaa;}
+.bootbox .modal-dialog {box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;}
+
+.bootbox .dialog-contents {padding:10px; text-align:center;}
+.bootbox .bootbox-body {font-size:0.875rem;}
+
+/* atach file */
+.atchFileList {width:100%; margin:20px 0;}
+.atchFileList thead {border-bottom:1px solid #afafaf;}
+.atchFileList thead th {background:#efefef;}
+.atchFileList .atch_size {}
+.atchFileList .atch_ctrl {text-align:right;}
+.atchFileList .atch_ctrl .atch_delete {color:red;}
+
+#content .topbar {height:3rem;}
+
+#accordionSidebar .collapse-item {padding:0.2rem 1rem; font-size:12px;}
+#accordionSidebar a.nav-link {padding:0.3rem 0.7rem;}
+
+.board-view {}
+.board-view .articleCn {min-height:200px;}
+.board-view .atchFileList .atch_download {border:1px solid #dfdfdf; font-size:0.875rem; background:#666; color:white; padding:3px 5px;}
+
+.tui-grid-container {font-family:'Noto Sans KR' !important; font-size:0.7rem !important;}
+.tui-grid-table .btn-sm {padding:0.2rem 0.3rem; font-size:0.75rem;}
+.bootstrap-datetimepicker-widget {z-index:1001;}
+
+* {
+	font-family: 'Dotum';
+	font-size: 12px !important;
+}
+
+h5 { font-weight: bold !important; font-size: 14px !important; }
+
+.collapse-header {	letter-spacing: -2px !important; }
+
+.tui-pagination .tui-ico-ellip, .tui-pagination .tui-ico-first, .tui-pagination .tui-ico-last, .tui-pagination .tui-ico-next, .tui-pagination .tui-ico-prev { font-size:0 !important;}
+
+
+/* Loading.. */
+.loading {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: -4px;
+	left: 0;
+	z-index: 99999;
+	background: rgba(0, 0, 0, 0.5);
+	display: none;
+}
+
+.loading p {
+	position: fixed;
+	top: 50%;
+	margin: -75px auto 0 auto;
+	width: 200px;
+	height: 50px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	background: #fff;
+	box-sizing: border-box;
+	padding: 0 30px;
+	text-align: center;
+	font-size: 16px;
+	color: #555;
+	left:0;
+	right:0;
+}

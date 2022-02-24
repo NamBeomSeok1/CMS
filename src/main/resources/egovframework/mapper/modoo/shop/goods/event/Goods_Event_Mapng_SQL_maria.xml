@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.event.service.impl.GoodsEventMapngMapper">
+
+	<insert id="insertGoodsEventMapng" parameterType="modoo.module.event.service.impl.GoodsEventMapngVO">
+		INSERT INTO stn_goods_event_mapng
+		(
+			EVENT_NO
+			, GOODS_ID
+			, EVENT_RANGE_SE_CODE
+			, EVENT_TY_CODE
+		)
+		VALUES(
+			#{eventNo}
+			, #{goodsId}
+			, #{eventRangeSeCode}
+			, #{eventTyCode}
+		)
+	</insert>
+	
+	<delete id="deleteGoodsEventMapngList" parameterType="modoo.module.event.service.impl.GoodsEventMapngVO">
+		DELETE
+		FROM stn_goods_event_mapng
+		WHERE EVENT_NO = #{eventNo}
+	</delete>
+	
+	<select id="selectGoodsEventMapngList" parameterType="modoo.module.event.service.impl.GoodsEventMapngVO" resultType="egovMap">
+		SELECT
+			A.EVENT_NO
+			, A.GOODS_ID
+			, A.EVENT_RANGE_SE_CODE
+			, A.EVENT_TY_CODE
+			, B.GOODS_NM
+		FROM stn_goods_event_mapng A
+		JOIN stn_goods B ON A.GOODS_ID = B.GOODS_ID
+		WHERE A.EVENT_NO = #{eventNo}
+	</select>
+</mapper>

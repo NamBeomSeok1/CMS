@@ -1,0 +1,58 @@
+@charset "UTF-8";
+.cms-search-box {border:1px solid #dfdfdf; border-left:0.3rem solid #5a5c69;box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15)!important;}
+.tot-cnt-label {min-width: 120px; }
+#tot-cnt-list input {background:#eee; text-align:center;}
+
+.excclc-sum {width:100%; text-align:center; border: 1px solid #999; border-collapse: collapse; font-size:0.875rem;}
+.excclc-sum th {background:#eee;}
+.excclc-sum th,
+.excclc-sum td {border: 1px solid #999; border-collapse: collapse;padding:5px;}
+
+.excclc-info {width:100%; text-align:center; border: 1px solid #999; border-collapse: collapse; font-size:0.875rem;}
+.excclc-info th {background:#eee;}
+.excclc-info th,
+.excclc-info td {border: 1px solid #999; border-collapse: collapse;padding:5px;}
+
+#taxbilInfo {background:#fffab6;}
+#searchCmpnyNmResult {background:#fffab6;}
+#cmpnyUserId {background:#fffab6;}
+
+.tui-grid-cell.tui-grid-cell-header {white-space:pre-line;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="titleAmount"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="sAmount"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="oAmount"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="dAmount"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="totAmount"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="orderGoodsPc"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="goodsTaxamt"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="optnPc"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="optnTaxamt"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="dlvyAmount"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="dlvyTaxamt"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="setleTotAmount"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="setleCardAmount"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="setlePoint"] {background:#c9ffd6;}
+
+.tui-grid-table .tui-grid-cell-header[data-column-name="event"] {background:#fff2c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="rsrvmney"] {background:#fff2c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="couponDscnt"] {background:#fff2c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="eventDscnt"] {background:#fff2c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="eventTot"] {background:#fff2c9;}
+
+.tui-grid-table .tui-grid-cell-header[data-column-name="setleFee"] {background:#ffd8c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="goodsFeeRate"] {background:#ffd8c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="setleFeeTot"] {background:#ffd8c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="setleFeeSplpc"] {background:#ffd8c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="setleFeeVat"] {background:#ffd8c9;}
+
+.tui-grid-table .tui-grid-cell-header[data-column-name="cmpnyExcclcTitle"] {background:#c9edff;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="cmpnyExcclcAmount"] {background:#c9edff;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="cmpnyExcclcVat"] {background:#c9edff;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="cmpnyExcclcTot"] {background:#c9edff;}
+
+.tui-grid-cell[data-column-name="excclcPrarnde"] {cursor:pointer;}
+
+
+.tui-grid-table td.cpe01 {}
+.tui-grid-table td.cpe02 {background:#ffe9e1;}
+.tui-grid-table td.cpe03 {background:#daf3ff;}

@@ -1,0 +1,829 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <title>모두의구독</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="Author" content="">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <!--[if lt IE 9]><script src="../../../resources/front/site/SITE_00000/js/html5.js"></script><![endif]-->
+    <link href="../../../../resources/front/site/SITE_00000/css/swiper.css" rel="stylesheet" />
+    <link href="../../../../resources/front/site/SITE_00000/css/style.css" rel="stylesheet" />
+
+    <!--이벤트 css-->
+    <link href="css/event.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="accessibility">
+        <a href="#contents">콘텐츠 바로가기</a>
+    </div>
+    <header class="site-header">
+        <div class="banner-top">
+            <div class="banner-txt-area">
+                <p>
+                    <img src="../../../resources/front/site/SITE_00000/image/ezwel/logo_ezwel.svg" alt="ezwel" /> 아래 사이트는 <strong style="color:#006CBA">복지관</strong>과 제휴에 의해 서비스 되고 있습니다.
+                </p>
+            </div>
+            <div class="banner-func">
+                <a href="#none"><span>온라인 복지관</span> 바로가기 <i class="ico-arr-r sm back" aria-hidden="true"></i></a>
+            </div>
+        </div>
+        <div class="wrap">
+            <h1 class="logo">
+                <a href="#none"><img src="../../../resources/front/site/SITE_00000/image/logo/logo.svg" alt="모두의구독" /></a>
+            </h1>
+            <nav class="site-gnb">
+                <ul>
+                    <li><a href="#none">카테고리</a></li>
+                    <li><a href="#none">브랜드관</a></li>
+                    <li><a href="#none">이벤트</a></li>
+                    <li><a href="#none"><em>#소확행</em></a></li>
+                </ul>
+            </nav>
+            <button type="button" class="btn-schall-toggle"><i class="ico-sch" aria-hidden="true"></i><span class="txt-hide">검색</span></button>
+            <div class="util">
+                <a href="#none"><i class="ico-user" aria-hidden="true"></i><span class="txt-hide">마이페이지</span></a>
+                <!--<a href="#none"><i class="ico-zzim" aria-hidden="true"></i><span class="txt-hide">찜</span></a>-->
+                <a href="#none">
+                    <i class="ico-cart" aria-hidden="true"></i>
+                    <span class="txt-hide">장바구니</span>
+                    <span class="label-notice">99+</span>
+                </a>
+            </div>
+            <!--모바일 전체 메뉴-->
+            <button type="button" class="m-btn-menu-toggle">
+                <i class="ico-menu" aria-hidden="true"></i>
+                <span class="txt-hide">메뉴</span>
+            </button>
+            <!--
+            <div class="m-menu">
+                <button class="btn-close"><span class="txt-hide">닫기</span></button>
+            </div>-->
+        </div><!-- //wrap -->
+    </header>
+    <div class="site-body" role="main">
+        <div class="contents wrap" id="contents">
+            <div class="location">
+                <a href="none"><strong>HOME</strong></a>
+                <a href="none">카테고리</a>
+                <a href="none">브랜드관</a>
+                <a href="none">델몬트</a>
+            </div>
+            <div class="event-fnc">
+                <span class="date">등록일자 : 2020. 12. 34</span>
+                <div class="layerpopup-sm-area share-area">
+                    <button type="button" class="btn-layerpopup-sm"><i class="ico-share"></i><span>공유하기</span></button>
+                    <div class="layerpopup-sm">
+                        <div class="pop-body">
+                            <div class="share">
+                                <button type="button"><i class="ico-sns-kakao-spot lg"></i><span class="txt-hide">카카오톡</span></button>
+                                <button type="button"><i class="ico-sns-facebook-spot lg"></i><span class="txt-hide">페이스북</span></button>
+                                <button type="button"><i class="ico-sns-instagram-spot lg"></i><span class="txt-hide">인스타그램</span></button>
+                                <button type="button"><i class="ico-sns-twitter-spot lg"></i><span class="txt-hide">트위터</span></button>
+                                <button type="button"><i class="ico-sns-naverblog-spot lg"></i><span class="txt-hide">네이버블로그</span></button>
+                                <button type="button" onclick="toast('URL이 복사되었습니다.')"><i class="ico-sns-url-spot lg"></i><span class="txt-hide">URL</span></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close">닫기</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-area">
+                <div class="event-visual">
+                    <div class="visual-img">
+                        <img src="images/img_visual.jpg" alt="2021 소확행 이벤트2 파격적인 가격의 다양한 이벤트 상품을 만나봐요. ※이벤트 상품은 구매제한 없음" class="m-none" />
+                        <img src="images/m_img_visual.jpg" alt="2021 소확행 이벤트2 파격적인 가격의 다양한 이벤트 상품을 만나봐요. ※이벤트 상품은 구매제한 없음" class="m-block" />
+                    </div>
+                    <canvas class="snow" id="snow"></canvas>
+                </div>
+                <div class="event-tabs">
+                    <ul class="event-tabs-nav">
+                        <li class="is-active">
+                            <a href="#hd">
+                                <cite>현대생활식서</cite>
+                                <p>‘바로잡곡6종세트’증정</p>
+                            </a>
+                        </li>
+                        <li class="event-mark">
+                            <a href="#hmh">
+                                <cite>한미헬스케어</cite>
+                                <p>선착순 2021명 멀티비타민 1+1</p>
+                            </a>
+                        </li>
+                        <li class="event-mark">
+                            <a href="#hm">
+                                <cite>한만두</cite>
+                                <p>선착순 2021명 만두 선물세트</p>
+                            </a>
+                        </li>
+                        <li class="event-mark">
+                            <a href="#jg">
+                                <cite>종근당건강</cite>
+                                <p>선착순 2021명 활력침향단 1+1</p>
+                            </a>
+                        </li>
+                        <li class="event-mark">
+                            <a href="#js">
+                                <cite>장수김</cite>
+                                <p>설 선물세트 / 미니김6종 증정</p>
+                            </a>
+                        </li>
+                        <li class="event-mark">
+                            <a href="#wg">
+                                <cite>우가청담</cite>
+                                <p>미슐랭 명품한우 설 선물세트</p>
+                            </a>
+                        </li>
+                        <li class="event-mark">
+                            <a href="#ot">
+                                <cite>오트리</cite>
+                                <p>설 선물세트 / 견과류 가격 할인</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#el">
+                                <cite>엘레강스펫</cite>
+                                <p>가격 할인, 1+1, 증정</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#hn">
+                                <cite>어니스틴</cite>
+                                <p>2주차프로모션 기획</p>
+                            </a>
+                        </li>
+                        <li class="event-mark">
+                            <a href="#id">
+                                <cite>아이두비</cite>
+                                <p>설맞이 이벤트</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#se">
+                                <cite>씨앤트리</cite>
+                                <p>정품 증정 스페셜 이벤트</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#st">
+                                <cite>스템코</cite>
+                                <p>마스크 1+1 특가</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#sn">
+                                <cite>스낵24</cite>
+                                <p>간식서랍 가격 할인</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#sw">
+                                <cite>성원상회</cite>
+                                <p>제품 구매시 선착순 100명</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#sl">
+                                <cite>샐러드판다</cite>
+                                <p>첫 구매 고객 20% 할인</p>
+                            </a>
+                        </li>
+                        <li class="event-mark">
+                            <a href="#bt">
+                                <cite>보틀웍스</cite>
+                                <p>보틀웍스 맞이 키트 할인</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#mh">
+                                <cite>미하이삭스</cite>
+                                <p>유튜브 구독 + 좋아요, 1+1 혜택</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#md">
+                                <cite>메디에이지</cite>
+                                <p>뉴트리에이지 990원</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#di">
+                                <cite>다이아프리티</cite>
+                                <p>립스틱, 밀키 크림 할인</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#ra">
+                                <cite>레아라 다이아포스</cite>
+                                <p>첫구독시 할인</p>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="event-tabs-cont is-active" id="hd">
+                        <div class="event-txt-area">
+                            <cite>정기구독신청 고객<br />'바로잡곡6종세트'증정</cite>
+                            <p>현대생활식서</p>
+                            <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/hd1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="hmh">
+                        <div class="event-txt-area">
+                            <cite>선착순 2021명! 새해특가<br />멀티비타민 1+1</cite>
+                            <p>한미헬스케어</p>
+                            <span>이벤트기간 : 2021/01/25 ~ 2021/02/14</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/hmh1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont is-active" id="hm">
+                        <div class="event-txt-area">
+                            <cite>만두 선물세트<br />2021명 한정 특가</cite>
+                            <p>한만두</p>
+                            <span>이벤트기간 : 2021/01/25 ~ 2021/02/14</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/hm1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont is-active" id="jg">
+                        <div class="event-txt-area">
+                            <cite>선착순 2021명<br />활력침향단 1+1</cite>
+                            <p>종근당건강</p>
+                            <span>이벤트기간 : 2021/01/25 ~ 2021/02/14</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/jg1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="js">
+                        <div class="event-tabs-sm">
+                            <ul class="event-tabs-nav-sm">
+                                <li>
+                                    <a href="#js1">신안 명품 재래돌김 <br />설 선물세트</a>
+                                </li>
+                                <li>
+                                    <a href="#js2">
+                                        장수김 구독상품 주문시<br />
+                                        선착순 100명 미니김6종 증정
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="event-tabs-cont-sm-area">
+                                <div class="event-tabs-cont-sm" id="js1">
+                                    <div class="event-txt-area">
+                                        <cite>
+                                            신안 명품 재래돌김<br />
+                                            설 선물세트
+                                        </cite>
+                                        <p>장수김</p>
+                                        <span>이벤트기간 : 2021/01/25 ~ 2021/02/14</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/js1.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                                    </div>
+                                </div>
+                                <div class="event-tabs-cont-sm" id="js2">
+                                    <div class="event-txt-area">
+                                        <cite>
+                                            장수김 구독상품 주문시<br />
+                                            선착순 100명 미니김6종 증정
+                                        </cite>
+                                        <p>장수김</p>
+                                        <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/js2.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r wh"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="wg">
+                        <div class="event-txt-area">
+                            <cite>미슐랭선정 우가청담 명품 한우<br /> 설 선물세트</cite>
+                            <p>우가청담</p>
+                            <span>이벤트기간 : 2021/01/25 ~ 2021/02/14</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/wg1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="ot">
+                        <div class="event-tabs-sm">
+                            <ul class="event-tabs-nav-sm">
+                                <li>
+                                    <a href="#ot1">
+                                        오트리 설 선물세트<br />
+                                        가격할인 이벤트
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#ot2">
+                                        오트리 견과류<br />
+                                        가격할인 이벤트
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="event-tabs-cont-sm-area">
+                                <div class="event-tabs-cont-sm" id="ot1">
+                                    <div class="event-txt-area">
+                                        <cite>
+                                            오트리 설 선물세트<br />
+                                            가격할인 이벤트
+                                        </cite>
+                                        <p>오트리</p>
+                                        <span>이벤트기간 : 2021/01/25 ~ 2021/02/14</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/ot1.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r wh"></i></a>
+                                    </div>
+                                </div>
+                                <div class="event-tabs-cont-sm" id="ot2">
+                                    <div class="event-txt-area">
+                                        <cite>
+                                            오트리 견과류<br />
+                                            가격할인 이벤트
+                                        </cite>
+                                        <p>오트리</p>
+                                        <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/ot2.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r wh"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="el">
+                        <div class="event-tabs-sm">
+                            <ul class="event-tabs-nav-sm">
+                                <li>
+                                    <a href="#el1">
+                                        엘레강스펫 샴푸 or 컨디셔너<br />
+                                        스테이크큐브 간식 1개 증정
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#el2">
+                                        엘레강스펫 워터리스워시<br />
+                                        1,000원 할인 이벤트
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#el3">
+                                        엘레강스펫 이어클리너<br />
+                                        1+1이벤트
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#el4">
+                                        엘레강스펫 주변 탈취제<br />
+                                        1,000원 할인 이벤트
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="event-tabs-cont-sm-area">
+                                <div class="event-tabs-cont-sm is-active" id="el1">
+                                    <div class="event-txt-area">
+                                        <cite>
+                                            엘레강스펫 샴푸 or 컨디셔너<br />
+                                            스테이크큐브 간식 1개 증정
+                                        </cite>
+                                        <p>엘레강스펫</p>
+
+                                        <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/el1.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                                    </div>
+                                </div>
+                                <div class="event-tabs-cont-sm" id="el2">
+                                    <div class="event-txt-area">
+                                        <cite>
+                                            엘레강스펫 워터리스워시<br />
+                                            1,000원 할인 이벤트
+                                        </cite>
+                                        <p>엘레강스펫</p>
+
+                                        <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/el2.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                                    </div>
+                                </div>
+                                <div class="event-tabs-cont-sm" id="el3">
+                                    <div class="event-txt-area">
+                                        <cite>
+                                            엘레강스펫 이어클리너<br />
+                                            1+1이벤트
+                                        </cite>
+                                        <p>엘레강스펫</p>
+
+                                        <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/el3.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                                    </div>
+                                </div>
+                                <div class="event-tabs-cont-sm" id="el4">
+                                    <div class="event-txt-area">
+                                        <cite>
+                                            엘레강스펫 주변 탈취제<br />
+                                            1,000원 할인 이벤트
+                                        </cite>
+                                        <p>엘레강스펫</p>
+
+                                        <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/el4.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="hn">
+                        <div class="event-txt-area">
+                            <cite>2주차프로모션 기획</cite>
+                            <p>어니스틴</p>
+                            <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/hn1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="id">
+                        <div class="event-txt-area">
+                            <cite>
+                                아이두비<br />
+                                설맞이 이벤트
+                            </cite>
+                            <p>아이두비</p>
+                            <span>이벤트기간 : 2021/01/25 ~ 2021/02/14</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/id1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="st">
+                        <div class="event-txt-area">
+                            <cite>
+                                스템코 마스크 1+1 특가 이벤트<br />
+                                29,500원 / 무료배송
+                            </cite>
+                            <p>스템코</p>
+                            <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/st1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="se">
+                        <div class="event-tabs-sm">
+                            <ul class="event-tabs-nav-sm">
+                                <li>
+                                    <a href="#se1">겹보습 세트 구매 시<br /> 자작나무 힐러 크림 증정</a>
+                                </li>
+                                <li>
+                                    <a href="#se2">클렌징 폼 기획세트 구매 시<br /> 앰플 마스크 10매 증정</a>
+                                </li>
+                            </ul>
+                            <div class="event-tabs-cont-sm-area">
+                                <div class="event-tabs-cont-sm" id="se1">
+                                    <div class="event-txt-area">
+                                        <cite>
+                                            겹보습 세트 구매 시<br />
+                                            자작나무 힐러 크림 증정
+                                        </cite>
+                                        <p>씨앤트리</p>
+                                        <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/se1.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r wh"></i></a>
+                                    </div>
+                                </div>
+                                <div class="event-tabs-cont-sm" id="se2">
+                                    <div class="event-txt-area">
+                                        <cite>
+                                            히알루론 클렌징 폼 기획세트 구매 시<br />
+                                            멀티 비타 앰플 마스크 시트 10매 증정
+                                        </cite>
+                                        <p>씨앤트리</p>
+                                        <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/se2.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="sn">
+                        <div class="event-txt-area">
+                            <cite>
+                                간식서랍 가격 할인<br />
+                                선착순 30명
+                            </cite>
+                            <p>스낵24</p>
+                            <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/sn1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="sw">
+                        <div class="event-txt-area">
+                            <cite>
+                                성원상품 제품 구매시<br />
+                                선착순 100명 / 체험형 고객 참여가능
+                            </cite>
+                            <p>성원상회</p>
+                            <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/sw1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="sl">
+                        <div class="event-txt-area">
+                            <cite>첫구매 고객<br />20%할인 혜택</cite>
+                            <p>샐러드판다</p>
+                            <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/sl1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="bt">
+                        <div class="event-txt-area">
+                            <cite>보틀웍스 설 맞이<br />키트 할인</cite>
+                            <p>보틀웍스 </p>
+                            <span>이벤트기간 : 2021/01/25 ~ 2021/02/14</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/bt1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="mh">
+                        <div class="event-tabs-sm">
+                            <ul class="event-tabs-nav-sm">
+                                <li>
+                                    <a href="#mh1">1+1이벤트 혜택</a>
+                                </li>
+                                <li>
+                                    <a href="#mh2">미하이삭스 유튜브<br />구독 + 좋아요</a>
+                                </li>
+                            </ul>
+                            <div class="event-tabs-cont-sm-area">
+                                <div class="event-tabs-cont-sm" id="mh1">
+                                    <div class="event-txt-area">
+                                        <cite>1+1이벤트 혜택</cite>
+                                        <p>미하이삭스</p>
+                                        <span>이벤트기간 : 2021/01/18 ~ 2021/02/19</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/mh1.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r wh"></i></a>
+                                    </div>
+                                </div>
+                                <div class="event-tabs-cont-sm" id="mh2">
+                                    <div class="event-txt-area">
+                                        <cite>
+                                            미하이삭스 유튜브 구독+ 좋아요<br />
+                                            [모두의 구독]에서 상품 구매 후<br />
+                                            배송메시지에 유튜브 아이디 남기면 참여완료
+                                        </cite>
+                                        <p>미하이삭스</p>
+                                        <span>이벤트기간 : 2021/01/18 ~ 2021/02/19</span>
+                                        <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                                    </div>
+                                    <div class="event-img-area">
+                                        <img src="images/mh2.jpg" />
+                                    </div>
+                                    <div class="btn-area">
+                                        <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="md">
+                        <div class="event-txt-area">
+                            <cite>뉴트리에이지<br />990원에 제공</cite>
+                            <p>메디에이지</p>
+                            <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/md1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="di">
+                        <div class="event-txt-area">
+                            <cite>
+                                다이아프리티 키스츄 립스틱 할인  &<br />
+                                다이아프리티 톤업 밀키 크림
+                            </cite>
+                            <p>다이아프리티</p>
+                            <span>이벤트기간 : 2021/01/18 ~ 재고소진 시</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/di1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <div class="event-tabs-cont" id="ra">
+                        <div class="event-txt-area">
+                            <cite>
+                                프리미엄 하이드로겔 아이패치 골드 60매<br />+ 스노우 60매 + 퍼펙트 아이세럼 골드 30g<br />
+                                첫 구독 할인
+                            </cite>
+                            <p>레아라 다이아포스</p>
+                            <span>이벤트기간 : 2021/01/18 ~ 2021/02/10</span>
+                            <a href="#none" class="btn-lg width spot4">바로가기 <i class="ico-arr-r sm spot"></i></a>
+                        </div>
+                        <div class="event-img-area">
+                            <img src="images/ra1.jpg" />
+                        </div>
+                        <div class="btn-area">
+                            <a href="#none" class="btn-lg width spot">바로가기 <i class="ico-arr-r sm wh"></i></a>
+                        </div>
+                    </div>
+                    <!--<div class="img-cha">
+                        <span><img src="images/img_cha_txt1.svg" /></span>
+                        <img src="images/img_cow.png" alt="캐릭터" />
+                    </div>-->
+                </div>
+            </div>
+        </div>
+        <a href="#" class="btn-top"><span class="txt-hide">처음으로</span></a>
+    </div><!-- //site-body -->
+
+    <footer class="site-footer">
+        <div class="wrap">
+            <div class="footer-info">
+                <address class="company-info">
+                    <cite>한국구독경제서비스(주)</cite>
+                    <p>서울 시 강남구 봉은사로 104길 10, 아이큐어타워 6층</p>
+                    <dl>
+                        <dt>통신판매업신고</dt>
+                        <dd>2020 - 서울 - xxxx</dd>
+                        <dt>사업자등록번호</dt>
+                        <dd>410 - 87 - 10313</dd>
+                        <dt>TEL</dt>
+                        <dd><a href="tel:1588-1234">1588 - 1234</a></dd>
+                        <dt>FAX</dt>
+                        <dd>02-000-0000</dd>
+                    </dl>
+                </address>
+                <address>
+                    <cite>고객센터</cite>
+                    <p>서울시 강남구 봉은사로 104길 10, 아이큐어타워 6층</p>
+                    <dl>
+                        <dt>TEL</dt>
+                        <dd><a href="tel:1588-1234">1588 - 1234</a></dd>
+                        <dt>FAX</dt>
+                        <dd>02-000-0000</dd>
+                        <dt>E-mail</dt>
+                        <dd>modoohelp@modoo.com</dd>
+                    </dl>
+                </address>
+                <nav class="footer-menu">
+                    <a href="#none">이용약관</a>
+                    <a href="#none"><strong>개인정보처리방침</strong></a>
+                    <a href="#none">공지사항</a>
+                    <a href="#none">FAQ</a>
+                </nav>
+            </div>
+            <figure class="footer-mark">
+                <img src="../../../resources/front/site/SITE_00000/image/logo/logo_kses_gray.png" alt="KSES" />
+                <a href="none">사업자 정보확인 <i class="ico-arr-r sm gr"></i></a>
+            </figure>
+            <p class="footer-txt">
+                한국구독경제서비스㈜는 통신판매중개자이며, 통신판매의 당사자가 아닙니다. 상품, 상품정보, 거래에 관한 의무와 책임은 판매자에게 있습니다.<br />
+                KSES Copyright © KSES Corp. All Rights Reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="../../../../resources/lib/jquery/jquery.js"></script>
+    <script src="../../../../resources/lib/jquery.easing/jquery.easing.js"></script>
+    <script src="../../../../resources/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../../../../resources/front/site/SITE_00000/js/ssm.min.js"></script>
+    <script src="../../../../resources/front/site/SITE_00000/js/swiper.min.js"></script>
+    <script src="../../../../resources/front/site/SITE_00000/js/ScrollMagic.min.js"></script>
+    <script src="../../../../resources/front/site/SITE_00000/js/TweenMax.min.js"></script>
+    <script src="../../../../resources/front/site/SITE_00000/js/animation.gsap.min.js"></script>
+    <script src="../../../../resources/front/site/SITE_00000/js/common.js"></script>
+
+    <script src="js/event.js"></script>
+</body>
+
+</html>

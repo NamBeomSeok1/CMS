@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.thema.service.impl.GoodsThemaMapper">
+
+	<!--테마목록-->
+	<select id="selectGoodsThemaList" parameterType="modoo.module.thema.service.impl.GoodsThemaVO"  resultType="modoo.module.thema.service.impl.GoodsThemaVO">
+		SELECT 
+			A.THEMA_NO
+			,A.THEMA_SJ
+			,DATE_FORMAT(THEMA_BEGIN_DT,'%Y-%m-%d') AS THEMA_BEGIN_DT 
+			,DATE_FORMAT(THEMA_END_DT,'%Y-%m-%d') AS THEMA_END_DT
+			,A.THEMA_CN
+			,A.PRTNR_ID
+			,A.THEMA_URL
+			,A.THEMA_THUMBNAIL
+			,A.THEMA_MAIN_IMG_PC
+			,A.THEMA_MAIN_IMG_MOB
+			,A.THEMA_DETAIL_IMG
+			,A.END_AT
+			,A.FRST_REGIST_PNTTM
+			,A.FRST_REGISTER_ID
+			,A.LAST_UPDT_PNTTM
+			,A.LAST_UPDUSR_ID
+			,A.THEMA_TY_CODE
+			,A.THEMA_SN
+		FROM 
+			stn_goods_thema A
+			<include refid="selectGoodsThemaListWhere"></include>
+			ORDER BY THEMA_SN ASC
+			LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectGoodsThemaListWhere">
+		<where>
+			1=1
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+				AND A.PRTNR_ID = #{searchPrtnrId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchEndAt)">
+				AND A.END_AT = #{searchEndAt}
+			</if>
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'SJ')">
+					AND A.THEMA_SJ LIKE CONCAT( '%', #{searchKeyword}, '%' )
+				</when>
+				<otherwise>
+				</otherwise>
+			</choose>
+		</where>
+	</sql>
+	
+	<select id="selectGoodsThemaListCnt" parameterType="modoo.module.thema.service.impl.GoodsThemaVO" resultType="int">
+		SELECT COUNT(*)
+		FROM stn_goods_thema A
+		<include refid="selectGoodsThemaListWhere"></include>
+	</select>
+	
+		<!--테마상세-->
+	<select id="selectGoodsThema" parameterType="modoo.module.thema.service.impl.GoodsThemaVO" resultType="modoo.module.thema.service.impl.GoodsThemaVO">
+		SELECT 
+			A.THEMA_NO
+			,A.THEMA_SJ
+			,DATE_FORMAT(THEMA_BEGIN_DT,'%Y-%m-%d') AS THEMA_BEGIN_DT 
+			,DATE_FORMAT(THEMA_END_DT,'%Y-%m-%d') AS THEMA_END_DT
+			,A.THEMA_CN
+			,A.PRTNR_ID
+			,A.THEMA_URL
+			,A.THEMA_THUMBNAIL
+			,A.THEMA_MAIN_IMG_PC
+			,A.THEMA_MAIN_IMG_MOB
+			,A.THEMA_DETAIL_IMG
+			,A.END_AT
+			,A.FRST_REGIST_PNTTM
+			,A.FRST_REGISTER_ID
+			,A.LAST_UPDT_PNTTM
+			,A.LAST_UPDUSR_ID
+			,A.THEMA_TY_CODE
+			,A.THEMA_SN
+		FROM 
+			stn_goods_thema A
+			WHERE THEMA_NO = #{themaNo}
+	</select>
+	
+	<select id="selectNextThemaNo" resultType="int">
+		SELECT
+			IFNULL(MAX(THEMA_NO), 0) + 1
+		FROM stn_goods_thema
+	</select>
+	
+	
+	<!--테마 다음 순번-->
+	<select id="selectNextThemaSn" parameterType="modoo.module.thema.service.impl.GoodsThemaVO" resultType="int">
+		SELECT 
+			IFNULL(MAX(THEMA_SN)+1,1)
+		FROM stn_goods_thema
+		<if test="prtnrId != null">
+			WHERE PRTNR_ID = #{prtnrId}
+		</if>
+	</select>
+
+	<insert id="insertGoodsThema" parameterType="modoo.module.thema.service.impl.GoodsThemaVO" >
+	
+		INSERT INTO	stn_goods_thema
+			(
+			THEMA_NO
+			,THEMA_SJ
+			,THEMA_BEGIN_DT
+			,THEMA_END_DT
+			,THEMA_CN
+			,PRTNR_ID
+			,THEMA_URL
+			,THEMA_THUMBNAIL
+			,THEMA_MAIN_IMG_PC
+			,THEMA_MAIN_IMG_MOB
+			,THEMA_DETAIL_IMG
+			,END_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSR_ID
+			,THEMA_TY_CODE
+			,THEMA_SN
+		)VALUES(
+			#{themaNo}
+			,#{themaSj}
+			,#{themaBeginDt}
+			,#{themaEndDt}
+			,#{themaCn}
+			,#{prtnrId}
+			,#{themaUrl}
+			,#{themaThumbnail}
+			,#{themaMainImgPc}
+			,#{themaMainImgMob}
+			,#{themaDetailImg}
+			,#{endAt}
+			,SYSDATE()
+			,#{frstRegisterId}
+			,#{lastUpdtPnttm}
+			,#{lastUpdusrId}
+			,#{themaTyCode}
+			,#{themaSn}
+			)
+	</insert>
+
+	<update id="updateGoodsThema" parameterType="modoo.module.thema.service.impl.GoodsThemaVO" >
+		UPDATE stn_goods_thema
+		<set>
+			<if test="themaSj != null">
+				THEMA_SJ = #{themaSj},
+			</if>
+			<if test="themaBeginDt != null">
+				THEMA_BEGIN_DT = #{themaBeginDt},
+			</if>
+			<if test="themaEndDt != null">
+				THEMA_END_DT = #{themaEndDt},
+			</if>
+			<if test="themaCn != null">
+				THEMA_CN = #{themaCn},
+			</if>
+			<if test="prtnrId != null">
+				PRTNR_ID = #{prtnrId},
+			</if>
+			<if test="themaUrl != null">
+				THEMA_URL = #{themaUrl},
+			</if>
+			<if test="themaThumbnail != null">
+				THEMA_THUMBNAIL = #{themaThumbnail},
+			</if>
+			<if test="themaMainImgPc != null">
+				THEMA_MAIN_IMG_PC = #{themaMainImgPc},
+			</if>
+			<if test="themaMainImgMob != null">
+				THEMA_MAIN_IMG_MOB = #{themaMainImgMob},
+			</if>
+			<if test="endAt != null">
+				END_AT = #{endAt},
+			</if>
+			<if test="lastUpdusrId != null">
+				LAST_UPDUSR_ID = #{lastUpdusrId},
+			</if>
+			<if test="themaTyCode != null">
+				THEMA_TY_CODE = #{themaTyCode},
+			</if>
+			<if test="themaSn != null">
+				THEMA_SN = #{themaSn},
+			</if>
+			LAST_UPDT_PNTTM = SYSDATE()
+		</set>
+		WHERE THEMA_NO =#{themaNo}
+	</update>
+	
+	<update id="deleteGoodsThema"  parameterType="modoo.module.thema.service.impl.GoodsThemaVO">
+		DELETE FROM stn_goods_thema
+		WHERE THEMA_NO = #{themaNo}
+	</update>
+	
+	<update id="deleteThemaImg" parameterType="modoo.module.thema.service.impl.GoodsThemaVO">
+		UPDATE stn_goods_thema
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchImageType, 'themaThumbnail')">
+				SET THEMA_THUMBNAIL = NULL
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchImageType, 'themaMainImgPc')">
+				SET THEMA_MAIN_IMG_PC = NULL
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchImageType, 'themaMainImgMob')">
+				SET THEMA_MAIN_IMG_MOB = NULL
+			</if>
+		WHERE THEMA_NO = #{themaNo}
+</update>
+
+</mapper>

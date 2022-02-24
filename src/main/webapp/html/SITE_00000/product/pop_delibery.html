@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <title>모두의구독</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="Author" content="">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <!--[if lt IE 9]><script src="../../../resources/front/site/SITE_00000/js/html5.js"></script><![endif]-->
+    <link href="../../../resources/front/site/SITE_00000/css/swiper.css" rel="stylesheet" />
+    <link href="../../../resources/front/site/SITE_00000/css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div style="padding:50px; text-align:center;">
+        <button type="button" class="btn-lg spot" data-popup-open="deliveryList">배송지 목록</button>
+    </div>
+
+    <div class="popup" data-popup="deliveryList" style="display:block;">
+        <div class="pop-header">
+            <h1>배송지 목록</h1>
+            <button type="button" class="btn-pop-close" data-popup-close="deliveryList">닫기</button>
+        </div>
+        <div class="pop-body">
+            <ul class="check-list">
+                <li>
+                    <label><input type="radio" name="delivery" checked /></label>
+                    <div class="txt-area">
+                        <strong>자택 │ 김모두</strong>
+                        <p>서울시 어쩌구 저쩌동 8282</p>
+                        <p class="fc-gr">010 - 1234 - 5678</p>
+                    </div>
+                    <button type="submit" class="btn-del"><span class="txt-hide">삭제</span></button>
+                </li>
+                <li>
+                    <label><input type="radio" name="delivery" /></label>
+                    <div class="txt-area">
+                        <strong>자택 │ 김모두 <span>[ 기본 배송지 ]</span></strong>
+                        <p>서울시 어쩌구 저쩌동 8282</p>
+                        <p class="fc-gr">010 - 1234 - 5678</p>
+                    </div>
+                    <button type="submit" class="btn-del"><span class="txt-hide">삭제</span></button>
+                </li>
+                <li>
+                    <label><input type="radio" name="delivery" /></label>
+                    <div class="txt-area">
+                        <strong>회사 │ 김모두</strong>
+                        <p>서울시 어쩌구 저쩌동 8282</p>
+                        <p class="fc-gr">010 - 1234 - 5678</p>
+                    </div>
+                    <button type="submit" class="btn-del"><span class="txt-hide">삭제</span></button>
+                </li>
+                <li>
+                    <label><input type="radio" name="delivery" /></label>
+                    <div class="txt-area">
+                        <strong>우리집 │ 김모두</strong>
+                        <p>서울시 어쩌구 저쩌동 8282</p>
+                        <p class="fc-gr">010 - 1234 - 5678</p>
+                    </div>
+                    <button type="submit" class="btn-del"><span class="txt-hide">삭제</span></button>
+                </li>
+                <li>
+                    <label><input type="radio" name="delivery" /></label>
+                    <div class="txt-area">
+                        <strong>자택 │ 김모두</strong>
+                        <p>서울시 어쩌구 저쩌동 8282</p>
+                        <p class="fc-gr">010 - 1234 - 5678</p>
+                    </div>
+                    <button type="submit" class="btn-del"><span class="txt-hide">삭제</span></button>
+                </li>
+            </ul>
+            <ul class="paging">
+                <li class="ppv"><a href="#none" title="처음으로"><span class="txt-hide">처음으로</span></a></li>
+                <li class="pv"><a href="#none" title="이전"><span class="txt-hide">이전</span></a></li>
+                <li class="is-active"><a href="#none" title="to 1 page">1</a></li>
+                <li><a href="#none" title="to 2 page">2</a></li>
+                <li><a href="#none" title="to 3 page">3</a></li>
+                <li><a href="#none" title="to 4 page">4</a></li>
+                <li><a href="#none" title="to 5 page">5</a></li>
+                <!--<li><a href="#none" title="to 6 page">6</a></li>
+                <li><a href="#none" title="to 7 page">7</a></li>
+                <li><a href="#none" title="to 8 page">8</a></li>
+                <li><a href="#none" title="to 9 page">9</a></li>-->
+                <li class="fw"><a href="#none" title="다음"><span class="txt-hide">다음</span></a></li>
+                <li class="ffw"><a href="#none" title="끝으로"><span class="txt-hide">끝으로</span></a></li>
+            </ul>
+            <div class="btn-area">
+                <!--<button type="button" class="btn-lg" data-popup-close="deliveryList">취소</button>-->
+                <button type="submit" class="btn-lg spot width" data-popup-close="deliveryList">확인</button>
+            </div>
+        </div>
+    </div>
+    <div class="dim" style="display:block;"></div>
+
+    <script src="../../../resources/lib/jquery/jquery.js"></script>
+    <script src="../../../resources/lib/jquery.easing/jquery.easing.js"></script>
+    <script src="../../../resources/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ssm.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/swiper.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ScrollMagic.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/TweenMax.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/animation.gsap.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/common.js"></script>
+    <script>
+        $(document).ready(function () {
+            //퍼블리싱 리스트용
+            popPosition($('.popup'));
+        });
+    </script>
+</body>
+</html>

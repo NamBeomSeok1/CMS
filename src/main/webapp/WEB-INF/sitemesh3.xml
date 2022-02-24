@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemesh>
+    <content-processor>
+        <tag-rule-bundle class="modoo.module.common.sitemesh.ExpandTagRuleBundle"/>
+    </content-processor>
+    
+    <!-- 
+    
+    
+    
+    
+   /src/main/java/modoo/module/common/filter/ModooLayoutFilter.java 변경 
+    
+    
+    
+    
+    
+     -->
+
+    <!-- Exclude -->
+    <mapping path="/html/*" exclude="true"/>
+    <mapping path="/resources/*" exclude="true"/>
+    <mapping path="/decms/ajax/*" exclude="true"/>
+    <mapping path="/decms/embed/*" exclude="true"/>
+    <mapping path="/embed/*" exclude="true"/>
+    <mapping path="/ajax/*" exclude="true"/>
+    <mapping path="/popup/*" exclude="true"/>
+
+    <!-- Include -->
+    <mapping path="/*" decorator="/WEB-INF/jsp/modoo/front/cmm/layout/decorator.jsp"/>
+    <mapping path="/decms/*" decorator="/WEB-INF/jsp/modoo/cms/cmm/layout/cmsDecorator.jsp"/>
+
+</sitemesh>

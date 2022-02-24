@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.biztalk.service.impl.BiztalkMapper">
+
+	<!-- 토큰조회 -->
+	<select id="selectBizTalkToken" parameterType="modoo.module.biztalk.service.BiztalkVO" resultType="modoo.module.biztalk.service.BiztalkVO">
+		SELECT
+			CREAT_PNTTM
+			, TOKEN
+		FROM dth_alimtalk_token_log
+		WHERE CREAT_PNTTM = DATE_FORMAT(NOW(), '%Y-%m-%d')
+		AND	SERVER_IP = #{serverIp}
+		LIMIT 1
+	</select>
+	
+	<!-- 토큰 저장 -->
+	<insert id="insertBizTalkToken" parameterType="modoo.module.banner.service.BannerVO">
+		INSERT dth_alimtalk_token_log (
+			CREAT_PNTTM
+			,SERVER_IP
+			, TOKEN
+		) VALUES (
+			DATE_FORMAT(NOW(), '%Y-%m-%d')
+			,#{serverIp}
+			, #{token}
+		)
+	</insert>
+	
+	<!-- 아릶톡전송이력등록 -->
+	<insert id="insertBizTalkHistory" parameterType="modoo.module.banner.service.BannerVO">
+		INSERT dth_alimtalk_log (
+			ALIMTALK_LOG_ID
+			, TMPLAT_CODE
+			, SEND_CODE
+			, SEND_CN
+			, REGIST_PNTTM
+			, BIZ_RESULT_CODE
+		) VALUES (
+			#{alimtalkLogId}
+			, #{tmplatCode}
+			, #{sendCode}
+			, #{sendCn}
+			, NOW()
+			, #{bizResultCode}
+		)
+	</insert>
+	
+	<!-- 알림톡 내용 조회 -->
+	<select id="selectBizTalkTemplate" parameterType="modoo.module.biztalk.service.BiztalkVO" resultType="modoo.module.biztalk.service.BiztalkVO">
+		SELECT
+			TMPLAT_CODE
+			,TMPLAT_NM
+			,TMPLAT_CN
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSR_ID
+			,USE_AT
+		FROM dtn_alimtalk
+		WHERE TMPLAT_CODE = #{tmplatCode} 
+	</select>
+	
+</mapper>

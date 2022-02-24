@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.popup.service.impl.PopupMapper">
+
+	<resultMap id="popupListResultMap" type="egovMap">
+		<result property="popupId" column="POPUP_ID"/>
+		<result property="siteId" column="SITE_ID"/>
+		<result property="popupSj" column="POPUP_SJ"/>
+		<result property="popupCn" column="POPUP_CN" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="popupBgnde" column="POPUP_BGNDE"/>
+		<result property="popupEndde" column="POPUP_ENDDE"/>
+		<result property="popupSeCode" column="POPUP_SE_CODE"/>
+		<result property="popupTop" column="POPUP_TOP"/>
+		<result property="popupLeft" column="POPUP_LEFT"/>
+		<result property="popupWidth" column="POPUP_WIDTH"/>
+		<result property="popupHeight" column="POPUP_HEIGHT"/>
+		<result property="popupImgPath" column="POPUP_IMG_PATH"/>
+		<result property="popupImgSeCode" column="POPUP_IMG_SE_CODE"/>
+		<result property="popupLink" column="POPUP_LINK"/>
+		<result property="actvtyAt" column="ACTVTY_AT"/>
+		<result property="frstRegistPnttm" column="FRST_REGIST_PNTTM"/>
+		<result property="frstRegisterId" column="FRST_REGISTER_ID"/>
+		<result property="lastUpdtPnttm" column="LAST_UPDT_PNTTM"/>
+		<result property="lastUpdusrId" column="LAST_UPDUSR_ID"/>
+		<result property="useAt" column="USE_AT"/>
+	</resultMap>
+
+	<!-- 팝업 목록 -->
+	<select id="selectPopupList" parameterType="modoo.module.popup.service.PopupVO" resultMap="popupListResultMap">
+		SELECT
+			POPUP_ID
+			,SITE_ID
+			,POPUP_SJ
+			,POPUP_CN
+			,POPUP_BGNDE
+			,POPUP_ENDDE
+			,POPUP_SE_CODE
+			,POPUP_TOP
+			,POPUP_LEFT
+			,POPUP_WIDTH
+			,POPUP_HEIGHT
+			,POPUP_IMG_PATH
+			,POPUP_IMG_SE_CODE
+			,POPUP_LINK
+			,ACTVTY_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSR_ID
+			,USE_AT
+		FROM	dtn_popup dp
+		<include refid="selectPopupListWhere"></include>
+		ORDER BY dp.POPUP_ID DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectPopupListWhere">
+		<where>
+			AND dp.USE_AT = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSiteId)">
+				AND dp.SITE_ID = #{searchSiteId}
+			</if>
+			<if test='searchTodayAt == "Y"'>
+				AND POPUP_BGNDE &lt;= DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s') AND POPUP_ENDDE &gt;= DATE_FORMAT(SYSDATE(),'%Y%m%d%H%i%s')
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'SJ')">
+						AND dp.POPUP_SJ LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CN')">
+						AND dp.POPUP_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+				</choose>
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 팝업 목록 카운트 -->
+	<select id="selectPopupListCnt" parameterType="modoo.module.popup.service.PopupVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	dtn_popup dp
+		<include refid="selectPopupListWhere"></include>
+	</select>
+	
+	<!-- 팝업 저장 -->
+	<insert id="insertPopup" parameterType="modoo.module.popup.service.PopupVO">
+		INSERT INTO dtn_popup (
+			POPUP_ID
+			,SITE_ID
+			,POPUP_SJ
+			,POPUP_CN
+			,POPUP_BGNDE
+			,POPUP_ENDDE
+			,POPUP_SE_CODE
+			,POPUP_TOP
+			,POPUP_LEFT
+			,POPUP_WIDTH
+			,POPUP_HEIGHT
+			,POPUP_IMG_PATH
+			,POPUP_IMG_SE_CODE
+			,POPUP_LINK
+			,ACTVTY_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,USE_AT
+		) VALUES (
+			#{popupId}
+			,#{siteId}
+			,#{popupSj}
+			,#{popupCn}
+			,#{popupBgnde}
+			,#{popupEndde}
+			,#{popupSeCode}
+			,#{popupTop}
+			,#{popupLeft}
+			,#{popupWidth}
+			,#{popupHeight}
+			,#{popupImgPath}
+			,#{popupImgSeCode}
+			,#{popupLink}
+			,#{actvtyAt}
+			,SYSDATE()
+			,#{frstRegisterId}
+			,'Y'
+		)
+	</insert>
+	
+	<!-- 팝업 상세 -->
+	<select id="selectPopup" parameterType="modoo.module.popup.service.PopupVO" resultType="modoo.module.popup.service.PopupVO">
+		SELECT
+			POPUP_ID
+			,SITE_ID
+			,POPUP_SJ
+			,POPUP_CN
+			,POPUP_BGNDE
+			,DATE_FORMAT(STR_TO_DATE(POPUP_BGNDE, '%Y%m%d%H%i%s'), '%Y-%m-%d') POPUP_BGN_DATE
+			,DATE_FORMAT(STR_TO_DATE(POPUP_BGNDE, '%Y%m%d%H%i%s'), '%H') POPUP_BGN_HOUR
+			,DATE_FORMAT(STR_TO_DATE(POPUP_BGNDE, '%Y%m%d%H%i%s'), '%i') POPUP_BGN_MIN
+			,POPUP_ENDDE
+			,DATE_FORMAT(STR_TO_DATE(POPUP_ENDDE, '%Y%m%d%H%i%s'), '%Y-%m-%d') POPUP_END_DATE
+			,DATE_FORMAT(STR_TO_DATE(POPUP_ENDDE, '%Y%m%d%H%i%s'), '%H') POPUP_END_HOUR
+			,DATE_FORMAT(STR_TO_DATE(POPUP_ENDDE, '%Y%m%d%H%i%s'), '%i') POPUP_END_MIN
+			,POPUP_SE_CODE
+			,POPUP_TOP
+			,POPUP_LEFT
+			,POPUP_WIDTH
+			,POPUP_HEIGHT
+			,POPUP_IMG_PATH
+			,POPUP_IMG_SE_CODE
+			,POPUP_LINK
+			,ACTVTY_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSR_ID
+			,USE_AT
+		FROM	dtn_popup
+		WHERE	POPUP_ID = #{popupId}
+	</select>
+	
+	<!-- 팝업 수정 -->
+	<update id="updatePopup" parameterType="modoo.module.popup.service.PopupVO">
+		UPDATE dtn_popup
+		SET
+			SITE_ID = #{siteId}
+			,POPUP_SJ = #{popupSj}
+			,POPUP_CN = #{popupCn}
+			,POPUP_BGNDE = #{popupBgnde}
+			,POPUP_ENDDE = #{popupEndde}
+			,POPUP_SE_CODE = #{popupSeCode}
+			,POPUP_TOP = #{popupTop}
+			,POPUP_LEFT = #{popupLeft}
+			,POPUP_WIDTH = #{popupWidth}
+			,POPUP_HEIGHT = #{popupHeight}
+			,POPUP_IMG_PATH = #{popupImgPath}
+			,POPUP_IMG_SE_CODE = #{popupImgSeCode}
+			,POPUP_LINK = #{popupLink}
+			,ACTVTY_AT = #{actvtyAt}
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	POPUP_ID = #{popupId}
+	</update>
+	
+	<!-- 팝업 삭제 -->
+	<delete id="deletePopup" parameterType="modoo.module.popup.service.PopupVO">
+		UPDATE dtn_popup
+		SET
+			USE_AT = 'N'
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	POPUP_ID = #{popupId}
+	</delete>
+</mapper>

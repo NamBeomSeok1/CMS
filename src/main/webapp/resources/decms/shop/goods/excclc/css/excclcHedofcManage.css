@@ -1,0 +1,57 @@
+@charset "UTF-8";
+.cms-search-box {border:1px solid #dfdfdf; border-left:0.3rem solid #5a5c69;box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15)!important;}
+.tot-cnt-label {min-width: 120px; }
+#tot-cnt-list input {background:#eee; text-align:center;}
+
+.excclc-sum {width:100%; text-align:center; border: 1px solid #999; border-collapse: collapse; font-size:0.875rem;}
+.excclc-sum th {background:#eee;}
+.excclc-sum th,
+.excclc-sum td {border: 1px solid #999; border-collapse: collapse;padding:5px;}
+
+.excclc-info {width:100%; text-align:center; border: 1px solid #999; border-collapse: collapse; font-size:0.875rem;}
+.excclc-info th {background:#eee;}
+.excclc-info th,
+.excclc-info td {border: 1px solid #999; border-collapse: collapse;padding:5px;}
+
+#taxbilInfo {background:#fffab6;}
+#searchCmpnyNmResult {background:#fffab6;}
+#cmpnyUserId {background:#fffab6;}
+
+.tui-grid-cell.tui-grid-cell-header {white-space:pre-line;}
+
+.tui-grid-table .tui-grid-cell-header[data-column-name="titleAmount"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="setleTotAmount"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="setleCardAmount"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="setlePoint"] {background:#c9ffd6;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="event"] {background:#fff2c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="rsrvmney"] {background:#fff2c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="couponDscnt"] {background:#fff2c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="titleEzwel"] {background:#c9edff;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="ezwelFee"] {background:#c9edff;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="ezwelFeeAmount"] {background:#c9edff;}
+
+.tui-grid-table .tui-grid-cell-header[data-column-name="titleReal"] {background:#ffd8c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="useRsrvmney"] {background:#ffd8c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="useCouponAmount"] {background:#ffd8c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="useEzwelFeeAmount"] {background:#ffd8c9;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="realTotAmount"] {background:#ffd8c9;}
+
+.tui-grid-table .tui-grid-cell-header[data-column-name="titleCancel"] {background:#dbc7fb;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="cancelPnttm"] {background:#dbc7fb;}
+.tui-grid-table .tui-grid-cell-header[data-column-name="cancelAmount"] {background:#dbc7fb;}
+
+.tui-grid-summary-area { text-align:right;}
+.tui-grid-summary-area .tui-grid-cell-summary {font-weight:bold; padding:0 5px; background:#eee;}
+.tui-grid-summary-area .tui-grid-cell-summary[data-column-name="excclcSttusCode"] {background:#ddd;}
+.tui-grid-summary-area .tui-grid-cell-summary[data-column-name="orderNo"] {background:#ddd;}
+.tui-grid-summary-area .tui-grid-cell-summary[data-column-name="orderNum"] {background:#ddd; font-weight:600;}
+.tui-grid-summary-area .tui-grid-cell-summary[data-column-name="setlePnttm"] {background:#ddd;}
+.tui-grid-summary-area .tui-grid-cell-summary[data-column-name="ordrrNm"] {background:#ddd;}
+.tui-grid-summary-area .tui-grid-cell-summary[data-column-name="cmpnyNm"] {background:#ddd;}
+.tui-grid-summary-area .tui-grid-cell-summary[data-column-name="taxtSeCode"] {background:#ddd;}
+.tui-grid-summary-area .tui-grid-cell-summary[data-column-name="goodsNm"] {background:#ddd;}
+
+
+.tui-grid-table td.cpe01 {}
+.tui-grid-table td.cpe02 {background:#ffe9e1;}
+.tui-grid-table td.cpe03 {background:#daf3ff;}

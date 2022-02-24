@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.sale.service.impl.SaleMapper">
+
+	<insert id="insertSaleGoods" parameterType="modoo.module.sale.service.impl.SaleVO">
+		INSERT INTO stn_sales (
+			EXPSR_ORDR
+			, GOODS_ID
+			, PRTNR_ID
+			, ACTVTY_AT
+			, LABEL_TY_CODE
+			, LABEL_TEXT
+			, LABEL_COLOR
+			, LABEL_TEXT_COLOR
+			, EXPSR_BEGIN_DE
+			, EXPSR_END_DE
+		)
+		VALUES	(
+			#{expsrOrdr}
+			, #{goodsId}
+			, #{prtnrId}
+			, #{actvtyAt}
+			, #{labelTyCode}
+			, #{labelText}
+			, #{labelColor}
+			, #{labelTextColor}
+			, #{expsrBeginDe}
+			, #{expsrEndDe}
+		)
+	</insert>
+
+	<delete id="deleteSaleGoods" parameterType="modoo.module.sale.service.impl.SaleVO">
+		DELETE FROM stn_sales
+		WHERE PRTNR_ID = #{prtnrId}
+	</delete>
+
+	<select id="selectSaleGoodsList" parameterType="modoo.module.sale.service.impl.SaleVO" resultType="egovMap">
+		SELECT
+			A.EXPSR_ORDR
+			, A.GOODS_ID
+			, A.PRTNR_ID
+			, B.GOODS_KND_CODE
+			, A.ACTVTY_AT
+			, A.LABEL_TY_CODE
+			, A.LABEL_TEXT
+			, A.LABEL_COLOR
+			, A.LABEL_TEXT_COLOR
+			,(SELECT GOODS_IMAGE_THUMB_PATH FROM stn_goods_image WHERE GOODS_ID = B.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' ORDER BY GOODS_IMAGE_SN ASC LIMIT 1 ) AS GOODS_IMAGE
+			, C.CMPNY_NM
+			, B.GOODS_NM
+			, B.GOODS_PC
+			, B.REGIST_STTUS_CODE
+			, A.EXPSR_BEGIN_DE
+			, A.EXPSR_END_DE
+			, '' EDIT
+		FROM stn_sales A
+		JOIN stn_goods B ON A.GOODS_ID = B.GOODS_ID
+		JOIN stn_prtnr_cmpny_mapng D ON B.PCMAPNG_ID = D.PCMAPNG_ID
+		JOIN stn_cmpny C ON D.CMPNY_ID = C.CMPNY_ID
+		WHERE A.PRTNR_ID = #{prtnrId}
+		ORDER BY A.EXPSR_ORDR
+	</select>
+</mapper>

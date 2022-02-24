@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <title>모두의구독</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="Author" content="">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <!--[if lt IE 9]><script src="../../../resources/front/site/SITE_00000/js/html5.js"></script><![endif]-->
+    <link href="../../../resources/front/site/SITE_00000/css/swiper.css" rel="stylesheet" />
+    <link href="../../../resources/front/site/SITE_00000/css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div style="padding:50px; text-align:center;">
+        <button type="button" class="btn-lg spot" data-popup-open="adress">주소 찾기</button>
+    </div>
+
+    <div class="popup" data-popup="adress" style="display:block;">
+        <div class="pop-header">
+            <h1>주소 찾기</h1>
+            <button type="button" class="btn-pop-close" data-popup-close="adress">닫기</button>
+        </div>
+        <div class="pop-body">
+            <div class="sch-area lg">
+                <input type="text" placeholder="주소를 입력해주세요." />
+                <button type="submit" class="btn-sch"><span class="txt-hide">검색</span></button>
+            </div>
+            <p class="mb10">총 <em>6</em>건</p>
+            <ul class="border-list">
+                <li>
+                    <p>[06170] 서울 강남구 삼성동 160-20 진유빌딩</p>
+                    <p class="fs-sm fc-gr"><span class="label spot3">도로명</span> 서울 강남구 봉은사로104길 6(삼성동, 진유빌딩)</p>
+                    <button type="button" class="btn-full"><span class="txt-hide">주소선택</span></button>
+                </li>
+                <li>
+                    <p>[06170] 서울 강남구 삼성동 160-20 진유빌딩</p>
+                    <p class="fs-sm fc-gr"><span class="label spot3">도로명</span> 서울 강남구 봉은사로104길 6(삼성동, 진유빌딩)</p>
+                    <button type="button" class="btn-full"><span class="txt-hide">주소선택</span></button>
+                </li>
+                <li>
+                    <p>[06170] 서울 강남구 삼성동 160-20 진유빌딩</p>
+                    <p class="fs-sm fc-gr"><span class="label spot3">도로명</span> 서울 강남구 봉은사로104길 6(삼성동, 진유빌딩)</p>
+                    <button type="button" class="btn-full"><span class="txt-hide">주소선택</span></button>
+                </li>
+                <li>
+                    <p>[06170] 서울 강남구 삼성동 160-20 진유빌딩</p>
+                    <p class="fs-sm fc-gr"><span class="label spot3">도로명</span> 서울 강남구 봉은사로104길 6(삼성동, 진유빌딩)</p>
+                    <button type="button" class="btn-full"><span class="txt-hide">주소선택</span></button>
+                </li>
+            </ul>
+            <ul class="paging">
+                <li class="ppv"><a href="#none" title="처음으로"><span class="txt-hide">처음으로</span></a></li>
+                <li class="pv"><a href="#none" title="이전"><span class="txt-hide">이전</span></a></li>
+                <li class="is-active"><a href="#none" title="to 1 page">1</a></li>
+                <li><a href="#none" title="to 2 page">2</a></li>
+                <li><a href="#none" title="to 3 page">3</a></li>
+                <li><a href="#none" title="to 4 page">4</a></li>
+                <li><a href="#none" title="to 5 page">5</a></li>
+                <li class="fw"><a href="#none" title="다음"><span class="txt-hide">다음</span></a></li>
+                <li class="ffw"><a href="#none" title="끝으로"><span class="txt-hide">끝으로</span></a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="dim" style="display:block;"></div>
+
+    <script src="../../../resources/lib/jquery/jquery.js"></script>
+    <script src="../../../resources/lib/jquery.easing/jquery.easing.js"></script>
+    <script src="../../../resources/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ssm.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/swiper.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ScrollMagic.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/TweenMax.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/animation.gsap.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/common.js"></script>
+    <script>
+        $(document).ready(function () {
+            //퍼블리싱 리스트용
+            popPosition($('.popup'));
+        });
+    </script>
+</body>
+</html>

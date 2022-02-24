@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.system.log.login.service.impl.LoginLogMapper">
+
+	<!-- 접속기록 저장 -->
+	<insert id="insertLoginLog" parameterType="modoo.module.system.log.login.service.LoginLogVO">
+		INSERT INTO dth_login_log (
+			LOG_ID
+			,SITE_ID
+			,CONECT_ID
+			,CONECT_IP
+			,CONECT_MTHD
+			,ERROR_OCCRRNC_AT
+			,ERROR_CODE
+			,CREAT_DT
+			,CREAT_YEAR
+			,CREAT_MONTH
+			,CREAT_DAY
+		) VALUES (
+			  #{logId}
+			,#{siteId}
+			,#{conectId}
+			,#{conectIp}
+			,#{conectMthd}
+			,#{errorOccrrncAt}
+			,#{errorCode}
+			,SYSDATE()
+			,DATE_FORMAT(SYSDATE(), '%Y')
+			,DATE_FORMAT(SYSDATE(), '%m')
+			,DATE_FORMAT(SYSDATE(), '%d')
+		)
+	</insert>
+
+	<!-- 접속기록 목록 -->
+	<select id="selectLoginLogList" parameterType="modoo.module.system.log.login.service.LoginLogVO" resultType="egovMap">
+		SELECT
+			A.LOG_ID
+			,A.SITE_ID
+			,A.CONECT_ID
+			,B.MBER_NM
+			,A.CONECT_IP
+			,A.CONECT_MTHD
+			,A.ERROR_OCCRRNC_AT
+			,A.ERROR_CODE
+			,A.CREAT_DT
+			,A.CREAT_YEAR
+			,A.CREAT_MONTH
+			,A.CREAT_DAY
+		FROM	dth_login_log A
+		LEFT OUTER JOIN dtn_mber B ON A.CONECT_ID = B.ESNTL_ID
+		<include refid="selectLoginLogListWhere"></include>
+		ORDER BY LOG_ID DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<sql id="selectLoginLogListWhere">
+		<where>
+			AND A.CONECT_MTHD = 'I'
+			<choose>
+				<when test="searchCondition = 'DAY'">
+					AND A.CREAT_DT BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'),'%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'),'%Y%m%d%H%i%s')
+				</when>
+			</choose>
+		</where>
+	</sql>
+
+	<!-- 접속기록 목록 카운트 -->
+	<select id="selectLoginLogListCnt" parameterType="modoo.module.system.log.login.service.LoginLogVO" resultType="int">
+		SELECT
+			COUNT(*) AS CNT
+		FROM	dth_login_log A
+		LEFT OUTER JOIN dtn_mber B
+			ON A.CONECT_ID = B.ESNTL_ID
+		<include refid="selectLoginLogListWhere"></include>
+	</select>
+	
+</mapper>

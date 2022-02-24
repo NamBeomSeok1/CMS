@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.faq.service.impl.FaqinfoMapper">
+
+	<resultMap id="faqinfoListResultMap" type="egovMap">
+		<result property="faqId" column="FAQ_ID"/>
+		<result property="siteId" column="SITE_ID"/>
+		<result property="faqClCode" column="FAQ_CL_CODE"/>
+		<result property="faqSeCode" column="FAQ_SE_CODE"/>
+		<result property="faqSeCodeNm" column="FAQ_SE_CODE_NM"/>
+		<result property="qestnSj" column="QESTN_SJ"/>
+		<result property="qestnCn" column="QESTN_CN" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="answerCn" column="ANSWER_CN" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="rdcnt" column="RDCNT"/>
+		<result property="atchFileId" column="ATCH_FILE_ID"/>
+		<result property="frstRegistPnttm" column="FRST_REGIST_PNTTM"/>
+		<result property="frstRegisterId" column="FRST_REGISTER_ID"/>
+		<result property="lastUpdtPnttm" column="LAST_UPDT_PNTTM"/>
+		<result property="lastUpdusrId" column="LAST_UPDUSR_ID"/>
+	</resultMap>
+
+	<!-- FAQ목록  -->
+	<select id="selectFaqinfoList" parameterType="modoo.module.faq.service.FaqinfoVO" resultMap="faqinfoListResultMap">
+		SELECT
+			faq.FAQ_ID
+			,faq.SITE_ID
+			,faq.FAQ_CL_CODE
+			,faq.FAQ_SE_CODE
+			,cd.CODE_NM AS FAQ_SE_CODE_NM
+			,faq.QESTN_SJ
+			,faq.QESTN_CN
+			,faq.ANSWER_CN
+			,faq.RDCNT
+			,faq.ATCH_FILE_ID
+			,faq.FRST_REGIST_PNTTM
+			,faq.FRST_REGISTER_ID
+			,faq.LAST_UPDT_PNTTM
+			,faq.LAST_UPDUSR_ID
+		FROM	dtn_faq faq
+		LEFT JOIN dtc_cmmn_detail_code cd ON cd.CODE = faq.FAQ_SE_CODE AND cd.CODE_ID = 'CMS020' AND cd.USE_AT = 'Y'
+		<include refid="selectFaqinfoListWhere"></include>
+		ORDER BY FAQ_ID DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectFaqinfoListWhere">
+		<where>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSiteId)">
+				AND faq.SITE_ID = #{searchSiteId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'QSJ')">
+						AND faq.QESTN_SJ LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'QCN')">
+						AND faq.QESTN_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'ACN')">
+						AND faq.ANSWER_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CN')">
+						AND ( 	faq.QESTN_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+							OR 	faq.ANSWER_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+							)
+					</when>
+				</choose>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchFaqClCode)">
+				AND faq.FAQ_CL_CODE = #{searchFaqClCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchFaqSeCode)">
+				AND faq.FAQ_SE_CODE IN
+                <foreach collection="searchFaqSeCode" item="item" index="index" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+			</if>
+		</where>
+	</sql>
+	
+	<!-- FAQ목록카운트  -->
+	<select id="selectFaqinfoListCnt" parameterType="modoo.module.faq.service.FaqinfoVO" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM	dtn_faq faq
+		LEFT JOIN dtc_cmmn_detail_code cd ON cd.CODE = faq.FAQ_SE_CODE AND cd.CODE_ID = 'CMS020' AND cd.USE_AT = 'Y'
+		<include refid="selectFaqinfoListWhere"></include>
+	</select>
+	
+	<!-- FAQ저장  -->
+	<insert id="insertFaqinfo" parameterType="modoo.module.faq.service.FaqinfoVO">
+		INSERT INTO dtn_faq (
+			FAQ_ID
+			,SITE_ID
+			,FAQ_CL_CODE
+			,QESTN_SJ
+			,QESTN_CN
+			,ANSWER_CN
+			,RDCNT
+			,FAQ_SE_CODE
+			,ATCH_FILE_ID
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+		) VALUES (
+			#{faqId}
+			,#{siteId}
+			,#{faqClCode}
+			,#{qestnSj}
+			,#{qestnCn}
+			,#{answerCn}
+			,0
+			,#{faqSeCode}
+			,#{atchFileId}
+			,SYSDATE()
+			,#{frstRegisterId}
+		)
+	</insert>
+	
+	<!-- FAQ상세  -->
+	<select id="selectFaqinfo" parameterType="modoo.module.faq.service.FaqinfoVO" resultType="modoo.module.faq.service.FaqinfoVO">
+		SELECT
+			faq.FAQ_ID
+			,faq.SITE_ID
+			,faq.FAQ_CL_CODE
+			,faq.FAQ_SE_CODE
+			,faq.QESTN_SJ
+			,faq.QESTN_CN
+			,faq.ANSWER_CN
+			,faq.RDCNT
+			,faq.ATCH_FILE_ID
+			,faq.FRST_REGIST_PNTTM
+			,faq.FRST_REGISTER_ID
+			,faq.LAST_UPDT_PNTTM
+			,faq.LAST_UPDUSR_ID
+		FROM	dtn_faq faq
+		LEFT JOIN dtc_cmmn_detail_code cd ON cd.CODE = faq.FAQ_SE_CODE AND cd.CODE_ID = 'CMS020' AND cd.USE_AT = 'Y'
+		WHERE	FAQ_ID = #{faqId}
+	</select>
+	
+	<!-- FAQ수정  -->
+	<update id="updateFaqinfo" parameterType="modoo.module.faq.service.FaqinfoVO">
+		UPDATE dtn_faq
+		SET
+			SITE_ID = #{siteId}
+			,FAQ_CL_CODE = #{faqClCode}
+			,FAQ_SE_CODE=#{faqSeCode}
+			,QESTN_SJ = #{qestnSj}
+			,QESTN_CN = #{qestnCn}
+			,ANSWER_CN = #{answerCn}
+			,ATCH_FILE_ID = #{atchFileId}
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	FAQ_ID = #{faqId}
+	</update>
+	
+	<!-- FAQ 조회수 업데이트 -->
+	<update id="updateFaqinfoRdcnt" parameterType="modoo.module.faq.service.FaqinfoVO">
+		UPDATE dtn_seq
+		SET
+			RDCNT = RDCNT + 1
+		WHERE	FAQ_ID = #{faqId}
+	</update>
+	
+	<!-- FAQ삭제  -->
+	<delete id="deleteFaqinfo" parameterType="modoo.module.faq.service.FaqinfoVO">
+		DELETE FROM dtn_faq
+		WHERE	FAQ_ID = #{faqId}
+	</delete>
+	
+</mapper>

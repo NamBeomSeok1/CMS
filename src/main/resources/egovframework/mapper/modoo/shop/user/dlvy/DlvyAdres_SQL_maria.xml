@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.user.service.impl.DlvyAdresMapper">
+
+	<!-- 배송지 목록 -->
+	<select id="selectDlvyAdresList" parameterType="modoo.module.shop.user.service.DlvyAdresVO" resultType="modoo.module.shop.user.service.DlvyAdresVO">
+		SELECT
+			DADRES_NO
+			,DLVY_ADRES_NM
+			,DLVY_ZIP
+			,DLVY_ADRES
+			,DLVY_ADRES_DETAIL
+			,TELNO
+			,DLVY_USER_ID
+			,DLVY_USER_NM
+			,USE_PNTTM
+			,BASS_DLVY_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSR_ID
+		FROM	stn_dlvy_adres
+		<include refid="selectDlvyAdresListWhere"></include>
+		ORDER BY FRST_REGIST_PNTTM DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectDlvyAdresListWhere">
+		<where>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'NM')">
+						AND DLVY_ADRES_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+				</choose>
+			</if>
+			AND  DLVY_USER_ID = #{dlvyUserId}
+		</where>
+	</sql>
+	
+	<!-- 배송지 목록 카운트 -->
+	<select id="selectDlvyAdresListCnt" parameterType="modoo.module.shop.user.service.DlvyAdresVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	stn_dlvy_adres
+		<include refid="selectDlvyAdresListWhere"></include>
+	</select>
+	
+	<!-- 배송지 저장 -->
+	<insert id="insertDlvyAdres" parameterType="modoo.module.shop.user.service.DlvyAdresVO">
+		INSERT INTO stn_dlvy_adres (
+			DADRES_NO
+			,DLVY_ADRES_NM
+			,DLVY_ZIP
+			,DLVY_ADRES
+			,DLVY_ADRES_DETAIL
+			,TELNO
+			,DLVY_USER_ID
+			,DLVY_USER_NM
+			,USE_PNTTM
+			,BASS_DLVY_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+		) VALUES (
+			#{dadresNo}
+			,#{dlvyAdresNm}
+			,#{dlvyZip}
+			,#{dlvyAdres}
+			,#{dlvyAdresDetail}
+			,#{telno}
+			,#{dlvyUserId}
+			,#{dlvyUserNm}
+			,#{usePnttm}
+			,IFNULL(#{bassDlvyAt},'N')
+			,SYSDATE()
+			,#{frstRegisterId}
+		)
+	</insert>
+	
+	<!-- 배송지 상세 -->
+	<select id="selectDlvyAdres" parameterType="modoo.module.shop.user.service.DlvyAdresVO" resultType="modoo.module.shop.user.service.DlvyAdresVO">
+		SELECT
+			DADRES_NO
+			,DLVY_ADRES_NM
+			,DLVY_ZIP
+			,DLVY_ADRES
+			,DLVY_ADRES_DETAIL
+			,TELNO
+			,DLVY_USER_ID
+			,DLVY_USER_NM
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,USE_PNTTM
+			,BASS_DLVY_AT
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSR_ID
+		FROM	stn_dlvy_adres
+		<include refid="selectDlvyAdresListWhere"></include>
+		AND	DADRES_NO = #{dadresNo}
+	</select>
+	
+	<!-- 배송지 수정 -->
+	<update id="updateDlvyAdres" parameterType="modoo.module.shop.user.service.DlvyAdresVO">
+		UPDATE stn_dlvy_adres
+		SET
+			DLVY_ADRES_NM = #{dlvyAdresNm}
+			,DLVY_ZIP = #{dlvyZip}
+			,DLVY_ADRES = #{dlvyAdres}
+			,DLVY_ADRES_DETAIL = #{dlvyAdresDetail}
+			,TELNO = #{telno}
+			,DLVY_USER_ID = #{dlvyUserId}
+			,DLVY_USER_NM = #{dlvyUserNm}
+			,BASS_DLVY_AT = #{bassDlvyAt}
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	DADRES_NO = #{dadresNo}
+	</update>
+	
+	<!-- 배송지 삭제 -->
+	<delete id="deleteDlvyAdres" parameterType="modoo.module.shop.user.service.DlvyAdresVO">
+		DELETE FROM stn_dlvy_adres
+		WHERE	DADRES_NO = #{dadresNo}
+	</delete>
+	
+	<!-- 최근사용 배송지 5개 -->
+	<select id="selectRecentUseDlvyAdres" parameterType="modoo.module.shop.user.service.DlvyAdresVO" resultType="modoo.module.shop.user.service.DlvyAdresVO">
+		SELECT
+			DADRES_NO
+			,DLVY_ADRES_NM
+			,DLVY_ZIP
+			,DLVY_ADRES
+			,DLVY_ADRES_DETAIL
+			,TELNO
+			,DLVY_USER_ID
+			,DLVY_USER_NM
+			,USE_PNTTM
+			,BASS_DLVY_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSR_ID
+		FROM	stn_dlvy_adres
+		<include refid="selectDlvyAdresListWhere"></include>
+		ORDER BY USE_PNTTM DESC
+		LIMIT 5
+	</select>
+	
+	<!-- 배송지 사용시점 수정 -->
+	<update id="updateUseDlvyAdres" parameterType="modoo.module.shop.user.service.DlvyAdresVO">
+		UPDATE stn_dlvy_adres
+		SET
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(recentDlvyCmd, 'USE')">
+					USE_PNTTM = SYSDATE()
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(recentDlvyCmd, 'DEL')">
+					USE_PNTTM = NULL
+				</when>
+			</choose>
+		WHERE	DADRES_NO = #{dadresNo}
+	</update>
+	
+	<!-- 기본배송지 정보 -->
+	<select id="selectBassDlvyAdres" parameterType="modoo.module.shop.user.service.DlvyAdresVO" resultType="modoo.module.shop.user.service.DlvyAdresVO">
+		SELECT
+			DADRES_NO
+			,DLVY_ADRES_NM
+			,DLVY_ZIP
+			,DLVY_ADRES
+			,DLVY_ADRES_DETAIL
+			,TELNO
+			,DLVY_USER_ID
+			,DLVY_USER_NM
+			,USE_PNTTM
+			,BASS_DLVY_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSR_ID
+		FROM	stn_dlvy_adres
+		WHERE	BASS_DLVY_AT = 'Y'
+			AND DLVY_USER_ID = #{dlvyUserId}
+		ORDER BY USE_PNTTM DESC
+		LIMIT 1
+	</select>
+	
+	<!-- 기본배송지외 나머지 해제 -->
+	<update id="updateRelisBassDlvyAdres" parameterType="modoo.module.shop.user.service.DlvyAdresVO">
+		UPDATE stn_dlvy_adres
+		SET
+			BASS_DLVY_AT = 'N'
+		WHERE DADRES_NO NOT IN (#{dadresNo})
+	</update>
+	
+	<!-- 기본배송지 설정 -->
+	<update id="updateSetBassDlvyAdres" parameterType="modoo.module.shop.user.service.DlvyAdresVO">
+		UPDATE stn_dlvy_adres
+		SET
+			BASS_DLVY_AT = 'Y'
+		WHERE DADRES_NO = #{dadresNo}
+	</update>
+	
+</mapper>

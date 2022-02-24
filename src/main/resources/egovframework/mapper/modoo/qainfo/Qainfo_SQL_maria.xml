@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.qainfo.service.impl.QainfoMapper">
+
+	<resultMap id="qainfoListResultMap" type="egovMap">
+		<result property="qaId" column="QA_ID"/>
+		<result property="siteId" column="SITE_ID"/>
+		<result property="goodsId" column="GOODS_ID"/>
+		<result property="goodsNm" column="GOODS_NM"/>
+		<result property="atchFileId" column="ATCH_FILE_ID"/>
+		<result property="qestnSj" column="QESTN_SJ"/>
+		<result property="qestnCn" column="QESTN_CN" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="writngDe" column="WRITNG_DE"/>
+		<result property="wrterId" column="WRTER_ID"/>
+		<result property="wrterNm" column="WRTER_NM"/>
+		<result property="emailAdres" column="EMAIL_ADRES"/>
+		<result property="wrterTelno" column="WRTER_TELNO"/>
+		<result property="writngPassword" column="WRITNG_PASSWORD"/>
+		<result property="answerCn" column="ANSWER_CN" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="answerDe" column="ANSWER_DE"/>
+		<result property="answerId" column="ANSWER_ID"/>
+		<result property="answerNm" column="ANSWER_NM"/>
+		<result property="qnaProcessSttusCode" column="QNA_PROCESS_STTUS_CODE"/>
+		<result property="qaSeCode" column="QA_SE_CODE"/>
+		<result property="qestnTyCode" column="QESTN_TY_CODE"/>
+		<result property="qestnTyNm" column="QESTN_TY_NM"/>
+		<result property="secretAt" column="SECRET_AT"/>
+		<result property="frstRegistPnttm" column="FRST_REGIST_PNTTM"/>
+		<result property="frstRegisterId" column="FRST_REGISTER_ID"/>
+		<result property="lastUpdtPnttm" column="LAST_UPDT_PNTTM"/>
+		<result property="lastUpdusrId" column="LAST_UPDUSR_ID"/>
+		<result property="useAt" column="USE_AT"/>
+	</resultMap>
+
+	<!-- 질답목록 -->
+	<select id="selectQainfoList" parameterType="modoo.module.qainfo.service.QainfoVO" resultMap="qainfoListResultMap">
+		SELECT
+			qa.QA_ID
+			,qa.SITE_ID
+			,qa.GOODS_ID
+			,g.GOODS_NM
+			,qa.ATCH_FILE_ID
+			,qa.QESTN_SJ
+			,qa.QESTN_CN
+			,qa.WRITNG_DE
+			,qa.WRTER_ID
+			,qa.WRTER_NM
+			,qa.EMAIL_ADRES
+			,qa.WRTER_TELNO
+			,qa.WRITNG_PASSWORD
+			,qa.ANSWER_CN
+			,qa.ANSWER_DE
+			,qa.ANSWER_ID
+			,qa.ANSWER_NM
+			,qa.QNA_PROCESS_STTUS_CODE
+			,qa.QA_SE_CODE
+			,qa.QESTN_TY_CODE
+			,cd.CODE_NM AS QESTN_TY_NM
+			,qa.SECRET_AT
+			,qa.FRST_REGIST_PNTTM
+			,qa.FRST_REGISTER_ID
+			,qa.LAST_UPDT_PNTTM
+			,qa.LAST_UPDUSR_ID
+			,qa.USE_AT
+		FROM	dtn_qainfo qa
+		LEFT JOIN	stn_goods g ON g.GOODS_ID = qa.GOODS_ID
+		LEFT JOIN	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID AND pcm.USE_AT = 'Y'
+		LEFT JOIN	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID AND c.USE_AT='Y'
+		LEFT JOIN 	dtc_cmmn_detail_code cd ON cd.CODE = qa.QESTN_TY_CODE AND cd.CODE_ID IN ('CMS018','CMS019')
+		<include refid="selectQainfoListWhere"></include>
+		ORDER BY QA_ID DESC
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(firstIndex)">
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+		</if>
+	</select>
+
+	<sql id="selectQainfoListWhere">
+		<where>
+			AND qa.USE_AT = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSiteId)">
+				AND qa.SITE_ID = #{searchSiteId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(qnaProcessSttusCode)">
+				AND qa.QNA_PROCESS_STTUS_CODE = #{qnaProcessSttusCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(wrterId)">
+				AND qa.WRTER_ID = #{wrterId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(frstRegisterId)">
+				AND qa.FRST_REGISTER_ID = #{frstRegisterId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(goodsId)">
+				AND qa.GOODS_ID = #{goodsId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(qaSeCode)">
+				AND qa.QA_SE_CODE = #{qaSeCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'QSJ')">
+						AND qa.QESTN_SJ LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'QCN')">
+						AND qa.QESTN_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'ACN')">
+						AND qa.ANSWER_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CN')">
+						AND ( 	qa.QESTN_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+							OR 	qa.ANSWER_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+							)
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'WEEK')">
+						AND qa.FRST_REGIST_PNTTM BETWEEN DATE_ADD(NOW(),INTERVAL -1 WEEK ) AND NOW()
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'MONTH')">
+						AND qa.FRST_REGIST_PNTTM BETWEEN DATE_ADD(NOW(),INTERVAL -1 MONTH ) AND NOW()
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, '3MONTH')">
+						AND qa.FRST_REGIST_PNTTM BETWEEN DATE_ADD(NOW(),INTERVAL -3 MONTH ) AND NOW()
+					</when>
+				</choose>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsNm)">
+				AND g.GOODS_NM LIKE CONCAT('%', #{searchGoodsNm}, '%')
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchQestnTyCode)">
+				AND qa.QESTN_TY_CODE = #{searchQestnTyCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchQnaProcessSttusCode)">
+				AND qa.QNA_PROCESS_STTUS_CODE = #{searchQnaProcessSttusCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+				AND c.CMPNY_ID = #{searchCmpnyId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyNm)">
+				AND c.CMPNY_NM LIKE CONCAT('%', #{searchCmpnyNm}, '%')
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchBgnde)">
+				<![CDATA[ AND qa.WRITNG_DE >= RPAD(REPLACE(#{searchBgnde}, '-', ''), 14, '0') ]]>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchEndde)">
+				<![CDATA[ AND qa.WRITNG_DE < DATE_FORMAT(DATE_ADD(STR_TO_DATE(RPAD(REPLACE(#{searchEndde}, '-', ''), 14, '0'),'%Y%m%d%H%i%s'), INTERVAL 1 DAY), '%Y%m%d%H%i%s') ]]>
+			</if>
+		</where>
+	</sql>
+	
+	<!-- QNA 1개당 첨부 이미지 목록 -->
+	<select id="selectImageList" parameterType="modoo.module.qainfo.service.QainfoVO" resultType="egovframework.com.cmm.service.FileVO">
+		SELECT
+			B.*
+		FROM dtn_qainfo A
+		JOIN dtn_file_detail B ON A.ATCH_FILE_ID = B.ATCH_FILE_ID
+		AND A.QA_ID = #{qaId}
+	</select>
+	
+	
+	<!-- 질답목록 카운트 -->
+	<select id="selectQainfoListCnt" parameterType="modoo.module.qainfo.service.QainfoVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	dtn_qainfo qa
+		LEFT JOIN	stn_goods g ON g.GOODS_ID = qa.GOODS_ID
+		LEFT JOIN	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID AND pcm.USE_AT = 'Y'
+		LEFT JOIN	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID AND c.USE_AT='Y'
+		LEFT JOIN 	dtc_cmmn_detail_code cd ON cd.CODE = qa.QESTN_TY_CODE AND cd.CODE_ID IN ('CMS018','CMS019')
+		<include refid="selectQainfoListWhere"></include>
+	</select>
+	
+	<!-- 질답저장 -->
+	<insert id="insertQainfo" parameterType="modoo.module.qainfo.service.QainfoVO">
+		INSERT INTO dtn_qainfo (
+			QA_ID
+			,SITE_ID
+			,GOODS_ID
+			,ATCH_FILE_ID
+			,QESTN_SJ
+			,QESTN_CN
+			,WRITNG_DE
+			,WRTER_ID
+			,WRTER_NM
+			,EMAIL_ADRES
+			,WRTER_TELNO
+			,WRITNG_PASSWORD
+			,ANSWER_CN
+			,ANSWER_DE
+			,ANSWER_ID
+			,ANSWER_NM
+			,QNA_PROCESS_STTUS_CODE
+			,QA_SE_CODE
+			,QESTN_TY_CODE
+			,SECRET_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,USE_AT
+		) VALUES (
+			#{qaId}
+			,#{siteId}
+			,#{goodsId}
+			,#{atchFileId}
+			,#{qestnSj}
+			,#{qestnCn}
+			,#{writngDe}
+			,#{wrterId}
+			,#{wrterNm}
+			,#{emailAdres}
+			,#{wrterTelno}
+			,#{writngPassword}
+			,#{answerCn}
+			,#{answerDe}
+			,#{answerId}
+			,#{answerNm}
+			,#{qnaProcessSttusCode}
+			,#{qaSeCode}
+			,#{qestnTyCode}
+			,#{secretAt}
+			,SYSDATE()
+			,#{frstRegisterId}
+			,'Y'
+		)
+	</insert>
+
+	<!-- 질답상세 -->
+	<select id="selectQainfo" parameterType="modoo.module.qainfo.service.QainfoVO" resultType="modoo.module.qainfo.service.QainfoVO">
+		SELECT
+			QA_ID
+			,SITE_ID
+			,GOODS_ID
+			,(SELECT GOODS_NM FROM STN_GOODS WHERE GOODS_ID = qa.GOODS_ID) AS GOODS_NM
+			,ATCH_FILE_ID
+			,QESTN_SJ
+			,QESTN_CN
+			,WRITNG_DE
+			,WRTER_ID
+			,WRTER_NM
+			,EMAIL_ADRES
+			,WRTER_TELNO
+			,WRITNG_PASSWORD
+			,ANSWER_CN
+			,ANSWER_DE
+			,ANSWER_ID
+			,ANSWER_NM
+			,QNA_PROCESS_STTUS_CODE
+			,QA_SE_CODE
+			,QESTN_TY_CODE
+			,SECRET_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSR_ID
+			,USE_AT
+		FROM dtn_qainfo qa
+		WHERE	QA_ID = #{qaId}
+	</select>
+	
+	<!-- 질답수정 -->
+	<update id="updateQainfo" parameterType="modoo.module.qainfo.service.QainfoVO">
+		UPDATE dtn_qainfo
+		SET 
+			SITE_ID = #{siteId}
+			,QESTN_SJ = #{qestnSj}
+			,QESTN_CN = #{qestnCn}
+			,WRITNG_DE = #{writngDe}
+			,WRTER_ID = #{wrterId}
+			,WRTER_NM = #{wrterNm}
+			,EMAIL_ADRES = #{emailAdres}
+			,WRTER_TELNO = #{wrterTelno}
+			,WRITNG_PASSWORD = #{writngPassword}
+			,ANSWER_CN = #{answerCn}
+			,ANSWER_DE = #{answerDe}
+			,ANSWER_ID = #{answerId}
+			,ANSWER_NM = #{answerNm}
+			,QNA_PROCESS_STTUS_CODE = #{qnaProcessSttusCode}
+			,LAST_UPDT_PNTTM = SYSDATE() 
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	QA_ID = #{qaId}
+	</update>
+
+	<!-- 질문 수정 -->
+	<update id="updateQainfoQestn" parameterType="modoo.module.qainfo.service.QainfoVO">
+		UPDATE dtn_qainfo
+		SET 
+			QESTN_SJ = #{qestnSj}
+			,QESTN_CN = #{qestnCn}
+			,WRTER_ID = #{wrterId}
+			,WRTER_NM = #{wrterNm}
+			,ATCH_FILE_ID = #{atchFileId}
+			,EMAIL_ADRES = #{emailAdres}
+			,WRTER_TELNO = #{wrterTelno}
+			,SECRET_AT=#{secretAt}
+			,QESTN_TY_CODE=#{qestnTyCode}
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	QA_ID = #{qaId}
+	</update>
+
+	<!-- 답변 수정 -->
+	<update id="updateQainfoAnswer" parameterType="modoo.module.qainfo.service.QainfoVO">
+		UPDATE dtn_qainfo
+		SET 
+			ANSWER_CN = #{answerCn}
+			,ANSWER_DE = DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s')
+			,ANSWER_ID = #{answerId}
+			,ANSWER_NM = #{answerNm}
+			,QNA_PROCESS_STTUS_CODE = #{qnaProcessSttusCode}
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	QA_ID = #{qaId}
+	</update>
+
+	<!-- 진행상태 수정 -->
+	<update id="updateQainfoProcessSttus" parameterType="modoo.module.qainfo.service.QainfoVO">
+		UPDATE dtn_qainfo
+		SET 
+			QNA_PROCESS_STTUS_CODE = #{qnaProcessSttusCode}
+			,LAST_UPDT_PNTTM = SYSDATE 
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	QA_ID = #{qaId}
+	</update>
+
+	<!-- 질답삭제 -->
+	<delete id="deleteQainfo" parameterType="modoo.module.qainfo.service.QainfoVO">
+		UPDATE dtn_qainfo
+		SET
+			USE_AT = 'N'
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	QA_ID = #{qaId}
+	</delete>
+	
+	<!-- cp > 반품, 교환 등 사유 조회 -->
+	<select id="selectReason" parameterType="modoo.module.qainfo.service.QainfoVO" resultType="modoo.module.qainfo.service.QainfoVO">
+		SELECT 
+			A.*
+		FROM dtn_qainfo A
+		JOIN stn_order B ON A.GOODS_ID = B.GOODS_ID
+		JOIN stn_order_dlvy C ON B.ORDER_NO = C.ORDER_NO
+		WHERE A.USE_AT = 'Y'
+			AND A.QA_SE_CODE = #{qaSeCode}
+			AND C.ORDER_DLVY_NO = #{searchOrderDlvyNo}
+		ORDER BY A.QA_ID DESC
+		LIMIT 1
+	</select>
+	
+	<!-- 교환/환불 > 상세정보 > 반품사유 -->
+	<select id="selectRefundInfo" parameterType="modoo.module.qainfo.service.QainfoVO" resultType="modoo.module.qainfo.service.QainfoVO">
+		SELECT *
+		FROM dtn_qainfo
+		WHERE GOODS_ID = #{goodsId}
+			AND USE_AT = 'Y'
+			AND FRST_REGISTER_ID = #{frstRegisterId}
+		ORDER BY FRST_REGIST_PNTTM DESC
+		LIMIT 1
+	</select>
+</mapper>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.stats.goods.service.impl.StatsGoodsMapper">
+
+	<!-- 상품매출 순위 목록 -->
+	<select id="selectStatsGoodsSelngList" parameterType="modoo.module.shop.stats.goods.service.StatsGoodsSearchVO" resultType="egovMap">
+		SELECT 
+			t1.GOODS_ID
+			,MAX(GOODS_SPLPC) GOODS_SPLPC
+			,MAX(GOODS_PC) GOODS_PC
+			,MAX(GOODS_NM) AS GOODS_NM
+			,SUM(ORDER_CNT) AS ORDER_CNT
+			,SUM(SETLE_STOT_AMOUNT) AS SETLE_STOT_AMOUNT
+			,DATE_FORMAT(MAX(FRST_REGIST_PNTTM), '%Y-%m-%d') AS SLE_DE
+		FROM (
+			SELECT 
+				1 AS ORDER_CNT
+				,g.GOODS_SPLPC 
+				,g.GOODS_PC
+				,IF(os.SETLE_STTUS_CODE='S',1,0) AS SETLE_CNT
+				,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) AS SETLE_STOT_AMOUNT
+				,g.FRST_REGIST_PNTTM 
+				,g.GOODS_ID 
+				,g.GOODS_NM
+			FROM	stn_order_dlvy od
+			JOIN	stn_order_setle os ON os.ORDER_SETLE_NO = od.ORDER_SETLE_NO
+			JOIN 	stn_order o ON o.ORDER_NO = od.ORDER_NO
+			JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+			JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+			LEFT JOIN dtn_mber m ON m.MBER_ID = o.ORDRR_ID
+			WHERE 	od.ORDER_REQ_STTUS_CODE IN ('O','C')
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CID')">
+				AND pcm.CMPNY_ID = #{searchKeyword}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsCtgryId)">
+				AND g.GOODS_CTGRY_ID IN (
+					SELECT
+						#{searchGoodsCtgryId} AS GOODS_CTGRY_ID
+					FROM 	dual
+					UNION ALL
+					SELECT 
+						a.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry a
+					WHERE 	a.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						b.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry a
+					INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+					WHERE	a.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						c.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry a
+					INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry c ON c.UPPER_GOODS_CTGRY_ID = b.GOODS_CTGRY_ID
+					WHERE	a.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						d.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry a
+					INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry c ON c.UPPER_GOODS_CTGRY_ID = b.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry d ON d.UPPER_GOODS_CTGRY_ID = c.GOODS_CTGRY_ID
+					WHERE	a.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+				)
+			</if>
+				AND os.SETLE_PNTTM  BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'), '%Y%m%d%H%i%s')
+		) t1
+		GROUP BY GOODS_ID
+		ORDER BY SETLE_STOT_AMOUNT DESC
+		LIMIT 20
+	</select>
+	
+	<!-- 입점사 매출 순위 목록 -->
+	<select id="selectStatsCmpnySelngList" parameterType="modoo.module.shop.stats.goods.service.StatsGoodsSearchVO" resultType="egovMap">
+		SELECT 
+			CMPNY_ID
+			,MAX(CMPNY_NM) aS CMPNY_NM
+			,SUM(ORDER_CNT) AS ORDER_CNT
+			,SUM(SETLE_STOT_AMOUNT) AS SETLE_STOT_AMOUNT
+		FROM (
+			SELECT 
+				1 AS ORDER_CNT
+				,c.CMPNY_ID
+				,c.CMPNY_NM
+				,g.GOODS_SPLPC 
+				,g.GOODS_PC
+				,IF(os.SETLE_STTUS_CODE='S',1,0) AS SETLE_CNT
+				,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) AS SETLE_STOT_AMOUNT
+			FROM	stn_order_dlvy od
+			JOIN	stn_order_setle os ON os.ORDER_SETLE_NO = od.ORDER_SETLE_NO
+			JOIN 	stn_order o ON o.ORDER_NO = od.ORDER_NO
+			JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+			JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+			JOIN 	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID
+			WHERE 	od.ORDER_REQ_STTUS_CODE IN ('O','C')
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+				AND pcm.CMPNY_ID = #{searchCmpnyId}
+			</if>
+				AND os.SETLE_PNTTM  BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'), '%Y%m%d%H%i%s')
+		) t1
+		GROUP BY CMPNY_ID
+		ORDER BY SETLE_STOT_AMOUNT DESC
+		LIMIT 20
+	</select>
+	
+	<!-- 상품별만족도 순위 목록 -->
+	<select id="selectStatsGoodsStsfdgSelngList" parameterType="modoo.module.shop.stats.goods.service.StatsGoodsSearchVO" resultType="egovMap">
+		SELECT
+			t2.GOODS_ID
+			,MAX(t2.GOODS_NM) GOODS_NM
+			,MAX(t2.ORDER_CNT) ORDER_CNT
+			,MAX(t2.SETLE_STOT_AMOUNT) SETLE_STOT_AMOUNT
+			,SUM(IFNULL(cm.SCORE,0)) TOT_SCORE
+		FROM (
+			SELECT 
+				t1.GOODS_ID
+				,t1.GOODS_NM
+				,SUM(ORDER_CNT) AS ORDER_CNT
+				,SUM(SETLE_STOT_AMOUNT) AS SETLE_STOT_AMOUNT
+			FROM (
+					SELECT 
+						g.GOODS_ID 
+						,g.GOODS_NM
+						,1 AS ORDER_CNT
+						,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) AS SETLE_STOT_AMOUNT
+					FROM	stn_order_dlvy od
+					JOIN	stn_order_setle os ON os.ORDER_SETLE_NO = od.ORDER_SETLE_NO
+					JOIN 	stn_order o ON o.ORDER_NO = od.ORDER_NO
+					JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+					WHERE 	od.ORDER_REQ_STTUS_CODE IN ('O','C')
+					<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+						AND pcm.CMPNY_ID = #{searchCmpnyId}
+					</if>
+						AND os.SETLE_PNTTM  BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'), '%Y%m%d%H%i%s')
+			) t1
+			GROUP BY GOODS_ID
+		) t2
+		LEFT JOIN dtn_comment cm ON cm.CNTNTS_ID = t2.GOODS_ID AND cm.CNTNTS_SE_CODE = 'STN_ORDER'
+		GROUP BY GOODS_ID
+		ORDER BY TOT_SCORE DESC
+	</select>
+	
+</mapper>

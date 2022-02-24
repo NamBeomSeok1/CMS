@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.stats.selng.service.impl.StatsSelngMapper">
+
+	<!-- 일별주문 카운트 목록 -->
+	<select id="selectStatsSelngDayList" parameterType="modoo.module.common.service.CommonDefaultSearchVO" resultType="egovMap">
+		SELECT 
+			SETLE_DE 
+			,SUM(ORDER_CNT) AS ORDER_CNT
+			,SUM(SETLE_CNT) AS SETLE_CNT
+			,SUM(CANCEL_CNT) AS CANCEL_CNT
+		FROM (
+			SELECT 
+				1 AS ORDER_CNT
+				,IF(os.SETLE_STTUS_CODE='S',1,0) AS SETLE_CNT
+				,IF(os.SETLE_STTUS_CODE='C',1,0) AS CANCEL_CNT
+				,DATE_FORMAT(os.SETLE_PNTTM,'%Y%m%d') AS SETLE_DE
+			FROM	stn_order_dlvy od
+			JOIN	stn_order_setle os ON os.ORDER_SETLE_NO = od.ORDER_SETLE_NO
+			JOIN 	stn_order o ON o.ORDER_NO = od.ORDER_NO
+			JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+			JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+			WHERE 	od.ORDER_REQ_STTUS_CODE IN ('O','C')
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CID')">
+				AND pcm.CMPNY_ID = #{searchKeyword}
+			</if>
+				AND os.SETLE_PNTTM  BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'), '%Y%m%d%H%i%s')
+		) t1
+		GROUP BY SETLE_DE
+	</select>
+	
+	<!-- 일별매출 목록 -->
+	<select id="selectStateSelngList" parameterType="modoo.module.common.service.CommonDefaultSearchVO" resultType="egovMap">
+		SELECT 
+			SETLE_DE
+			,COUNT(ORDER_SETLE_NO) AS ORDER_CNT
+			,SUM(SETLE_CNT) AS SETLE_CNT
+			,SUM(SETLE_STOT_AMOUNT) AS SETLE_STOT_AMOUNT
+			,SUM(CANCEL_CNT) AS CANCEL_CNT
+			,SUM(SETLE_CTOT_AMOUNT) AS SETLE_CTOT_AMOUNT
+			,SUM(DLVY_AMOUNT) AS DLVY_AMOUNT
+			,SUM(SETLE_FEE_TOT) AS SETLE_FEE_TOT
+			,SUM(SETLE_POINT) AS SETLE_POINT
+			,SUM(RSRVMNEY) AS RSRVMNEY
+			,SUM(COUPON_DSCNT) AS COUPON_DSCNT
+			,SUM(EVENT_DSCNT) AS EVENT_DSCNT
+		FROM (
+			SELECT 
+				os.ORDER_SETLE_NO 
+				,DATE_FORMAT(os.SETLE_PNTTM,'%Y%m%d') AS SETLE_DE
+				,IF(os.SETLE_STTUS_CODE='S',1,0) AS SETLE_CNT
+				,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) AS SETLE_STOT_AMOUNT
+				,IF(os.SETLE_STTUS_CODE='C',1,0) AS CANCEL_CNT
+				,IF(os.SETLE_STTUS_CODE='C',os.SETLE_TOT_AMOUNT,0) AS SETLE_CTOT_AMOUNT
+				,od.DLVY_AMOUNT 
+				,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100) AS SETLE_FEE_TOT
+				,IFNULL(os.SETLE_POINT,0) SETLE_POINT 
+				,o.RSRVMNEY 
+				,0 AS COUPON_DSCNT
+				,0 AS EVENT_DSCNT
+			FROM 	stn_order_setle os
+			JOIN	stn_order_dlvy od ON od.ORDER_SETLE_NO  = os.ORDER_SETLE_NO AND od.ORDER_REQ_STTUS_CODE IN ('O','C')
+			JOIN 	stn_order o ON o.ORDER_NO = od.ORDER_NO
+			JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+			WHERE	os.SETLE_STTUS_CODE IN ('S','C')
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CID')">
+				AND pcm.CMPNY_ID = #{searchKeyword}
+			</if>
+				AND os.SETLE_PNTTM  BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'), '%Y%m%d%H%i%s')
+		) t1
+		GROUP BY SETLE_DE
+	</select>
+	
+	<!-- 요일별 매출 -->
+	<select id="selectStateSelngWeekList" parameterType="modoo.module.common.service.CommonDefaultSearchVO" resultType="egovMap">
+		SELECT 
+			t2.WN
+			,IFNULL(t3.CNT,0) CNT
+			,IFNULL(t3.SETLE_STOT_AMOUNT,0) SETLE_STOT_AMOUNT
+		FROM (
+			SELECT '0' AS W, '월요일' AS WN UNION ALL
+			SELECT '1' AS W, '화요일' AS WN UNION ALL
+			SELECT '2' AS W, '수요일' AS WN UNION ALL
+			SELECT '3' AS W, '목요일' AS WN UNION ALL
+			SELECT '4' AS W, '금요일' AS WN UNION ALL
+			SELECT '5' AS W, '토요일' AS WN UNION ALL
+			SELECT '6' AS W, '일요일' AS WN 
+		) t2 LEFT JOIN (
+			SELECT
+				t1.W
+				,COUNT(t1.W) CNT
+				,SUM(SETLE_STOT_AMOUNT) AS SETLE_STOT_AMOUNT
+			FROM (
+				SELECT 
+					WEEKDAY(os.SETLE_PNTTM) W
+					,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) AS SETLE_STOT_AMOUNT
+				FROM	stn_order_setle os
+				JOIN	stn_order_dlvy od ON od.ORDER_SETLE_NO  = os.ORDER_SETLE_NO
+				JOIN 	stn_order o ON o.ORDER_NO = od.ORDER_NO
+				JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+				JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+				WHERE	os.SETLE_STTUS_CODE = 'S'
+				<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CID')">
+					AND pcm.CMPNY_ID = #{searchKeyword}
+				</if>
+				AND os.SETLE_PNTTM  BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'), '%Y%m%d%H%i%s')
+			) t1
+			GROUP BY W
+		) t3 ON t3.W = t2.W
+	</select>
+	
+	<!-- 시간대별 매출 목록 -->
+	<select id="selectStateSelngHourList" parameterType="modoo.module.common.service.CommonDefaultSearchVO" resultType="egovMap">
+		SELECT 
+			t2.HR_NM
+			,IFNULL(t3.CNT,0) CNT
+			,IFNULL(t3.SETLE_STOT_AMOUNT,0) SETLE_STOT_AMOUNT
+		FROM (
+			SELECT '0' AS HR, '0' AS HR_NM UNION ALL
+			SELECT '1' AS HR, '1' AS HR_NM UNION ALL
+			SELECT '2' AS HR, '2' AS HR_NM UNION ALL
+			SELECT '3' AS HR, '3' AS HR_NM UNION ALL
+			SELECT '4' AS HR, '4' AS HR_NM UNION ALL
+			SELECT '5' AS HR, '5' AS HR_NM UNION ALL
+			SELECT '6' AS HR, '6' AS HR_NM UNION ALL
+			SELECT '7' AS HR, '7' AS HR_NM UNION ALL
+			SELECT '8' AS HR, '8' AS HR_NM UNION ALL
+			SELECT '9' AS HR, '9' AS HR_NM UNION ALL
+			SELECT '10' AS HR, '10' AS HR_NM UNION ALL
+			SELECT '11' AS HR, '11' AS HR_NM UNION ALL
+			SELECT '12' AS HR, '12' AS HR_NM UNION ALL
+			SELECT '13' AS HR, '13' AS HR_NM UNION ALL
+			SELECT '14' AS HR, '14' AS HR_NM UNION ALL
+			SELECT '15' AS HR, '15' AS HR_NM UNION ALL
+			SELECT '16' AS HR, '16' AS HR_NM UNION ALL
+			SELECT '17' AS HR, '17' AS HR_NM UNION ALL
+			SELECT '18' AS HR, '18' AS HR_NM UNION ALL
+			SELECT '19' AS HR, '19' AS HR_NM UNION ALL
+			SELECT '20' AS HR, '20' AS HR_NM UNION ALL
+			SELECT '21' AS HR, '21' AS HR_NM UNION ALL
+			SELECT '22' AS HR, '22' AS HR_NM UNION ALL
+			SELECT '23' AS HR, '23' AS HR_NM
+		) t2 LEFT JOIN (
+			SELECT
+				t1.HR
+				,COUNT(t1.HR) CNT
+				,SUM(SETLE_STOT_AMOUNT) AS SETLE_STOT_AMOUNT
+			FROM (
+				SELECT 
+					DATE_FORMAT(os.SETLE_PNTTM,'%k') HR 
+					,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) AS SETLE_STOT_AMOUNT
+				FROM	stn_order_setle os
+				JOIN	stn_order_dlvy od ON od.ORDER_SETLE_NO  = os.ORDER_SETLE_NO
+				JOIN 	stn_order o ON o.ORDER_NO = od.ORDER_NO
+				JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+				JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+				WHERE	os.SETLE_STTUS_CODE = 'S'
+				<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CID')">
+					AND pcm.CMPNY_ID = #{searchKeyword}
+				</if>
+				AND os.SETLE_PNTTM  BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'), '%Y%m%d%H%i%s')
+			) t1
+			GROUP BY HR 
+		) t3 ON t3.HR = t2.HR
+	</select>
+	
+	<!-- 주별 주문건수 목록 -->
+	<select id="selectStateSelngMonthWeekList" parameterType="modoo.module.common.service.CommonDefaultSearchVO" resultType="egovMap">
+		SELECT 
+			MAX(CWK) - WK AS GWK
+			,SUM(ORDER_CNT) AS ORDER_CNT
+			,SUM(SETLE_STOT_AMOUNT) AS SETLE_STOT_AMOUNT
+			,SUM(SETLE_CNT) AS SETLE_CNT
+			,SUM(SETLE_CTOT_AMOUNT) AS SETLE_CTOT_AMOUNT
+			,SUM(CANCEL_CNT) AS CANCEL_CNT
+			,SUM(DLVY_AMOUNT) AS DLVY_AMOUNT
+			,SUM(SETLE_FEE_TOT) AS SETLE_FEE_TOT
+			,SUM(SETLE_POINT) AS SETLE_POINT
+			,SUM(RSRVMNEY) AS RSRVMNEY
+			,SUM(COUPON_DSCNT) AS COUPON_DSCNT
+			,SUM(EVENT_DSCNT) AS EVENT_DSCNT
+			,DATE_FORMAT(MAX(MDAY), '%Y-%m-%d') AS BDE
+			,DATE_FORMAT(MAX(SDAY), '%Y-%m-%d') AS EDE
+		FROM (
+			SELECT 
+				1 AS ORDER_CNT
+				,IF(os.SETLE_STTUS_CODE='S',1,0) AS SETLE_CNT
+				,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) AS SETLE_STOT_AMOUNT
+				,IF(os.SETLE_STTUS_CODE='C',1,0) AS CANCEL_CNT
+				,IF(os.SETLE_STTUS_CODE='C',os.SETLE_TOT_AMOUNT,0) AS SETLE_CTOT_AMOUNT
+				,od.DLVY_AMOUNT 
+				,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100) AS SETLE_FEE_TOT
+				,IFNULL(os.SETLE_POINT,0) SETLE_POINT 
+				,o.RSRVMNEY 
+				,0 AS COUPON_DSCNT
+				,0 AS EVENT_DSCNT
+				,WEEKOFYEAR(os.SETLE_PNTTM) AS WK
+				,WEEKOFYEAR(SYSDATE()) AS CWK
+				,SUBDATE(os.SETLE_PNTTM, WEEKDAY(os.SETLE_PNTTM)) AS MDAY
+				,SUBDATE(os.SETLE_PNTTM, WEEKDAY(os.SETLE_PNTTM)) + INTERVAL 6 DAY AS SDAY
+			FROM	stn_order_dlvy od
+			JOIN	stn_order_setle os ON os.ORDER_SETLE_NO = od.ORDER_SETLE_NO
+			JOIN 	stn_order o ON o.ORDER_NO = od.ORDER_NO
+			JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+			JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+			WHERE 	od.ORDER_REQ_STTUS_CODE IN ('O','C')
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CID')">
+				AND pcm.CMPNY_ID = #{searchKeyword}
+			</if>
+			AND os.SETLE_PNTTM  BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'), '%Y%m%d%H%i%s')
+		) t1
+		GROUP BY WK
+	</select>
+	
+	<!-- 월별 주문건수 매출 목록 -->
+	<select id="selectStateSelngMonthList" parameterType="modoo.module.common.service.CommonDefaultSearchVO" resultType="egovMap">
+		SELECT 
+			t1.MDE
+			,SUM(ORDER_CNT) AS ORDER_CNT
+			,SUM(SETLE_STOT_AMOUNT) AS SETLE_STOT_AMOUNT
+			,SUM(SETLE_CNT) AS SETLE_CNT
+			,SUM(SETLE_CTOT_AMOUNT) AS SETLE_CTOT_AMOUNT
+			,SUM(CANCEL_CNT) AS CANCEL_CNT
+			,SUM(DLVY_AMOUNT) AS DLVY_AMOUNT
+			,SUM(SETLE_FEE_TOT) AS SETLE_FEE_TOT
+			,SUM(SETLE_POINT) AS SETLE_POINT
+			,SUM(RSRVMNEY) AS RSRVMNEY
+			,SUM(COUPON_DSCNT) AS COUPON_DSCNT
+			,SUM(EVENT_DSCNT) AS EVENT_DSCNT
+		FROM (
+			SELECT 
+				1 AS ORDER_CNT
+				,IF(os.SETLE_STTUS_CODE='S',1,0) AS SETLE_CNT
+				,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) AS SETLE_STOT_AMOUNT
+				,IF(os.SETLE_STTUS_CODE='C',1,0) AS CANCEL_CNT
+				,IF(os.SETLE_STTUS_CODE='C',os.SETLE_TOT_AMOUNT,0) AS SETLE_CTOT_AMOUNT
+				,od.DLVY_AMOUNT 
+				,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100) AS SETLE_FEE_TOT
+				,IFNULL(os.SETLE_POINT,0) SETLE_POINT 
+				,o.RSRVMNEY 
+				,0 AS COUPON_DSCNT
+				,0 AS EVENT_DSCNT
+				,DATE_FORMAT(os.SETLE_PNTTM,'%Y-%m') AS MDE
+			FROM	stn_order_dlvy od
+			JOIN	stn_order_setle os ON os.ORDER_SETLE_NO = od.ORDER_SETLE_NO
+			JOIN 	stn_order o ON o.ORDER_NO = od.ORDER_NO
+			JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+			JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+			WHERE 	od.ORDER_REQ_STTUS_CODE IN ('O','C')
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CID')">
+				AND pcm.CMPNY_ID = #{searchKeyword}
+			</if>
+				AND os.SETLE_PNTTM  BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') 
+					AND STR_TO_DATE(DATE_FORMAT(LAST_DAY(  STR_TO_DATE(#{searchEndde},'%Y%m%d')  ), '%Y%m%d235959'), '%Y%m%d%H%i%s')
+		) t1
+		GROUP BY MDE
+	</select>
+	
+	<!-- 연령대별 주문거수 매출 목록 -->
+	<select id="selectStateSelngAgeList" parameterType="modoo.module.common.service.CommonDefaultSearchVO" resultType="egovMap">
+		SELECT 
+			CASE 
+				WHEN t2.AGRDE = 'ETC' THEN '기타'
+				WHEN t2.AGRDE &lt; 10 THEN '10대이하'
+				WHEN t2.AGRDE &lt; 20 THEN '10대'
+				WHEN t2.AGRDE &lt; 30 THEN '20대' 
+				WHEN t2.AGRDE &lt; 40 THEN '30대' 
+				WHEN t2.AGRDE &lt; 50 THEN '40대' 
+				WHEN t2.AGRDE &lt; 60 THEN '50대' 
+				WHEN t2.AGRDE &lt; 70 THEN '60대' 
+				WHEN t2.AGRDE &gt;= 70 THEN '70대이상' 
+				END AGRDE
+			,IFNULL(t3.ORDER_CNT,0) ORDER_CNT
+			,IFNULL(t3.SETLE_STOT_AMOUNT,0) SETLE_STOT_AMOUNT
+			,IFNULL(t3.SETLE_CNT,0) SETLE_CNT
+			,IFNULL(t3.SETLE_CTOT_AMOUNT,0) SETLE_CTOT_AMOUNT
+			,IFNULL(t3.CANCEL_CNT,0) CANCEL_CNT
+			,IFNULL(t3.DLVY_AMOUNT,0) DLVY_AMOUNT
+			,IFNULL(t3.SETLE_FEE_TOT,0) SETLE_FEE_TOT
+			,IFNULL(t3.SETLE_POINT,0) SETLE_POINT
+			,IFNULL(t3.RSRVMNEY,0) RSRVMNEY
+			,IFNULL(t3.COUPON_DSCNT,0) COUPON_DSCNT
+			,IFNULL(t3.EVENT_DSCNT,0) EVENT_DSCNT
+		FROM (
+			SELECT 'ETC' AS AGRDE UNION ALL
+			SELECT 0 AS AGRDE UNION ALL
+			SELECT 10 AS AGRDE UNION ALL
+			SELECT 20 AS AGRDE UNION ALL
+			SELECT 30 AS AGRDE UNION ALL
+			SELECT 40 AS AGRDE UNION ALL
+			SELECT 50 AS AGRDE UNION ALL
+			SELECT 60 AS AGRDE UNION ALL
+			SELECT 70 AS AGRDE 
+		) t2 LEFT JOIN (
+			SELECT 
+				t1.AGRDE
+				,SUM(ORDER_CNT) AS ORDER_CNT
+				,SUM(SETLE_STOT_AMOUNT) AS SETLE_STOT_AMOUNT
+				,SUM(SETLE_CNT) AS SETLE_CNT
+				,SUM(SETLE_CTOT_AMOUNT) AS SETLE_CTOT_AMOUNT
+				,SUM(CANCEL_CNT) AS CANCEL_CNT
+				,SUM(DLVY_AMOUNT) AS DLVY_AMOUNT
+				,SUM(SETLE_FEE_TOT) AS SETLE_FEE_TOT
+				,SUM(SETLE_POINT) AS SETLE_POINT
+				,SUM(RSRVMNEY) AS RSRVMNEY
+				,SUM(COUPON_DSCNT) AS COUPON_DSCNT
+				,SUM(EVENT_DSCNT) AS EVENT_DSCNT
+			FROM (
+				SELECT 
+					1 AS ORDER_CNT
+					,IF(os.SETLE_STTUS_CODE='S',1,0) AS SETLE_CNT
+					,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) AS SETLE_STOT_AMOUNT
+					,IF(os.SETLE_STTUS_CODE='C',1,0) AS CANCEL_CNT
+					,IF(os.SETLE_STTUS_CODE='C',os.SETLE_TOT_AMOUNT,0) AS SETLE_CTOT_AMOUNT
+					,od.DLVY_AMOUNT 
+					,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100) AS SETLE_FEE_TOT
+					,IFNULL(os.SETLE_POINT,0) SETLE_POINT 
+					,o.RSRVMNEY 
+					,0 AS COUPON_DSCNT
+					,0 AS EVENT_DSCNT
+					,CASE WHEN m.AGRDE IS NULL THEN 'ETC'
+						WHEN m.AGRDE &lt; 70 THEN m.AGRDE 
+						ELSE 70 END AS AGRDE
+				FROM	stn_order_dlvy od
+				JOIN	stn_order_setle os ON os.ORDER_SETLE_NO = od.ORDER_SETLE_NO
+				JOIN 	stn_order o ON o.ORDER_NO = od.ORDER_NO
+				JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+				JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+				LEFT JOIN dtn_mber m ON m.MBER_ID = o.ORDRR_ID
+				WHERE 	od.ORDER_REQ_STTUS_CODE IN ('O','C')
+				<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CID')">
+					AND pcm.CMPNY_ID = #{searchKeyword}
+				</if>
+				AND os.SETLE_PNTTM  BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'), '%Y%m%d%H%i%s')
+			) t1
+			GROUP BY AGRDE
+		) t3 ON t3.AGRDE = t2.AGRDE
+	</select>
+	
+	<!-- 성별 매출 -->
+	<select id="selectStateSelngSexdstnList" parameterType="modoo.module.common.service.CommonDefaultSearchVO" resultType="egovMap">
+		SELECT 
+			t2.SEXDSTN
+			,IFNULL(t3.ORDER_CNT,0) ORDER_CNT
+			,IFNULL(t3.SETLE_STOT_AMOUNT,0) SETLE_STOT_AMOUNT
+			,IFNULL(t3.SETLE_CNT,0) SETLE_CNT
+			,IFNULL(t3.SETLE_CTOT_AMOUNT,0) SETLE_CTOT_AMOUNT
+			,IFNULL(t3.CANCEL_CNT,0) CANCEL_CNT
+			,IFNULL(t3.DLVY_AMOUNT,0) DLVY_AMOUNT
+			,IFNULL(t3.SETLE_FEE_TOT,0) SETLE_FEE_TOT
+			,IFNULL(t3.SETLE_POINT,0) SETLE_POINT
+			,IFNULL(t3.RSRVMNEY,0) RSRVMNEY
+			,IFNULL(t3.COUPON_DSCNT,0) COUPON_DSCNT
+			,IFNULL(t3.EVENT_DSCNT,0) EVENT_DSCNT
+		FROM (
+			SELECT '남' AS SEXDSTN UNION ALL
+			SELECT '여' AS SEXDSTN UNION ALL
+			SELECT '기타' AS SEXDSTN 
+		) t2 LEFT JOIN (
+			SELECT 
+				t1.SEXDSTN
+				,SUM(ORDER_CNT) AS ORDER_CNT
+				,SUM(SETLE_STOT_AMOUNT) AS SETLE_STOT_AMOUNT
+				,SUM(SETLE_CNT) AS SETLE_CNT
+				,SUM(SETLE_CTOT_AMOUNT) AS SETLE_CTOT_AMOUNT
+				,SUM(CANCEL_CNT) AS CANCEL_CNT
+				,SUM(DLVY_AMOUNT) AS DLVY_AMOUNT
+				,SUM(SETLE_FEE_TOT) AS SETLE_FEE_TOT
+				,SUM(SETLE_POINT) AS SETLE_POINT
+				,SUM(RSRVMNEY) AS RSRVMNEY
+				,SUM(COUPON_DSCNT) AS COUPON_DSCNT
+				,SUM(EVENT_DSCNT) AS EVENT_DSCNT
+			FROM (
+				SELECT 
+					1 AS ORDER_CNT
+					,IF(os.SETLE_STTUS_CODE='S',1,0) AS SETLE_CNT
+					,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) AS SETLE_STOT_AMOUNT
+					,IF(os.SETLE_STTUS_CODE='C',1,0) AS CANCEL_CNT
+					,IF(os.SETLE_STTUS_CODE='C',os.SETLE_TOT_AMOUNT,0) AS SETLE_CTOT_AMOUNT
+					,od.DLVY_AMOUNT 
+					,IF(os.SETLE_STTUS_CODE='S',os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100) AS SETLE_FEE_TOT
+					,IFNULL(os.SETLE_POINT,0) SETLE_POINT 
+					,o.RSRVMNEY 
+					,0 AS COUPON_DSCNT
+					,0 AS EVENT_DSCNT
+					,CASE 
+						WHEN m.SEXDSTN = 'M' THEN '남'
+						WHEN m.SEXDSTN = 'F' THEN '여'
+						ELSE '기타' END AS SEXDSTN
+				FROM	stn_order_dlvy od
+				JOIN	stn_order_setle os ON os.ORDER_SETLE_NO = od.ORDER_SETLE_NO
+				JOIN 	stn_order o ON o.ORDER_NO = od.ORDER_NO
+				JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+				JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+				LEFT JOIN dtn_mber m ON m.MBER_ID = o.ORDRR_ID
+				WHERE 	od.ORDER_REQ_STTUS_CODE IN ('O','C')
+				<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CID')">
+					AND pcm.CMPNY_ID = #{searchKeyword}
+				</if>
+				AND os.SETLE_PNTTM  BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},'000000'), '%Y%m%d%H%i%s') AND STR_TO_DATE(CONCAT(#{searchEndde},'235959'), '%Y%m%d%H%i%s')
+			) t1
+			GROUP BY SEXDSTN
+		) t3 ON t3.SEXDSTN = t2.SEXDSTN
+	</select>
+	
+</mapper>

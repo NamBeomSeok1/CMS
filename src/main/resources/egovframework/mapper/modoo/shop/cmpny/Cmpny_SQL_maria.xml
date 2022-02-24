@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.cmpny.service.impl.CmpnyMapper">
+
+	<resultMap id="cmpnyNameResult" type="egovMap">
+		<result property="cmpnyId" column="CMPNY_ID"/>
+		<result property="cmpnyNm" column="CMPNY_NM"/>
+	</resultMap>
+
+	<!-- 업체목록 -->
+	<select id="selectCmpnyList" parameterType="modoo.module.shop.cmpny.service.CmpnyVO" resultType="egovMap">
+		SELECT
+			cp.CMPNY_ID
+			,cp.CMPNY_NM
+			,cp.CMPNY_USER_ESNTL_ID
+			,cp.BIZRNO
+			,cp.BSNM_ADRES
+			,cp.RPRSNTV_NM
+			,cp.HMPG
+			,cp.CS_CHNNL
+			,cp.OPNNG_DE
+			,cp.CMPNY_TELNO
+			,cp.CHARGER_NM
+			,cp.CHARGER_TELNO
+			,cp.CHARGER_EMAIL
+			,cp.STDE_SE_CODE
+			,cp.SPLPC_SE_CODE
+			,cp.BANK_ID
+			,cp.ACNUTNO
+			,cp.CMPNY_LOGO_PATH
+			,cp.OPNNG_STTUS_CODE
+			,cp.MNGR_MEMO
+			,cp.SVC_ADRES
+			,cp.SVC_HDRY_NM
+			,cp.RTNGUD_DLVY_PC
+			,cp.EXCHNG_DLVY_PC
+			,cp.CMPNY_DLVY_POLICY_CN
+			,cp.FRST_REGIST_PNTTM
+			,cp.FRST_REGISTER_ID
+			,cp.LAST_UPDT_PNTTM
+			,cp.LAST_UPDUSER_ID
+			,cp.USE_AT
+			,0 AS CMPNY_GOODS_CO
+		FROM	stn_cmpny cp
+		LEFT JOIN dtn_mber m ON m.ESNTL_ID = cp.CMPNY_USER_ESNTL_ID
+		<include refid="selectCmpnyListWhere"></include>
+		ORDER BY CMPNY_ID DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectCmpnyListWhere">
+		<where>
+			AND cp.USE_AT = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'NM')">
+						AND cp.CMPNY_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'EQ_NM')">
+						AND cp.CMPNY_NM = #{searchKeyword}
+					</when>
+				</choose>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchBgnde)">
+				<![CDATA[ AND cp.OPNNG_DE >= #{searchBgnde} ]]>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchEndde)">
+				<![CDATA[ AND cp.OPNNG_DE <= #{searchEndde} ]]>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOpnngSttusCode)">
+				AND cp.OPNNG_STTUS_CODE = #{searchOpnngSttusCode}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 업체목록 카운트 -->
+	<select id="selectCmpnyListCnt" parameterType="modoo.module.shop.cmpny.service.CmpnyVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	stn_cmpny cp
+		<include refid="selectCmpnyListWhere"></include>
+	</select>
+	
+	<!-- 업체 전체 목록 -->
+	<select id="selectCmpnyAllList" parameterType="modoo.module.shop.cmpny.service.CmpnyVO" resultMap="cmpnyNameResult">
+		SELECT
+			cp.CMPNY_ID
+			,cp.CMPNY_NM
+			,m.MBER_ID
+		FROM	stn_cmpny cp
+		LEFT JOIN dtn_mber m ON m.ESNTL_ID = cp.CMPNY_USER_ESNTL_ID
+		WHERE	cp.USE_AT = 'Y'
+			AND cp.CMPNY_NM LIKE CONCAT('%', #{cmpnyNm}, '%')
+	</select>
+	
+	<!-- 업체저장 -->
+	<insert id="insertCmpny" parameterType="modoo.module.shop.cmpny.service.CmpnyVO">
+		INSERT INTO stn_cmpny (
+			CMPNY_ID
+			,CMPNY_NM
+			,CMPNY_USER_ESNTL_ID
+			,BIZRNO
+			,BSNM_ADRES
+			,RPRSNTV_NM
+			,HMPG
+			,CS_CHNNL
+			,OPNNG_DE
+			,CMPNY_TELNO
+			,CHARGER_NM
+			,CHARGER_TELNO
+			,CHARGER_EMAIL
+			,STDE_SE_CODE
+			,SPLPC_SE_CODE
+			,BANK_ID
+			,ACNUTNO
+			,CMPNY_LOGO_PATH
+			,OPNNG_STTUS_CODE
+			,MNGR_MEMO
+			,SVC_ADRES
+			,SVC_HDRY_NM
+			,RTNGUD_DLVY_PC
+			,EXCHNG_DLVY_PC
+			,CMPNY_DLVY_POLICY_CN
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,USE_AT
+		) VALUES (
+			#{cmpnyId}
+			,#{cmpnyNm}
+			,#{cmpnyUserEsntlId}
+			,#{bizrno}
+			,#{bsnmAdres}
+			,#{rprsntvNm}
+			,#{hmpg}
+			,#{csChnnl}
+			,#{opnngDe}
+			,#{cmpnyTelno}
+			,#{chargerNm}
+			,#{chargerTelno}
+			,#{chargerEmail}
+			,#{stdeSeCode}
+			,#{splpcSeCode}
+			,IF(#{bankId}='', NULL, #{bankId})
+			,IF(#{acnutno}='', NULL, #{acnutno})
+			,#{cmpnyLogoPath}
+			,#{opnngSttusCode}
+			,#{mngrMemo}
+			,#{svcAdres}
+			,#{svcHdryNm}
+			,#{rtngudDlvyPc}
+			,#{exchngDlvyPc}
+			,#{cmpnyDlvyPolicyCn}
+			,SYSDATE()
+			,#{frstRegisterId}
+			,'Y'
+		)
+	</insert>
+
+	<!-- 업체상세 -->
+	<select id="selectCmpny" parameterType="modoo.module.shop.cmpny.service.CmpnyVO" resultType="modoo.module.shop.cmpny.service.CmpnyVO">
+		SELECT
+			cp.CMPNY_ID
+			,cp.CMPNY_NM
+			,cp.CMPNY_USER_ESNTL_ID
+			,IF(m.MBER_STTUS = 'P',m.MBER_ID, CONCAT(m.MBER_ID, '(탙퇴)')) AS CMPNY_MBER_ID
+			,cp.BIZRNO
+			,cp.BSNM_ADRES
+			,cp.RPRSNTV_NM
+			,cp.HMPG
+			,cp.CS_CHNNL
+			,cp.OPNNG_DE
+			,cp.CMPNY_TELNO
+			,cp.CHARGER_NM
+			,cp.CHARGER_TELNO
+			,cp.CHARGER_EMAIL
+			,cp.STDE_SE_CODE
+			,cp.SPLPC_SE_CODE
+			,cp.BANK_ID
+			,cp.ACNUTNO
+			,cp.CMPNY_LOGO_PATH
+			,cp.OPNNG_STTUS_CODE
+			,cp.MNGR_MEMO
+			,cp.SVC_ADRES
+			,cp.SVC_HDRY_NM
+			,cp.RTNGUD_DLVY_PC
+			,cp.EXCHNG_DLVY_PC
+			,cp.CMPNY_DLVY_POLICY_CN
+			,cp.FRST_REGIST_PNTTM
+			,cp.FRST_REGISTER_ID
+			,cp.LAST_UPDT_PNTTM
+			,cp.LAST_UPDUSER_ID
+			,cp.USE_AT
+		FROM	stn_cmpny cp
+		LEFT JOIN dtn_mber m ON m.ESNTL_ID = cp.CMPNY_USER_ESNTL_ID
+		WHERE	cp.CMPNY_ID = #{cmpnyId}
+	</select>
+	
+	<!-- 업체수정 -->
+	<update id="updateCmpny" parameterType="modoo.module.shop.cmpny.service.CmpnyVO">
+		UPDATE stn_cmpny
+		SET
+			CMPNY_NM = #{cmpnyNm}
+			,CMPNY_USER_ESNTL_ID = #{cmpnyUserEsntlId}
+			,BIZRNO = #{bizrno}
+			,BSNM_ADRES = #{bsnmAdres}
+			,RPRSNTV_NM = #{rprsntvNm}
+			,HMPG = #{hmpg}
+			,CS_CHNNL = #{csChnnl}
+			,OPNNG_DE = #{opnngDe}
+			,CMPNY_TELNO = #{cmpnyTelno}
+			,CHARGER_NM = #{chargerNm}
+			,CHARGER_TELNO = #{chargerTelno}
+			,CHARGER_EMAIL = #{chargerEmail}
+			,STDE_SE_CODE = #{stdeSeCode}
+			,SPLPC_SE_CODE = #{splpcSeCode}
+			,BANK_ID = IF(#{bankId}='', NULL, #{bankId})
+			,ACNUTNO = IF(#{acnutno}='', NULL, #{acnutno})
+			,CMPNY_LOGO_PATH = #{cmpnyLogoPath}
+			,MNGR_MEMO = #{mngrMemo}
+			,SVC_ADRES = #{svcAdres}
+			,SVC_HDRY_NM = #{svcHdryNm}
+			,RTNGUD_DLVY_PC = #{rtngudDlvyPc}
+			,EXCHNG_DLVY_PC = #{exchngDlvyPc}
+			,CMPNY_DLVY_POLICY_CN = #{cmpnyDlvyPolicyCn}
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSER_ID = #{lastUpduserId}
+		WHERE	CMPNY_ID = #{cmpnyId}
+	</update>
+
+	<!-- 업체삭제 -->
+	<delete id="deleteCmpny" parameterType="modoo.module.shop.cmpny.service.CmpnyVO">
+		UPDATE stn_cmpny
+		SET
+			USE_AT = 'N'
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSER_ID = #{lastUpduserId}
+		WHERE	CMPNY_ID = #{cmpnyId}
+	</delete>
+	
+	<!-- 사업자등록 조회 카운트 -->
+	<select id="selectCmpnyBizrnoCheckCnt" parameterType="modoo.module.shop.cmpny.service.CmpnyVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	stn_cmpny
+		WHERE	BIZRNO = #{bizrno}
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(cmpnyId)">
+			AND <![CDATA[ CMPNY_ID <> #{cmpnyId} ]]>
+		</if>
+	</select>
+	
+	<!-- 업체 사용자 검색 -->
+	<select id="selectCmpnyMberList" parameterType="modoo.module.mber.info.service.MberVO" resultType="egovMap">
+		SELECT
+			m.ESNTL_ID 
+			,m.MBER_ID
+			,m.MBER_NM  
+			,cp.CMPNY_ID 
+			,cp.CMPNY_NM
+		FROM	dtn_mber m
+		LEFT OUTER JOIN	stn_cmpny cp ON cp.CMPNY_USER_ESNTL_ID = m.ESNTL_ID
+		<include refid="selectCmpnyMberListWhere"></include>
+		ORDER BY MBER_NM ASC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectCmpnyMberListWhere">
+		<where>
+			m.MBER_STTUS = 'P'
+			AND m.AUTHOR_CODE IN ('ROLE_SHOP')
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSiteId)">
+				AND m.SITE_ID = #{searchSiteId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'NM')">
+						AND m.MBER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'ID')">
+						AND m.MBER_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+				</choose>
+			</if>	
+		</where>
+	</sql>
+	
+	<!-- 엡체 사용자 목록 카운트 -->
+	<select id="selectCmpnyMberListCnt" parameterType="modoo.module.mber.info.service.MberVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	dtn_mber m
+		LEFT OUTER JOIN	stn_cmpny cp ON cp.CMPNY_USER_ESNTL_ID = m.ESNTL_ID
+		<include refid="selectCmpnyMberListWhere"></include>
+	</select>
+	
+	<!-- 업체 사용자 비밀번호 변경 -->
+	<update id="updateCmpnyMberPassword" parameterType="modoo.module.shop.cmpny.service.CmpnyVO">
+		UPDATE dtn_mber
+		SET
+			PASSWORD = #{cmpnyMberPassword}
+		WHERE	ESNTL_ID = #{cmpnyUserEsntlId}
+	</update>
+	
+	<!-- 업체 택배사 목록 -->
+	<select id="selectHdryCmpnyMapngList" parameterType="modoo.module.shop.cmpny.service.CmpnyVO" resultType="modoo.module.shop.hdry.service.HdryCmpnyVO">
+		SELECT
+			 hc.HDRY_ID
+			,hc.HDRY_NM
+			,hc.HDRY_TELNO
+			,hc.USE_AT 
+			,chm.CMPNY_ID
+		FROM 	stn_hdry_cmpny hc
+		JOIN	stn_cmpny_hdry_mapng chm ON chm.HDRY_ID = hc.HDRY_ID
+		WHERE 	hc.USE_AT = 'Y'
+			AND	chm.CMPNY_ID = #{cmpnyId}
+	</select>
+	
+	<!-- 업체택배매핑 저장 -->
+	<insert id="insertHdryCmpnyMapng" parameterType="modoo.module.shop.cmpny.service.CmpnyVO">
+		INSERT INTO stn_cmpny_hdry_mapng (
+			CMPNY_ID
+			,HDRY_ID
+		) VALUES (
+			#{cmpnyId}
+			,#{hdryId}
+		)
+	</insert>
+	
+	<!-- 업체택배매핑 삭제 -->
+	<delete id="deleteHdryCmpnyMapng" parameterType="modoo.module.shop.cmpny.service.CmpnyVO">
+		DELETE FROM stn_cmpny_hdry_mapng
+		WHERE	CMPNY_ID = #{cmpnyId}
+	</delete>
+	
+	<!-- 업체상태코드 수정 -->
+	<update id="updateHdryCmpnySttusCode" parameterType="modoo.module.shop.cmpny.service.CmpnyVO">
+		UPDATE stn_cmpny
+		SET
+			OPNNG_STTUS_CODE = #{opnngSttusCode}
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSER_ID = #{lastUpduserId}
+		WHERE	CMPNY_ID = #{cmpnyId}
+	</update>
+
+	<select id="selectOrderCmpnyTelno" parameterType="egovMap" resultType="modoo.module.shop.cmpny.service.CmpnyVO">
+	SELECT A.CHARGER_TELNO 
+	FROM
+ 	stn_cmpny A
+ 	JOIN stn_prtnr_cmpny_mapng B ON A.CMPNY_ID = B.CMPNY_ID
+ 	JOIN stn_goods C ON C.PCMAPNG_ID = B.PCMAPNG_ID AND C.GOODS_ID = #{goodsId}
+	</select>	
+
+	<!-- 공지사항 알림톡 발송할 CP 담당자 전화번호 목록 -->
+	<select id="selectContactList" resultType="modoo.module.shop.cmpny.service.CmpnyVO">
+		SELECT
+			CHARGER_TELNO
+		FROM stn_cmpny
+		WHERE CHARGER_TELNO IS NOT NULL
+	</select>
+
+</mapper>

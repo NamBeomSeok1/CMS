@@ -1,0 +1,53 @@
+@charset "UTF-8";
+
+#brand-image-file {border:2px dotted #afafaf; height:100px; text-align:center; padding:10px;}
+#brand-image-file #brandLogo{max-height:100%;}
+#brand-image-file #brandIntroImg,#brandImage{max-height:100%; max-width:100%;}
+
+.keyword-item {display:inline-block; margin:5px 2px 0; font-weight:normal;}
+.btnRemoveKeyword {border:none; background:transparent; color:#dfdfdf; padding:2px 5px;}
+
+#mvpSourcEditor { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+#viewMvpSource {border:2px dotted #afafaf; height:100%; text-align:center;}
+
+.note-editor {width:100%;}
+
+/*
+.gdc-img-item {margin-bottom:5px; color:white;}
+.gdc-img-item .gdc-img-item-box {position:relative; border:1px solid #858796; min-height:150px;}
+.gdc-img-item .gdc-img-header {background:#858796;cursor:move;}
+.gdc-img-item img {width:100%;}
+
+.pc-img-item {margin-bottom:5px; color:white;}
+.pc-img-item .pc-img-item-box {position:relative; border:1px solid #858796; min-height:150px;}
+.pc-img-item .pc-img-header {background:#858796;cursor:move;}
+.pc-img-item img {width:100%;}
+*/
+
+.img-item {margin-bottom:5px; color:white;}
+.img-item .gdc-img-item-box {position:relative; border:1px solid #858796;  height:200px;overflow:hidden;}
+.img-item .gdc-img-header {background:#858796;cursor:move;}
+.img-item .evt-img-header {background:#858796;cursor:move;}
+.img-item .img-item-box {position:relative; border:1px solid #858796; height:200px;overflow:hidden;}
+.img-item .img-header {background:#858796;cursor:move;}
+.img-item img {width:100%;}
+
+/* 관련 추천상품*/
+#recomend-list {}
+#recomend-list .figure-header { background:#858796; color:white;}
+#recomend-list .recomend-item .figure  {background:white; width:100%; border:1px solid #afafaf; padding:5px;}
+#recomend-list .recomend-item .figure img  {width:100%; }
+#recomend-list .recomend-item .figure-caption {border-top: 1px solid #afafaf;}
+
+label.sbscrptCycleSe {cursor:pointer; background:#717384; border:1px solid #dfdfdf; box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;}
+label.sbscrptCycleSe .fa-check {display:none;}
+label.sbscrptCycleSe:hover {border:1px solid #bfbfbf;color:#333;}
+label.sbscrptCycleSe.active {background:#484a54; color:white;}
+label.sbscrptCycleSe.active .fa-check {display:inline;}
+
+.table-calendar {font-size:0.8rem;}
+.table-calendar th {padding:5px 15px; background:#efefef;}
+.table-calendar th,
+.table-calendar td {border:1px solid #dfdfdf;}
+.table-calendar tbody td button.btnSbcrptDlvyDay {width:30px;}
+.table-calendar tbody td button.btnSbcrptDlvyDay.active {background:#4e73df; color:white;}

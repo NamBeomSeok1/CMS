@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.mber.author.service.impl.MberAuthorMapper">
+
+	<!-- 권한 목록 -->
+	<select id="selectMberAuthorList" parameterType="modoo.module.mber.author.service.MberAuthorVO" resultType="modoo.module.mber.author.service.MberAuthorVO">
+		SELECT
+			AUTHOR_CODE
+			,AUTHOR_NM
+			,AUTHOR_DC
+			,AUTHOR_CREAT_DE
+		FROM	dtn_author_info
+	</select>
+
+	<!-- 사용된 권한 목록 -->
+	<select id="selectUsedAuthorList" parameterType="modoo.module.mber.author.service.MberAuthorVO" resultType="modoo.module.mber.author.service.MberAuthorVO">
+		SELECT
+			AUTHOR_CODE
+			,AUTHOR_NM
+			,AUTHOR_DC
+			,AUTHOR_CREAT_DE
+		FROM	dtn_author_info dai
+		WHERE	dai.AUTHOR_CODE LIKE 'ROLE_%'
+			AND dai.AUTHOR_CODE NOT IN ('ROLE_ANONYMOUS')
+	</select>
+</mapper>

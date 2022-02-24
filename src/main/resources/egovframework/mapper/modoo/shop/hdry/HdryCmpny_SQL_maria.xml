@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.hdry.service.impl.HdryCmpnyMapper">
+
+	<!-- 택배사목록 -->
+	<select id="selectHdryCmpnyList" parameterType="modoo.module.shop.hdry.service.HdryCmpnyVO" resultType="modoo.module.shop.hdry.service.HdryCmpnyVO">
+		SELECT
+			HDRY_ID
+			,HDRY_NM
+			,HDRY_TELNO
+			,USE_AT
+			,API_ID
+		FROM	stn_hdry_cmpny
+		WHERE 	USE_AT = 'Y'
+	</select>
+
+	<!-- 택배사목록 카운트 -->
+	<select id="selectHdryCmpnyListCnt" parameterType="modoo.module.shop.hdry.service.HdryCmpnyVO" resultType="int">
+		SELECT
+			COUNT(*) AS CNT
+		FROM	stn_hdry_cmpny
+	</select>
+
+	<!-- 택배사저장 -->
+	<insert id="insertHdryCmpny" parameterType="modoo.module.shop.hdry.service.HdryCmpnyVO">
+		INSERT INTO stn_hdry_cmpny (
+			HDRY_ID
+			,HDRY_NM
+			,HDRY_TELNO
+			,API_ID
+			,USE_AT
+		) VALUES (
+			#{hdryId}
+			,TRIM(#{hdryNm})
+			,#{hdryTelno}
+			,#{apiId}
+			,'Y'
+		)
+	</insert>
+
+	<!-- 택배사상세 -->
+	<select id="selectHdryCmpny" parameterType="modoo.module.shop.hdry.service.HdryCmpnyVO" resultType="modoo.module.shop.hdry.service.HdryCmpnyVO">
+		SELECT
+			HDRY_ID
+			,HDRY_NM
+			,HDRY_TELNO
+			,API_ID
+			,USE_AT
+		FROM	stn_hdry_cmpny
+		WHERE	HDRY_ID = #{hdryId}
+	</select>
+
+	<!-- 택배사수정 -->
+	<update id="updateHdryCmpny" parameterType="modoo.module.shop.hdry.service.HdryCmpnyVO">
+		UPDATE stn_hdry_cmpny
+		SET
+			HDRY_ID = #{hdryId}
+			,HDRY_NM = TRIM(#{hdryNm})
+			,HDRY_TELNO = #{hdryTelno}
+		WHERE	HDRY_ID = #{hdryId}
+	</update>
+	
+	<!-- 택배사삭제 -->
+	<delete id="deleteHdryCmpny" parameterType="modoo.module.shop.hdry.service.HdryCmpnyVO">
+		UPDATE stn_hdry_cmpny
+		SET
+			USE_AT = 'N'
+		WHERE	HDRY_ID = #{hdryId}
+	</delete>
+	
+	<!-- 택배사명 체크 카운트 -->
+	<select id="selectHdryCmpnyCheckCnt" parameterType="modoo.module.shop.hdry.service.HdryCmpnyVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	stn_hdry_cmpny
+		WHERE	HDRY_NM = TRIM(#{hdryNm})
+	</select>
+
+	<!-- 업체별 택배사 조회 -->
+	<select id="selectGoodsHdryList" parameterType="modoo.module.shop.hdry.service.HdryCmpnyVO" resultType="modoo.module.shop.hdry.service.HdryCmpnyVO">
+		SELECT
+			A.HDRY_ID
+			, A.HDRY_NM
+		FROM stn_hdry_cmpny A
+		JOIN stn_cmpny_hdry_mapng B ON A.HDRY_ID = B.HDRY_ID
+		WHERE B.CMPNY_ID = #{searchCmpnyId}
+	</select>
+</mapper>

@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" build-on-make="true" name="foxmall">
+    <output-path>$PROJECT_DIR$/target/war</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>foxmall</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="ROOT.war">
+      <element id="artifact" artifact-name="foxmall:war exploded" />
+    </root>
+  </artifact>
+</component>

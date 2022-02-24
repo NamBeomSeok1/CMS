@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.ctgry.service.impl.GoodsCtgryMapper">
+
+	<!-- 상품카테고리 목록 -->
+	<select id="selectGoodsCtgryList" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO" resultType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO">
+		SELECT
+			GOODS_CTGRY_ID
+			,UPPER_GOODS_CTGRY_ID
+			,GOODS_CTGRY_NM
+			,GOODS_CTGRY_SN
+			,ACTVTY_AT
+			,CTGRY_EXPSR_SE_CODE
+			,BASS_SORT_CODE
+			,BASS_EXHBI_CODE
+			,CTGRY_IMAGE_PATH
+			,USE_AT
+		FROM	stn_goods_ctgry gc
+		<!-- ,(SELECT COUNT(*) FROM STN_GOODS WHERE GOODS_CTGRY_ID = gc.GOODS_CTGRY_ID) AS GOODS_LIST_CNT
+			,CASE WHEN d.PRT = '1' THEN p.PRTNR_ID ELSE 'PRTNR_XXXX' END AS PRTNR_ID
+		JOIN	STN_CMPNY c ON c.CMPNY_ID = b.CMPNY_ID AND c.USE_AT = 'Y'
+		JOIN	STN_PRTNR_CMPNY_MAPNG p ON p.CMPNY_ID = c.CMPNY_ID AND p.USE_AT = 'Y'
+		JOIN 	(
+			SELECT '1' AS PRT FROM DUAL UNION ALL
+			SELECT '2' AS PRT FROM DUAL
+		) d   -->
+		<include refid="selectCmpnyListWhere"></include>
+		ORDER BY UPPER_GOODS_CTGRY_ID ASC, GOODS_CTGRY_SN ASC
+	</select>
+
+	<!-- 활성 상품카테고리 목록 -->
+	<select id="selectActGoodsCtgryList" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO" resultType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO">
+		SELECT
+			GOODS_CTGRY_ID
+			,UPPER_GOODS_CTGRY_ID
+			,GOODS_CTGRY_NM
+			,GOODS_CTGRY_SN
+			,ACTVTY_AT
+			,CTGRY_EXPSR_SE_CODE
+			,BASS_SORT_CODE
+			,BASS_EXHBI_CODE
+			,CTGRY_IMAGE_PATH
+			,USE_AT
+		FROM	stn_goods_ctgry gc
+		<include refid="selectCmpnyListWhere"></include>
+		ORDER BY UPPER_GOODS_CTGRY_ID ASC, GOODS_CTGRY_SN ASC
+	</select>
+	
+	<sql id="selectCmpnyListWhere">
+		<where>
+			AND gc.USE_AT = 'Y'
+			AND gc.UPPER_GOODS_CTGRY_ID IS NOT NULL
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(actvtyAt, 'Y')">
+				AND gc.ACTVTY_AT = 'Y'
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'NM')">
+						AND gc.GOODS_CTGRY_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+				</choose>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchUpperGoodsCtgryId)">
+				AND gc.UPPER_GOODS_CTGRY_ID = #{searchUpperGoodsCtgryId}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 상품카테고리 목록 카운트 -->
+	<select id="selectGoodsCtgryListCnt" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	stn_goods_ctgry gc
+		<include refid="selectCmpnyListWhere"></include>
+	</select>
+	
+	<!-- 상품카테고리 저장 -->
+	<insert id="insertGoodsCtgry" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO">
+		INSERT INTO stn_goods_ctgry (
+			GOODS_CTGRY_ID
+			,UPPER_GOODS_CTGRY_ID
+			,GOODS_CTGRY_NM
+			,GOODS_CTGRY_SN
+			,CTGRY_EXPSR_SE_CODE
+			,ACTVTY_AT
+			,BASS_SORT_CODE
+			,BASS_EXHBI_CODE
+			,CTGRY_IMAGE_PATH
+			,USE_AT
+		) VALUES (
+			#{goodsCtgryId}
+			,#{upperGoodsCtgryId}
+			,#{goodsCtgryNm}
+			,#{goodsCtgrySn}
+			,#{ctgryExpsrSeCode}
+			,'Y'
+			,#{bassSortCode}
+			,#{bassExhbiCode}
+			,#{ctgryImagePath}
+			,'Y'
+		) 
+	</insert>
+
+	<!-- 상품카테고리 상세 -->
+	<select id="selectGoodsCtgry" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO" resultType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO">
+		SELECT
+			GOODS_CTGRY_ID
+			,UPPER_GOODS_CTGRY_ID
+			,GOODS_CTGRY_NM
+			,GOODS_CTGRY_SN
+			,CTGRY_EXPSR_SE_CODE
+			,ACTVTY_AT
+			,BASS_SORT_CODE
+			,BASS_EXHBI_CODE
+			,CTGRY_IMAGE_PATH
+			,USE_AT
+		FROM	stn_goods_ctgry
+		WHERE	GOODS_CTGRY_ID = #{goodsCtgryId}
+	</select>
+	
+	<!-- 상품카테고리 수정 -->
+	<update id="updateGoodsCtgry" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO">
+		UPDATE stn_goods_ctgry
+		SET
+			UPPER_GOODS_CTGRY_ID = #{upperGoodsCtgryId}
+			,GOODS_CTGRY_NM = #{goodsCtgryNm}
+			,GOODS_CTGRY_SN = #{goodsCtgrySn}
+			,CTGRY_EXPSR_SE_CODE = #{ctgryExpsrSeCode}
+			,ACTVTY_AT = #{actvtyAt} 
+			,BASS_SORT_CODE = #{bassSortCode}
+			,BASS_EXHBI_CODE = #{bassExhbiCode}
+			,CTGRY_IMAGE_PATH = #{ctgryImagePath}
+		WHERE	GOODS_CTGRY_ID = #{goodsCtgryId}
+	</update>
+
+
+	<!-- 상품카테고리 삭제 -->
+	<delete id="deleteGoodsCtgry" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO">
+		UPDATE stn_goods_ctgry
+		SET
+			USE_AT = 'N'
+		WHERE	GOODS_CTGRY_ID = #{goodsCtgryId}
+	</delete>
+	
+	<!-- 서브 상품카테고리  비활성화/활성화 -->
+	<delete id="updateSubGoddsCtgryAct" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO">
+		UPDATE stn_goods_ctgry t1, (
+			SELECT 
+				a.GOODS_CTGRY_ID 
+			FROM	stn_goods_ctgry a
+			WHERE 	a.UPPER_GOODS_CTGRY_ID = #{goodsCtgryId}
+			UNION ALL
+			SELECT
+				b.GOODS_CTGRY_ID 
+			FROM	stn_goods_ctgry a
+			INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+			WHERE	a.UPPER_GOODS_CTGRY_ID = #{goodsCtgryId}
+			UNION ALL
+			SELECT
+				c.GOODS_CTGRY_ID 
+			FROM	stn_goods_ctgry a
+			INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+			INNER JOIN stn_goods_ctgry c ON c.UPPER_GOODS_CTGRY_ID = b.GOODS_CTGRY_ID
+			WHERE	a.UPPER_GOODS_CTGRY_ID = #{goodsCtgryId}
+			UNION ALL
+			SELECT
+				d.GOODS_CTGRY_ID 
+			FROM	stn_goods_ctgry a
+			INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+			INNER JOIN stn_goods_ctgry c ON c.UPPER_GOODS_CTGRY_ID = b.GOODS_CTGRY_ID
+			INNER JOIN stn_goods_ctgry d ON d.UPPER_GOODS_CTGRY_ID = c.GOODS_CTGRY_ID
+			WHERE	a.UPPER_GOODS_CTGRY_ID = #{goodsCtgryId}
+		) t2 
+		SET
+			t1.ACTVTY_AT = #{actvtyAt}
+		WHERE	t1.GOODS_CTGRY_ID = t2.GOODS_CTGRY_ID
+	</delete>
+	<!-- 서브 상품카테고리 삭제 -->
+	<delete id="deleteSubGoddsCtgry" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO">
+		UPDATE stn_goods_ctgry t1, (
+			SELECT 
+				a.GOODS_CTGRY_ID 
+			FROM	stn_goods_ctgry a
+			WHERE 	a.UPPER_GOODS_CTGRY_ID = #{goodsCtgryId}
+			UNION ALL
+			SELECT
+				b.GOODS_CTGRY_ID 
+			FROM	stn_goods_ctgry a
+			INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+			WHERE	a.UPPER_GOODS_CTGRY_ID = #{goodsCtgryId}
+			UNION ALL
+			SELECT
+				c.GOODS_CTGRY_ID 
+			FROM	stn_goods_ctgry a
+			INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+			INNER JOIN stn_goods_ctgry c ON c.UPPER_GOODS_CTGRY_ID = b.GOODS_CTGRY_ID
+			WHERE	a.UPPER_GOODS_CTGRY_ID = #{goodsCtgryId}
+			UNION ALL
+			SELECT
+				d.GOODS_CTGRY_ID 
+			FROM	stn_goods_ctgry a
+			INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID
+			INNER JOIN stn_goods_ctgry c ON c.UPPER_GOODS_CTGRY_ID = b.GOODS_CTGRY_ID
+			INNER JOIN stn_goods_ctgry d ON d.UPPER_GOODS_CTGRY_ID = c.GOODS_CTGRY_ID
+			WHERE	a.UPPER_GOODS_CTGRY_ID = #{goodsCtgryId}
+		) t2 
+		SET
+			t1.USE_AT = 'N'
+		WHERE	t1.GOODS_CTGRY_ID = t2.GOODS_CTGRY_ID
+	</delete>
+	
+	<!-- 상품카테고리 DEPTH별 목록 -->
+	<select id="selectGoodsCtgryDepthList" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO" resultType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO">
+		SELECT 
+			a.GOODS_CTGRY_ID 
+			,a.GOODS_CTGRY_NM
+			,1 AS DP
+			,a.UPPER_GOODS_CTGRY_ID 
+		FROM	stn_goods_ctgry a
+		WHERE 	a.UPPER_GOODS_CTGRY_ID = 'GCTGRY_0000000000000'
+			AND a.USE_AT = 'Y'
+		UNION ALL
+		SELECT
+			b.GOODS_CTGRY_ID 
+			,b.GOODS_CTGRY_NM
+			,2 AS DP
+			,b.UPPER_GOODS_CTGRY_ID 
+		FROM	stn_goods_ctgry a
+		INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID AND b.USE_AT = 'Y'
+		WHERE	a.UPPER_GOODS_CTGRY_ID = 'GCTGRY_0000000000000'
+			AND a.USE_AT = 'Y'
+		UNION ALL
+		SELECT
+			c.GOODS_CTGRY_ID 
+			,c.GOODS_CTGRY_NM
+			,3 AS DP
+			,c.UPPER_GOODS_CTGRY_ID 
+		FROM	stn_goods_ctgry a
+		INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID  AND b.USE_AT = 'Y'
+		INNER JOIN stn_goods_ctgry c ON c.UPPER_GOODS_CTGRY_ID = b.GOODS_CTGRY_ID  AND c.USE_AT = 'Y'
+		WHERE	a.UPPER_GOODS_CTGRY_ID = 'GCTGRY_0000000000000'
+			AND a.USE_AT = 'Y'
+		UNION ALL
+		SELECT
+			d.GOODS_CTGRY_ID 
+			,d.GOODS_CTGRY_NM
+			,4 AS DP
+			,d.UPPER_GOODS_CTGRY_ID 
+		FROM	stn_goods_ctgry a
+		INNER JOIN stn_goods_ctgry b ON b.UPPER_GOODS_CTGRY_ID = a.GOODS_CTGRY_ID  AND b.USE_AT = 'Y'
+		INNER JOIN stn_goods_ctgry c ON c.UPPER_GOODS_CTGRY_ID = b.GOODS_CTGRY_ID  AND c.USE_AT = 'Y'
+		INNER JOIN stn_goods_ctgry d ON d.UPPER_GOODS_CTGRY_ID = c.GOODS_CTGRY_ID  AND d.USE_AT = 'Y'
+		WHERE	a.UPPER_GOODS_CTGRY_ID = 'GCTGRY_0000000000000'
+			AND a.USE_AT = 'Y'
+	</select>
+	
+	<!-- 상품카테고리 메뉴 목록 -->
+	<select id="selectGoodsCtgryMenuList" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO" resultType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO">
+		SELECT
+			GOODS_CTGRY_ID
+			,GOODS_CTGRY_NM
+		FROM (
+			SELECT
+				CONCAT(IFNULL(G1,''), IFNULL(G2,''), IFNULL(G3,''), IFNULL(G4,'')) GOODS_CTGRY_ID
+				,CONCAT(IFNULL(N1,''), IFNULL(N2,''), IFNULL(N3,''), IFNULL(N4,'')) GOODS_CTGRY_NM
+			FROM (
+				SELECT
+					CASE NUM WHEN '1' THEN a.GOODS_CTGRY_ID ELSE NULL END G1
+					,CASE NUM WHEN '2' THEN b.GOODS_CTGRY_ID ELSE NULL END G2
+					,CASE NUM WHEN '3' THEN c.GOODS_CTGRY_ID ELSE NULL END G3
+					,CASE NUM WHEN '4' THEN d.GOODS_CTGRY_ID ELSE NULL END G4
+					,CASE NUM WHEN '1' THEN a.GOODS_CTGRY_NM ELSE NULL END N1 
+					,CASE NUM WHEN '2' THEN b.GOODS_CTGRY_NM ELSE NULL END N2
+					,CASE NUM WHEN '3' THEN c.GOODS_CTGRY_NM ELSE NULL END N3
+					,CASE NUM WHEN '4' THEN d.GOODS_CTGRY_NM ELSE NULL END N4
+				FROM stn_goods_ctgry a
+				LEFT JOIN stn_goods_ctgry b ON b.GOODS_CTGRY_ID = a.UPPER_GOODS_CTGRY_ID AND b.USE_AT = 'Y'
+				LEFT JOIN stn_goods_ctgry c ON c.GOODS_CTGRY_ID = b.UPPER_GOODS_CTGRY_ID AND c.USE_AT = 'Y'
+				LEFT JOIN stn_goods_ctgry d ON d.GOODS_CTGRY_ID = c.UPPER_GOODS_CTGRY_ID AND d.USE_AT = 'Y'
+				JOIN (
+					SELECT '4' AS NUM FROM DUAL UNION ALL
+					SELECT '3' AS NUM FROM DUAL UNION ALL
+					SELECT '2' AS NUM FROM DUAL UNION ALL
+					SELECT '1' AS NUM FROM DUAL
+				) u
+				WHERE	a.GOODS_CTGRY_ID = #{goodsCtgryId}
+					AND a.USE_AT = 'Y'
+					AND a.ACTVTY_AT = 'Y'
+				ORDER BY NUM ASC
+			) t1
+		) t2
+		WHERE	t2.GOODS_CTGRY_ID &lt;&gt; ''
+	</select>
+
+	<select id="selectSubCtgryList" parameterType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO" resultType="modoo.module.shop.goods.ctgry.service.GoodsCtgryVO">
+		SELECT
+			*
+		FROM stn_goods_ctgry
+		WHERE USE_AT = 'Y'
+			AND ACTVTY_AT = 'Y'
+			AND UPPER_GOODS_CTGRY_ID = #{searchUpperGoodsCtgryId}
+		ORDER BY GOODS_CTGRY_SN
+	</select>
+</mapper>	

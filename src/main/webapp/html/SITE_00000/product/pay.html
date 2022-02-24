@@ -1,0 +1,1312 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <title>모두의구독</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="Author" content="">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <!--[if lt IE 9]><script src="../../../resources/front/site/SITE_00000/js/html5.js"></script><![endif]-->
+    <link href="../../../resources/front/site/SITE_00000/css/swiper.css" rel="stylesheet" />
+    <link href="../../../resources/front/site/SITE_00000/css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="accessibility">
+        <a href="#contents">콘텐츠 바로가기</a>
+    </div>
+    <header class="site-header">
+        <div class="banner-top">
+            <div class="banner-txt-area">
+                <p>
+                    <img src="../../../resources/front/site/SITE_00000/image/ezwel/logo_ezwel.svg" alt="ezwel" /> 아래 사이트는 <strong style="color:#006CBA">복지관</strong>과 제휴에 의해 서비스 되고 있습니다.
+                </p>
+            </div>
+            <!--<div class="banner-func">
+                <a href="#none"><span>온라인 복지관</span> 바로가기 <i class="ico-arr-r sm back" aria-hidden="true"></i></a>
+            </div>-->
+        </div>
+        <div class="wrap">
+            <!--<h1 class="logo">
+                <a href="#none"><img src="../../../resources/front/site/SITE_00000/image/logo/logo_b_txt.svg" alt="편안함에 익숙해지다 - 모두의구독" /></a>
+            </h1>-->
+            <h1 class="logo">
+                <a href="#none">모두의 구독</a>
+            </h1>
+            <nav class="site-gnb">
+                <ul>
+                    <li><button type="button" class="btn-category-open">카테고리</button></li>
+                    <li><button type="button">브랜드관</button></li>
+                </ul>
+            </nav>
+            <button type="button" class="btn-schall-toggle"><i class="ico-sch" aria-hidden="true"></i><span class="txt-hide">검색</span></button>
+            <!--<div class="schall">
+                <button class="btn-close"><span class="txt-hide">닫기</span></button>
+            </div>-->
+            <div class="util">
+                <a href="#none"><i class="ico-user" aria-hidden="true"></i><span class="txt-hide">마이페이지</span></a>
+                <!--<a href="#none"><i class="ico-zzim" aria-hidden="true"></i><span class="txt-hide">찜</span></a>-->
+                <a href="#none">
+                    <i class="ico-cart" aria-hidden="true"></i>
+                    <span class="txt-hide">장바구니</span>
+                    <span class="label-notice">99+</span>
+                </a>
+            </div>
+
+            <!--모바일 전체 메뉴-->
+            <button type="button" class="m-btn-menu-toggle">
+                <i class="ico-menu" aria-hidden="true"></i>
+                <span class="txt-hide">메뉴</span>
+            </button>
+            <!--
+            <div class="m-menu">
+                <button class="btn-close"><span class="txt-hide">닫기</span></button>
+            </div>-->
+        </div><!-- //wrap -->
+    </header>
+    <div class="site-body" role="main">
+        <div class="contents wrap" id="contents">
+            <div class="sub-contents">
+                <div class="sticky-cont">
+                    <div class="cont-area">
+                        <h2 class="sub-tit">주문/결제</h2>
+                        <!--<section>
+                            <div class="sub-tit-area">
+                                <h3 class="sub-tit">업체 요청 사항(필수정보입력)</h3>
+                            </div>
+                            <div class="write-type">
+                                <table>
+                                    <caption>업체요성사항 입력</caption>
+                                    <colgroup>
+                                        <col style="width:150px" />
+                                        <col />
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">1. 섭취 연령</th>
+                                            <td><input type="text" class="p10" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">2. 알레르기 반응</th>
+                                            <td><input type="text" class="p10" /></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">3. 기타요청사항</th>
+                                            <td><input type="text" class="p10" /></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>-->
+                        <section>
+                            <div class="sub-tit-area">
+                                <h3 class="sub-tit">주문자 정보</h3>
+                            </div>
+                            <div class="write-type full">
+                                <table>
+                                    <caption>주문자정보 입력</caption>
+                                    <colgroup>
+                                        <col style="width:150px" />
+                                        <col />
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">보내시는 분</th>
+                                            <td>
+                                                <input type="text" class="p6" placeholder="예)집, 회사" />
+                                                <span class="fs-sm fc-gr">* 보내시는 분의 이름을 변경하여 주문가능합니다.</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">휴대전화</th>
+                                            <td>
+                                                <!--<strong class="ff-din">010 - 000 - 0000</strong><span class="fs-sm fc-gr">* 해당 번호로 주문정보가 발송됩니다.</span>
+                                                <div>
+                                                    <button type="button" class="btn spot2">번호 번경하기</button>
+                                                </div>-->
+                                                <div class="phone inlin-block">
+                                                    <input type="number" class="p0" maxlength="3">
+                                                    <input type="number" class="p0" maxlength="4">
+                                                    <input type="number" class="p0" maxlength="4">
+                                                </div>
+                                                <span class="fs-sm fc-gr">* 해당 번호로 주문정보가 발송됩니다.</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">이메일 주소</th>
+                                            <td>
+                                                <div class="email">
+                                                    <input type="text" class="p2" />
+                                                    <span>@</span>
+                                                    <input type="text" class="p2" />
+                                                    <select>
+                                                        <option>직접입력</option>
+                                                        <option>naver.com</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p class="fs-sm">* 주문자 정보로 결제관련 정보가 제공됩니다. 정확한 정보기입이 필요합니다. </p>
+                            </div>
+                        </section>
+                        <section>
+                            <div class="sub-tit-area">
+                                <h3 class="sub-tit">배송정보</h3>
+                            </div>
+                            <!--<div class="tabs">
+                                <ul>
+                                    <li><a href="#delivery1">기본 배송지</a></li>
+                                    <li><a href="#delivery2">신규입력</a></li>
+                                </ul>
+                                <div id="delivery1">
+                                    <div class="write-type border-none">
+                                        <div class="fnc-area">
+                                            <div class="fl">
+                                                <cite class="tit">최근 배송지 선택</cite>
+                                                <ul class="check-inline-list">
+                                                    <li>
+                                                        <label><input type="radio" name="delivery" checked />집</label>
+                                                        <button type="submit" class="btn-sm-del"><span class="txt-hide">삭제</span></button>
+                                                    </li>
+                                                    <li>
+                                                        <label><input type="radio" name="delivery" />회사</label>
+                                                        <button type="submit" class="btn-sm-del"><span class="txt-hide">삭제</span></button>
+                                                    </li>
+                                                    <li>
+                                                        <label><input type="radio" name="delivery" />우리집</label>
+                                                        <button type="submit" class="btn-sm-del"><span class="txt-hide">삭제</span></button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="fr">
+                                                <button type="button" class="btn spot2">배송지 목록</button>
+                                            </div>
+                                        </div>
+                                        <table>
+                                            <caption>배송지 정보</caption>
+                                            <colgroup>
+                                                <col style="width:150px" />
+                                                <col />
+                                            </colgroup>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">수령인 (배송지)</th>
+                                                    <td>김모두 (회사)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">연락처</th>
+                                                    <td>010 - 0000 - 0000</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">배송주소</th>
+                                                    <td>(061170) 서울시 강남구 봉은사로 104길 10, 아이큐어타워 6층</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">배송메세지</th>
+                                                    <td>
+                                                        <select title="배송메세지 선택" class="p10">
+                                                            <option>배송 전에 미리 연락 바랍니다.</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div id="delivery2">
+                                    <div class="write-type border-none">
+                                        <p class="txt ar"><i class="required"></i> 필수입력</p>
+                                        <table>
+                                            <caption>신규 입력</caption>
+                                            <colgroup>
+                                                <col style="width:150px" />
+                                                <col />
+                                            </colgroup>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">배송지명</th>
+                                                    <td><input type="text" class="p10" placeholder="예)집, 회사" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" class="required">수령인</th>
+                                                    <td><input type="text" class="p10" placeholder="이름을 입력하세요." /></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" class="required">연락처</th>
+                                                    <td><input type="number" class="p0" maxlength="3" /><input type="number" class="p0" maxlength="4" /><input type="number" class="p0" maxlength="4" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" class="required">배송주소</th>
+                                                    <td>
+                                                        <input type="text" class="p5" disabled />
+                                                        <button type="button" class="btn spot2">주소 찾기</button>
+                                                        <input type="text" class="p10" disabled />
+                                                        <input type="text" class="p10" placeholder="상세주소를 입력해주세요" />
+                                                        <div class="block">
+                                                            <label><input type="checkbox" /> 기본 배송지로 설정</label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" class="required">배송메세지</th>
+                                                    <td>
+                                                        <select title="배송메세지 선택" class="p10">
+                                                            <option>요청사항을 직접 입력합니다.</option>
+                                                        </select>
+                                                        <textarea rows="3"></textarea>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>-->
+
+                            <div class="tabs-normal">
+                                <ul class="tabs-nav">
+                                    <li class="is-active"><a href="#delivery1">기본 배송지</a></li>
+                                    <li><a href="#delivery2">신규입력</a></li>
+                                </ul>
+                                <div id="delivery1" class="tabs-cont">
+                                    <div class="write-type border-none">
+                                        <div class="fnc-area">
+                                            <div class="fl">
+                                                <cite class="tit">최근 배송지 선택</cite>
+                                                <ul class="check-inline-list">
+                                                    <li>
+                                                        <label><input type="radio" name="delivery" checked />집</label>
+                                                        <button type="submit" class="btn-sm-del"><span class="txt-hide">삭제</span></button>
+                                                    </li>
+                                                    <li>
+                                                        <label><input type="radio" name="delivery" />회사</label>
+                                                        <button type="submit" class="btn-sm-del"><span class="txt-hide">삭제</span></button>
+                                                    </li>
+                                                    <li>
+                                                        <label><input type="radio" name="delivery" />우리집</label>
+                                                        <button type="submit" class="btn-sm-del"><span class="txt-hide">삭제</span></button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="fr">
+                                                <button type="button" class="btn spot2">배송지 목록</button>
+                                            </div>
+                                        </div>
+                                        <table>
+                                            <caption>배송지 정보</caption>
+                                            <colgroup>
+                                                <col style="width:150px" />
+                                                <col />
+                                            </colgroup>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">수령인 (배송지)</th>
+                                                    <td>김모두 (회사)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">연락처</th>
+                                                    <td>010 - 0000 - 0000</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">배송주소</th>
+                                                    <td>(061170) 서울시 강남구 봉은사로 104길 10, 아이큐어타워 6층</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">배송메세지</th>
+                                                    <td>
+                                                        <select title="배송메세지 선택" class="p10">
+                                                            <option>배송 전에 미리 연락 바랍니다.</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div id="delivery2" class="tabs-cont">
+                                    <div class="write-type border-none">
+                                        <p class="txt ar"><i class="required"></i> 필수입력</p>
+                                        <table>
+                                            <caption>신규 입력</caption>
+                                            <colgroup>
+                                                <col style="width:150px" />
+                                                <col />
+                                            </colgroup>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">배송지명</th>
+                                                    <td><input type="text" class="p10" placeholder="예)집, 회사" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" class="required">수령인</th>
+                                                    <td><input type="text" class="p10" placeholder="이름을 입력하세요." /></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" class="required">연락처</th>
+                                                    <td><input type="number" class="p0" maxlength="3" /><input type="number" class="p0" maxlength="4" /><input type="number" class="p0" maxlength="4" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" class="required">배송주소</th>
+                                                    <td>
+                                                        <input type="text" class="p5" disabled />
+                                                        <button type="button" class="btn spot2">주소 찾기</button>
+                                                        <input type="text" class="p10" disabled />
+                                                        <input type="text" class="p10" placeholder="상세주소를 입력해주세요" />
+                                                        <div class="block">
+                                                            <label><input type="checkbox" /> 기본 배송지로 설정</label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" class="required">배송메세지</th>
+                                                    <td>
+                                                        <select title="배송메세지 선택" class="p10">
+                                                            <option>요청사항을 직접 입력합니다.</option>
+                                                        </select>
+                                                        <textarea rows="3"></textarea>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section>
+                            <div class="sub-tit-area">
+                                <h3 class="sub-tit">주문정보</h3>
+                            </div>
+                            <div class="table-type">
+                                <div class="thead">
+                                    <cite>상품정보</cite>
+                                    <cite>주문정보</cite>
+                                    <cite class="col-w200">결제금액</cite>
+                                </div>
+                                <div class="tbody">
+                                    <div class="al m-col-block">
+                                        <a href="#none">
+                                            <div class="thumb-area lg">
+                                                <figure><img src="../../../resources/front/site/SITE_00000/image/temp/thumb11.jpg" alt="델몬트 허니글로우 패키지 01" /></figure>
+                                                <div class="txt-area">
+                                                    <cite>델몬트</cite>
+                                                    <h2 class="tit">델몬트 허니글로우 패키지 01</h2>
+                                                    <div class="price">
+                                                        <strong><span>29,000</span>원</strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="al m-col-block">
+                                        <ul class="option-info">
+                                            <li>
+                                                <strong>구독주기 :</strong>
+                                                <span>1주</span>
+                                            </li>
+                                            <li>
+                                                <strong>구독요일 :</strong>
+                                                <span>화요일</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>수량 :</cite>
+                                                <span>1개</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>기본옵션 :</cite>
+                                                <span>냄비(+600원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>첫구독옵션 :</cite>
+                                                <span>냄비(+600원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>추가옵션 :</cite>
+                                                <span>냄비(+6000원)</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-w200 m-col-block">
+                                        <div class="price">
+                                            <strong><span>29,000</span>원</strong>
+                                            (1회차)
+                                            <p class="fc-gr fs-sm">다음 회차 정기 결제예정액 <strong>: 29,5000원</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tbody">
+                                    <ul class="bullet al">
+                                        <li>첫 구독옵션은 1회차에만 적용 및 결제되며, 2회차부터는 미결제 /미배송 됩니다.</li>
+                                        <li>※ 결제주기 및 옵션/수량 변경은 마이구독 &gt; 구독변경에서 가능합니다.</li>
+                                    </ul>
+                                </div>
+                                <div class="tbody">
+                                    <div class="al m-col-block">
+                                        <a href="#none">
+                                            <div class="thumb-area lg">
+                                                <figure><img src="../../../resources/front/site/SITE_00000/image/temp/thumb11.jpg" alt="델몬트 허니글로우 패키지 01" /></figure>
+                                                <div class="txt-area">
+                                                    <cite>델몬트</cite>
+                                                    <h2 class="tit">델몬트 허니글로우 패키지 01</h2>
+                                                    <div class="price">
+                                                        <strong><span>29,000</span>원</strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="al m-col-block">
+                                        <ul class="option-info">
+                                            <li>
+                                                <strong>구독주기 :</strong>
+                                                <span>1주</span>
+                                            </li>
+                                            <li>
+                                                <strong>구독요일 :</strong>
+                                                <span>화요일</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>수량 :</cite>
+                                                <span>1개</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>기본옵션 :</cite>
+                                                <span>냄비(+600원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>첫구독옵션 :</cite>
+                                                <span>냄비(+600원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>추가옵션 :</cite>
+                                                <span>냄비(+6000원)</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-w200 m-col-block">
+                                        <div class="price">
+                                            <strong><span>29,000</span>원</strong>
+                                            (1회차)
+                                            <p class="fc-gr fs-sm">다음 회차 정기 결제예정액 <strong>: 29,5000원</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tbody">
+                                    <ul class="bullet al">
+                                        <li>첫 구독옵션은 1회차에만 적용 및 결제되며, 2회차부터는 미결제 /미배송 됩니다.</li>
+                                        <li>※ 결제주기 및 옵션/수량 변경은 마이구독 &gt; 구독변경에서 가능합니다.</li>
+                                    </ul>
+                                </div>
+                                <div class="tfooter al">
+                                    <cite class="table-tit">업체 요청사항(필수정보입력)</cite>
+                                    <dl class="write-area">
+                                        <dt>1. 섭취 연령</dt>
+                                        <dd><input type="text" class="p10" /></dd>
+                                        <dt>2. 알레르기 반응</dt>
+                                        <dd><input type="text" class="p10" /></dd>
+                                        <dt>3. 기타요청사항 기타요청사항기타요청사항기타요청사항기타요청사항기타요청사항기타요청사항기타요청사항기타요청사항기타요청사항</dt>
+                                        <dd><input type="text" class="p10" /></dd>
+                                    </dl>
+                                </div>
+                                <div class="tbody">
+                                    <div class="al m-col-block">
+                                        <a href="#none">
+                                            <div class="thumb-area lg">
+                                                <figure><img src="../../../resources/front/site/SITE_00000/image/temp/thumb11.jpg" alt="델몬트 허니글로우 패키지 01" /></figure>
+                                                <div class="txt-area">
+                                                    <cite>밀리의 서재</cite>
+                                                    <h2 class="tit">델몬트 허니글로우 패키지 01</h2>
+                                                    <div class="price">
+                                                        <strong><span>29,000</span>원</strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="al m-col-block">
+                                        <ul class="option-info">
+                                            <li>
+                                                <strong>구독주기 :</strong>
+                                                <span>1주</span>
+                                            </li>
+                                            <li>
+                                                <strong>구독요일 :</strong>
+                                                <span>화요일</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>수량 :</cite>
+                                                <span>1개</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>기본옵션 :</cite>
+                                                <span>냄비(+600원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>첫구독옵션 :</cite>
+                                                <span>냄비(+600원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>추가옵션 :</cite>
+                                                <span>냄비(+6000원)</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-w200 m-col-block">
+                                        <div class="price">
+                                            <strong><span>29,000</span>원</strong>
+                                            (1회차)
+                                            <p class="fc-gr fs-sm">다음 회차 정기 결제예정액 <strong>: 29,5000원</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </section>
+                        <section>
+                            <div class="sub-tit-area">
+                                <h3 class="sub-tit">결제수단</h3>
+                                <div class="fnc-area">
+                                    <button type="button" class="btn-gr">카드사 혜택보기</button>
+                                    <a href="none" class="btn-gr">카드 등록 / 관리</a>
+                                </div>
+                            </div>
+                            <!--<div class="tabs">
+                            <ul>
+                                <li><a href="#payment1">포인트 선결제</a></li>
+                                <li><a href="#payment2">카드결제</a></li>
+                            </ul>
+                            <div id="payment1">
+                                <div class="write-type border-none">
+                                    <table>
+                                        <caption>포인트 선결제</caption>
+                                        <colgroup>
+                                            <col style="width:150px" />
+                                            <col />
+                                        </colgroup>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">복지 포인트 결제</th>
+                                                <td>
+                                                    <input type="text" class="p5 ar" value="잔여포인트: 150,000원" disabled />
+                                                    <p class="msg">
+                                                        ※ 결제 안내 : 포인트 모두 소진시 , 등록되어있는 결제 카드정보로 설정한<br class="m-none" />
+                                                        구독주기 / 배송일 3일전에 정기결제가 이루어 집니다.
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">자동결제 기본카드</th>
+                                                <td>
+                                                    <input type="text" value="Always On(올웨이즈온)(3300)" disabled class="p10" />-->
+                            <!--<select title="카드선택" class="p10">
+                                <option>카드를 선택해주세요.</option>
+                                <option>Always On(올웨이즈온)(3300)</option>
+                            </select>-->
+                            <!--<p class="msg">기본카드 변경: 카드 등록 / 관리</p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div id="payment2">
+                                    <div class="write-type border-none">
+                                        <table>
+                                            <caption>포인트 선결제</caption>
+                                            <colgroup>
+                                                <col style="width:150px" />
+                                                <col />
+                                            </colgroup>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">등록된 카드</th>
+                                                    <td>
+                                                        <select title="카드선택" class="p10">
+                                                            <option>Always On(올웨이즈온)(3300)</option>
+                                                            <option>BC (3300)</option>
+                                                            <option>현대카드 (3300)</option>
+                                                        </select>
+                                                        <p class="msg">기본카드 변경: 카드 등록 / 관리</p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>-->
+
+                            <div class="write-type full">
+                                <table>
+                                    <caption>포인트 선결제</caption>
+                                    <colgroup>
+                                        <col style="width:200px" />
+                                        <col />
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">복지 포인트 결제</th>
+                                            <td>
+                                                <div class="input-st-area">
+                                                    <div class="input-st ar"><strong class="price">20,000</strong> 원</div>
+                                                    <span>잔여 포인트 <em>123,333,330</em>원</span>
+                                                </div>
+                                                <label><input type="checkbox" disabled /> 포인트 선결제</label>
+                                                <p class="msg">
+                                                    ※ 결제 안내 : 포인트 모두 소진시, 등록되어 있는 결제카드정보로<br class="m-none" />
+                                                    설정한 구독주기에 정기결제가 이루어 집니다.
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">카드 결제금액</th>
+                                            <td>
+                                                <div class="input-st ar"><strong class="price">20,000</strong> 원</div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">정기결제 기본카드</th>
+                                            <td>
+                                                <select title="카드선택" class="p6">
+                                                    <!--<option>카드를 선택해주세요.</option>-->
+                                                    <option>Always On(올웨이즈온)(3300)</option>
+                                                </select>
+                                                <p class="msg">(카드 등록 및 변경은 카드 등록/관리에서 가능합니다.)</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">결제수단</th>
+                                            <td>
+                                                <div class="border-box">
+                                                    <div class="payment-area" id="payment2">
+                                                        <fieldset class="radio-type">
+                                                            <legend>결제수단 선택</legend>
+                                                            <label><input type="radio" name="paymentEtc" checked />신용카드</label>
+                                                            <label><input type="radio" name="paymentEtc" />실시간계좌이체</label>
+                                                            <label><input type="radio" name="paymentEtc" />가상계좌발급</label>
+                                                            <label><input type="radio" name="paymentEtc" />휴대폰결제</label>
+                                                        </fieldset>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="sticky-area total-buy-area">
+                        <div class="sticky-toggle-area">
+                            <div class="sticky-header">총 결제금액</div>
+                            <div class="sticky-body">
+                                <ul class="price-info-list">
+                                    <li>
+                                        <cite>상품금액</cite>
+                                        <div>8,900원</div>
+                                    </li>
+                                    <li>
+                                        <cite>할인예상금액</cite>
+                                        <div>0원</div>
+                                    </li>
+                                    <li>
+                                        <cite>포인트사용</cite>
+                                        <div>-1,000원</div>
+                                    </li>
+                                    <li>
+                                        <cite>배송비</cite>
+                                        <div>0원</div>
+                                    </li>
+                                    <li>
+                                        <cite>추가배송비</cite>
+                                        <div>3000원</div>
+                                    </li>
+                                </ul>
+                                <div class="total-area">
+                                    <cite>총 <em>3</em>건</cite>
+                                    <div class="price">
+                                        <strong><span>8,900</span> 원</strong>
+                                    </div>
+                                </div>
+                                <div class="agree-area">
+                                    <ul class="bullet-none">
+                                        <li>
+                                            <label><input type="checkbox" /> 개인정보 제 3자 제공 동의</label>
+                                            <button type="button" class="fc-gr fs-sm">보기 <i class="ico-arr-r sm back gr"></i></button>
+                                        </li>
+                                        <li>
+                                            <label><input type="checkbox" /> 구매조건 확인 및 결제대행 서비스 약관 동의</label>
+                                            <button type="button" class="fc-gr fs-sm">보기 <i class="ico-arr-r sm back gr"></i></button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-table-area">
+                            <a href="#none" class="btn-lg spot">주문하기</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- //contents -->
+        <a href="#" class="btn-top"><span class="txt-hide">처음으로</span></a>
+    </div><!-- //site-body -->
+
+    <footer class="site-footer">
+        <div class="wrap">
+            <div class="footer-info">
+                <address class="company-info">
+                    <cite>한국구독경제서비스(주)</cite>
+                    <p>서울시 강남구 봉은사로 104길 10, 아이큐어타워 6층</p>
+                    <dl>
+                        <dt>통신판매업신고</dt>
+                        <dd>2020 - 서울 - xxxx</dd>
+                        <dt>사업자등록번호</dt>
+                        <dd>410 - 87 - 10313</dd>
+                        <dt>TEL</dt>
+                        <dd><a href="tel:1588-1234">1588 - 1234</a></dd>
+                        <dt>FAX</dt>
+                        <dd>02-000-0000</dd>
+                    </dl>
+                </address>
+                <address>
+                    <cite>고객센터</cite>
+                    <p>서울시 강남구 봉은사로 104길 10, 아이큐어타워 6층</p>
+                    <dl>
+                        <dt>TEL</dt>
+                        <dd><a href="tel:1588-1234">1588 - 1234</a></dd>
+                        <dt>FAX</dt>
+                        <dd>02-000-0000</dd>
+                        <dt>E-mail</dt>
+                        <dd>modoohelp@modoo.com</dd>
+                    </dl>
+                </address>
+                <nav class="footer-menu">
+                    <a href="#none">이용약관</a>
+                    <a href="#none"><strong>개인정보처리방침</strong></a>
+                    <a href="#none">공지사항</a>
+                    <a href="#none">FAQ</a>
+                </nav>
+            </div>
+            <figure class="footer-mark">
+                <img src="../../../resources/front/site/SITE_00000/image/logo/logo_kses_gray.png" alt="KSES" />
+                <a href="none">사업자 정보확인 <i class="ico-arr-r sm gr"></i></a>
+            </figure>
+            <p class="footer-txt">
+                한국구독경제서비스㈜는 통신판매중개자이며, 통신판매의 당사자가 아닙니다. 상품, 상품정보, 거래에 관한 의무와 책임은 판매자에게 있습니다.<br />
+                KSES Copyright © KSES Corp. All Rights Reserved.
+            </p>
+        </div>
+    </footer>
+
+    <div class="popup-lg" data-popup="terms">
+        <div class="pop-header">
+            <h1>약관</h1>
+            <button type="button" class="btn-pop-close" data-popup-close="terms">닫기</button>
+        </div>
+        <div class="pop-body">
+            <div class="terms">
+                <section>
+                    <h3>한국구독경제서비스㈜ 모두의 구독 개인정보 처리방침</h3>
+                    <p>
+                        한국구독경제서비스㈜(이하 "회사"라 함)가 운영하는 정기구독 플랫폼(이하 "모두의 구독"이라 함)은 개인정보 보호법 제30조에 따라 회원의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 다음과 같이 개인정보 처리방침을 수립 · 공개합니다.
+                    </p>
+                    <p>모두의 구독 홈페이지 개인정보 수집 및 이용은 다음과 같은 내용을 담고 있습니다.</p>
+                    <ol class="bullet-demical">
+                        <li><strong>개인정보의 수집항목 및 이용목적</strong></li>
+                        <li><strong>개인정보의 수집방법</strong></li>
+                        <li><strong>개인정보의 보유 및 이용기간</strong></li>
+                        <li><strong>개인정보의 제 3자 제공</strong></li>
+                        <li><strong>개인정보의 처리 위탁</strong></li>
+                        <li><strong>개인정보 파기절차 및 방법</strong></li>
+                        <li><strong>개인정보의 안전성 확보조치(기술적/관리적/물리적 조치)</strong></li>
+                        <li><strong>개인정보 자동 수집 장치의 설치/운영 및 거부에 관한 사항(쿠키의 운용 및 거부)</strong></li>
+                        <li><strong>회원 및 법정 대리인의 권리와 그 행사방법</strong></li>
+                        <li><strong>개인정보 보호책임자</strong></li>
+                        <li><strong>개인정보침해 관련 상담 신고</strong></li>
+                        <li><strong>개인정보처리방침 고지/변경의 의무</strong></li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>제 1 조 개인정보의 수집항목 및 이용목적</h3>
+                    <ol class="bullet-demical">
+                        <li>
+                            모두의 구독은 다음의 목적을 위하여 개인정보를 처리합니다. 처리하고 있는 개인정보는 다음의 목적 이외의 용도로 이용되지 않으며, 이용 목적이 변경되는 경우에는 개인정보 보호법 제18조에 따라 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.
+                            <div class="info-type">
+                                <table>
+                                    <caption>개인정보의 수집항목 및 이용목적</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">필수항목</th>
+                                            <th scope="col">이용목적</th>
+                                            <th scope="col">이용기간</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                (회원가입시 수집)<br />
+                                                성명, 아이디(이메일주소)
+                                            </td>
+                                            <td>회원가입 정보 관리</td>
+                                            <td>계약종료 및 회원 탈퇴시까지</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                (결제시) 성명, 휴대폰번호, 이메일주소, 배송주소,<br />
+                                                (카드등록시) 생년월일, 카드정보
+                                            </td>
+                                            <td>
+                                                재화 또는 서비스 제공<br />
+                                                - 상품구입에 따른 배송(반품/환불)<br />
+                                                - 기타서비스 제공
+                                            </td>
+                                            <td>
+                                                이용목적 달성시까지
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>성명, 생년월일, 성별, 아이디</td>
+                                            <td>
+                                                설문조사 신청<br />
+                                                - 고객만족 설문조사 진행<br />
+                                                - 신규 서비스 발굴 및 기존 서비스 개선
+                                            </td>
+                                            <td>이용목적 달성시까지</td>
+                                        </tr>
+                                        <tr>
+                                            <td>성명, 생년월일, 주소, 휴대폰번호, 아이디, 이메일주소</td>
+                                            <td>
+                                                이벤트 및 경품행사 신청<br />
+                                                - 이벤트 및 경품행사 당첨결과 안내 및 상품배송
+                                            </td>
+                                            <td>이용목적 달성시까지</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                        <li>
+                            모두의 구독 모바일 앱 서비스를 위하여 고객의 이동통신단말기 내 정보 및 기능 중 아래 사항에 대해 접근을 합니다. 필수 접근항목은 앱 설치 또는 최초 실행시 안내 및 동의를 받으며, 선택 접근항목은 해당 서비스 진입시 별도 동의를 받습니다. 선택 접근항목의 경우 OS버전에 따라 동의 받는 방법이 다를 수 있으나, 고객이 거부하시더라도 서비스 이용에는 제한이 없습니다.
+                            p
+                            <ul>
+                                <li>
+                                    <cite>1) 모두의 구독 모바일 앱</cite>
+                                    <div class="info-type">
+                                        <table>
+                                            <caption>모두의 구독 모바일 앱</caption>
+                                            <colgroup>
+                                                <col style="width:20%" />
+                                                <col />
+                                                <col />
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">필수/선택</th>
+                                                    <th scope="col">접근 항목</th>
+                                                    <th scope="col">접근 목적</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row" rowspan="2">필수</th>
+                                                    <td>기기 및 앱 기록 권한</td>
+                                                    <td>당사 APP 실행, 앱 구동관련 오류 확인</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>전화/저장공간/주소록 권한</td>
+                                                    <td>고객센터 바로 전화걸기, 이미지캐싱, 간편선물하기 이용</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">선택</th>
+                                                    <td>위치 정보</td>
+                                                    <td>내 주변 혜택 알림</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>제 2 조 개인정보의 수집방법</h3>
+                    <ul class="bullet">
+                        <li>모두의 구독은 이용자의 소속된 회사와 계약을 통해 최소의 필수 정보를 수집합니다.</li>
+                        <li>홈페이지 회원가입 절차, 상담절차, 이벤트 및 경품행사 응모 등의 방법으로 수집합니다.</li>
+                        <li>고객센터를 통한 상담 과정에서 홈페이지, 메일, 팩스, 전화 등을 통해 이용자의 개인정보가 수집 될 수 있습니다.</li>
+                        <li>오프라인 이벤트 등에서 서면을 통해 개인정보가 수집될 수 있습니다.</li>
+                        <li>스마트폰용 어플리케이션을 통해 개인정보를 수집합니다.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>제 3 조 개인정보의 보유 및 이용기간</h3>
+                    <ol class="bullet-demical">
+                        <li>
+                            모두의 구독은 개인정보의 수집목적 및 이용목적이 달성되면 파기합니다.<br />
+                            단, 관련 법령의 규정에 의하여 다음과 같이 거래 관련 관리 의무 관계의 확인 등을 이유로 일정기간 보유하여야 할 필요가 있을 경우에는 일정기간 보유합니다.
+                            <ul class="bullet">
+                                <li>
+                                    「전자상거래 등에서의 소비자보호에 관한 법률」에 의한 보관
+                                    <ul>
+                                        <li>1) 계약 또는 청약철회 등에 관한 기록: 5년</li>
+                                        <li>2) 대금결제 및 재화 등의 공급에 관한 기록: 5년</li>
+                                        <li>3) 소비자의 불만 또는 분쟁처리에 관한 기록: 3년</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    「통신비밀보호법」 제41조에 따른 통신사실확인자료 보관
+                                    <ul>
+                                        <li>1) 컴퓨터통신, 인터넷 로그기록자료, 접속치 추적자료: 3개월</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    「전자금융거래법」에 의한 보관
+                                    <ul>
+                                        <li>1) 건당 1만원 초과의 전자금융거래 기록 : 5년</li>
+                                        <li>2) 건당 1만원 이하의 전자금융거래 기록 : 1년</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    「회사방침」에 의한 정보보유 사유<br />
+                                    부정이용 방지를 위한 기록
+                                    <ul class="bullet">
+                                        <li>보존이유 : 재가입 등을 반복적으로 행하며 명의를 무단으로 사용하는 불법/부정 이용차단</li>
+                                        <li>보존기간 : 2개월</li>
+                                        <li>보존항목 : 성명, 아이디, 비밀번호, 이메일주소, 접속로그, IP정보 등)</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            상기 사유 이외에 다음의 예외적인 사유에 해당하는 경우 해당 사유 종료 시까지 개인정보를 보유합니다.
+                            <ul>
+                                <li>1) 관계 법령 위반에 따른 수사·조사 등이 진행 중인 경우 : 해당 수사·조사 종료 시까지</li>
+                                <li>2) 서비스 이용에 따른 채권·채무관계 잔존할 경우: 해당 채권·채무관계 정산 시까지</li>
+                                <li>3) 재화 또는 서비스 제공의 경우: 재화·서비스 공급완료 및 요금결제·정산 완료 시까지</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>제 4 조 개인정보의 제3자 제공</h3>
+                    <ol class="bullet-demical">
+                        <li>모두의 구독은 이용자의 개인정보를 명시한 범위 내에서만 처리하며, 정보주체의 동의, 법률의 특별한 규정에 해당하는 경우에만 개인정보를 제3자에게 제공합니다.</li>
+                        <li>
+                            모두의 구독은 다음과 같이 개인정보를 제3자에게 제공하고 있습니다.
+                            <div class="info-type">
+                                <table>
+                                    <caption>개인정보의 제3자 제공</caption>
+                                    <colgroup>
+                                        <col style="width:15%" />
+                                        <col />
+                                        <col />
+                                        <col style="width:15%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">제공받는 자</th>
+                                            <th scope="col">제공받는 자의 개인정보 이용목적</th>
+                                            <th scope="col">제공하는 개인정보 항목</th>
+                                            <th scope="col">제공받는 자의 보유·이용기간</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">상품공급업체</th>
+                                            <td>주문한 상품의 주문처리, 청약의사의 확인, 거래이행, 배송, 고객상담, AS 등 불만처리</td>
+                                            <td>성명, 아이디, 연락처(유선전화번호, 휴대폰번호), 주소, 이메일주소, 주문정보, 수취인 정보(성명, 전화번호, 휴대폰번호, 주소)</td>
+                                            <td>구매서비스 종료 후 3개월</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">제휴사</th>
+                                            <td>주문한 상품의 주문처리, 청약의사의 확인, 거래이행, 배송, 고객상담, AS 등 불만처리, 해당 제휴사의 상품구매 및 서비스 이용</td>
+                                            <td>성명, 아이디, 연락처(전화번호, 휴대폰번호), 주소, 이메일주소, 주문정보, 수취인 정보(성명, 전화번호, 휴대폰번호, 주소)</td>
+                                            <td>제휴서비스 종료시까지</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">관할세무서</th>
+                                            <td>국세청 고시에 따른 주류 통신판매 주문에 대한 분기별 명세 세무서 제공</td>
+                                            <td>
+                                                주문자 인적사항(주소, 성명, 생년월일), 주문일자, 상품명, 수량, 주문금액 등
+                                            </td>
+                                            <td>관할세무서 제출시까지(관련 고시 준용)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                        <li>개인정보 제3자 제공이 필요한 경우에는 합당한 절차를 통한 회원의 동의를 얻어 제3자에게 개인정보를 제공 할 수 있습니다. 동의를 거부하시는 경우에도 회원가입서비스는 이용하실 수 있으나, 제 3자 제공에 기반한 관련 서비스의 이용/제공이 제한될 수 있습니다.</li>
+                        <li>개인정보의 제3자 제공은 제휴 관계의 개시 또는 종료에 따라 변동될 수 있으며, 제휴관계가 종료되면 제3자에게 제공된 정보 역시 파기하도록 조치합니다.</li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>제 5 조 개인정보처리의 위탁</h3>
+                    <ol class="bullet-demical">
+                        <li>모두의 구독은 기본적인 서비스의 제공, 서비스의 유지 및 관리, 고객 상담, 고객 편의 제공 등 서비스에 반드시 필요한 업무 중 일부를 외부 전문업체에 위탁하여 운영하고 있습니다.</li>
+                        <li>
+                            개인정보 처리 위탁 기관 및 위탁업무의 내용은 아래와 같습니다.
+                            <div class="info-type">
+                                <table>
+                                    <caption>개인정보처리의 위탁</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">위탁받는 자</th>
+                                            <th scope="col">위탁하는 업무의 내용</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">㈜케이지이니시스</th>
+                                            <td>본인확인 서비스(신용카드 인증)</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">㈜케이지이니시스</th>
+                                            <td>결제처리 서비스</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">비즈톡 주식회사</th>
+                                            <td>카카오 알림톡 발송 업무</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                        <li> 모두의 구독은 위탁계약 체결 시 위탁업무 수행목적 외 개인정보 처리금지, 기술적 관리적 보호조치, 재위탁 제한, 수탁자에 대한 관리 감독, 손해배상 등 책임에 관한 사항을 계약서 등 문서에 명시하고, 수탁자가 개인정보를 안전하게 처리하는지를 감독하고 있습니다.</li>
+                        <li>위탁업무의 내용이나 수탁자가 변경될 경우에는 지체 없이 본 개인정보 처리방침을 통하여 공개하도록 하겠습니다.</li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>제 6 조 개인정보 파기절차 및 방법</h3>
+                    <p>모두의 구독은 개인정보 보유기간의 경과, 처리목적 달성 등 개인정보가 불필요하게 되었을 때에는 해당 개인정보를 지체 없이 파기합니다.</p>
+                    <ol class="bullet-demical">
+                        <li>이용자로부터 동의 받은 개인정보 보유기간이 경과하거나 처리목적이 달성되었음에도 불구하고 다른 법령에 따라 개인정보를 계속 보존하여야 하는 경우에는, 해당 개인정보를 별도의 데이터베이스로 옮기거나 보관장소를 달리하여 보존합니다.</li>
+                        <li>
+                            개인정보 파기의 절차 및 방법은 다음과 같습니다.
+                            <ul>
+                                <li>
+                                    1) 파기절차<br />
+                                    <ul class="bullet">
+                                        <li>파기 사유가 발생한 개인정보를 선정하고, 회사의 개인정보 보호책임자의 승인을 받아 개인정보를 파기합니다.</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    2) 파기방법<br />
+                                    <ul class="bullet">
+                                        <li>종이에 출력된 개인정보: 분쇄기로 분쇄하거나 소각</li>
+                                        <li>전자적 파일 형태로 저장된 개인정보: 기록을 재생할 수 없는 기술적 방법을 사용하여 삭제</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>잘못된 개인정보를 제3자에게 이미 제공한 경우에는 정정 처리결과를 제3자에게 지체 없이 통지하여 정정하도록 조치하겠습니다.</li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>제 7 조 개인정보의 안전성 확보조치(기술적/관리적/물리적 조치)</h3>
+                    <p>회사는 개인정보의 안전성 확보를 위해 다음과 같은 조치를 취하고 있습니다.</p>
+                    <ol class="bullet-demical">
+                        <li>
+                            관리적 조치
+                            <ul class="bullet">
+                                <li>개인정보에 대한 접근권한을 최소화 하고 있습니다.</li>
+                                <li>내부규정 및 절차 등을 마련하고 정기적으로 소속 직원들의 개인정보보호 교육 진행과 자가보안 진단을 실시하고 있습니다.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            기술적 조치
+                            <ul class="bullet">
+                                <li>개인정보를 암호화하여 저장 및 관리하고 있습니다.</li>
+                                <li>다양한 보안 위협으로부터 안전하게 지키기 위하여 DDoS 장비와 침입방지시스템 등의 보안장비를 운영하고 있으며 통합백신을 사용하여 바이러스, 악성코드 등에 의한 피해를 방지하고 침해사고에 실시간 대응을 위해 365일 보안관제를 통해 침입을 감지하고 있습니다.</li>
+                                <li>전사적으로 인터넷망과 내부망을 분리하여 개인정보 유출 가능성을 최소화 하고 있습니다.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            물리적 조치
+                            <ul class="bullet">
+                                <li>사내 규정에 의거하여 보호구역을 지정하여 출입을 엄격히 통제하고 있습니다.</li>
+                                <li>중요 시스템에 대한 분리 운영 및 24시간 관리감독을 철저히 이행하고 있습니다.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>제 8 조 개인정보 자동 수집 장치의 설치/운영 및 거부에 관한 사항</h3>
+                    <p>회사는 이용자 개개인에게 개인화되고 맞춤화된 서비스를 제공하기 위해 이용자의 정보를 저장하고 수시로 불러오는 '쿠키(cookie)'를 사용합니다.</p>
+                    <ol class="bullet-demical">
+                        <li>
+                            쿠키의 사용 목적
+                            <ul class="bullet">
+                                <li>이용자의 접속 빈도나 방문 시간 등의 분석, 이용자의 취향과 관심분야의 파악 및 자취 추적, 각종 이벤트 참여 정도 및 방문 횟수 파악 등을 통한 타겟 마케팅 및 개인 맞춤 서비스 제공</li>
+                            </ul>
+                        </li>
+                        <li>
+                            쿠키의 사용 목적
+                            <ul class="bullet">
+                                <li>
+                                    이용자는 쿠키 설치에 대해 거부할 수 있습니다. 단, 쿠키 설치를 거부하였을 경우 로그인이 필요한 일부 서비스의 이용이 어려울 수 있습니다.<br />
+                                    (설정방법, IE 기준)웹 브라우저 상단의 도구 &gt; 인터넷 옵션 &gt; 개인정보 &gt; 사이트 차단
+                                </li>
+                            </ul>
+                        </li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>제 9 조 이용자 및 법정 대리인의 권리와 그 행사방법</h3>
+                    <ol class="bullet-demical">
+                        <li>
+                            이용자는 언제든지 다음 각 호의 개인정보 보호권리를 행사할 수 있습니다.
+                            <ul>
+                                <li>1) 개인정보 열람요구</li>
+                                <li>2) 오류 등이 있을 경우 정정 요구</li>
+                                <li>3) 삭제요구</li>
+                                <li>4) 처리정지 요구</li>
+                            </ul>
+                        </li>
+                        <li> 제1항에 따른 권리 행사는 회사에 대해 서면, 전화, 전자우편, 모사전송(FAX) 등을 통하여 하실 수 있으며 회사는 이에 대해 지체 없이 조치하겠습니다.</li>
+                        <li>이용자가 개인정보 오류 등에 대한 정정 또는 삭제를 요구한 경우에는 회사는 정정 또는 삭제를 완료할 때까지 당해 개인정보를 이용하거나 제공하지 않습니다. 또한 잘못된 개인정보를 제3자에게 이미 제공한 경우에는 정정 처리결과를 제 3자에게 지체없이 통지하여 정정이 이루어지도록 하겠습니다.</li>
+                        <li> 이용자는 정보통신망법, 개인정보보호법 등 관계법령을 위반하여 회사가 처리하고 있는 이용자 본인이나 타인의 개인정보 및 사생활을 침해하여서는 안됩니다.</li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>제 10 조 개인정보 보호책임자</h3>
+                    <p>회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한 이용자의 불만처리 및 피해구제 등을 위하여 다음과 같이 개인정보 보호책임자를 지정·운영하고 있습니다.</p>
+                    <div class="info-type">
+                        <table>
+                            <caption>개인정보 보호책임자</caption>
+                            <colgroup>
+                                <col style="width:20%" />
+                                <col />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="col">구분</th>
+                                    <th scope="col">개인정보 보호책임자</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">성명</th>
+                                    <td>오영석</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">직책</th>
+                                    <td>차장</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">소속</th>
+                                    <td>한국구독경제서비스</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">이메일</th>
+                                    <td>
+                                        ysoh@ksubes.com
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">연락처</th>
+                                    <td>
+                                        02-6011-8434
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                <section>
+                    <h3>제 11 조 개인정보침해 관련 상담 신고</h3>
+                    <p>
+                        이용자는 아래의 기관에 대해 개인정보 침해에 대한 피해규제, 상담 등을 문의하실 수 있습니다.<br />
+                        (아래의 기관은 회사와 별개의 기관으로서 회사의 자체적인 개인정보 불만처리, 피해구제 결과에 만족하지 못하시거나 보다 자세한 도움이 필요하시면 문의하여 주시기 바랍니다.)
+                    </p>
+                    <div class="info-type">
+                        <table>
+                            <caption>개인정보침해 관련 상담 신고</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">구분</th>
+                                    <th scope="col">연락처</th>
+                                    <th scope="col">홈페이지</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">개인정보 침해신고센터</th>
+                                    <td>(국번없이) 118</td>
+                                    <td>
+                                        http://privacy.kisa.or.kr
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">개인정보 분쟁조정위원회</th>
+                                    <td>
+                                        (국번없이) 1833-6972
+                                    </td>
+                                    <td>
+                                        http://kopico.go.kr
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">대검찰청 사이버수사과</th>
+                                    <td>
+                                        (국번없이) 1301
+                                    </td>
+                                    <td>
+                                        http://spo.go.kr
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">경찰청 사이버안전국</th>
+                                    <td>
+                                        (국번없이) 182
+                                    </td>
+                                    <td>
+                                        http://cyberbureau.police.go.kr
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                <section>
+                    <h3>제 12 조 개인정보처리방침 고지/변경의 의무</h3>
+                    <ol class="bullet-demical">
+                        <li> 이 개인정보 처리방침은 2020.11.16부터 적용됩니다.</li>
+                    </ol>
+                </section>
+            </div>
+            <div class="btn-table-area">
+                <button type="submit" class="btn-lg spot width" onclick="popClose('terms')">확인</button>
+            </div>
+        </div>
+    </div>
+    <div class="dim"></div>
+
+    <script src="../../../resources/lib/jquery/jquery.js"></script>
+    <script src="../../../resources/lib/jquery.easing/jquery.easing.js"></script>
+    <script src="../../../resources/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ssm.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/swiper.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ScrollMagic.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/TweenMax.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/animation.gsap.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/common.js"></script>
+</body>
+
+</html>

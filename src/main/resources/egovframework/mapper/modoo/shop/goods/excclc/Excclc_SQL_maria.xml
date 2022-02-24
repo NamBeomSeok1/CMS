@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.excclc.service.impl.ExcclcMapper">
+
+	<!-- 정산목록 -->
+	<select id="selectExcclcList" parameterType="modoo.module.shop.goods.excclc.service.ExcclcVO" resultType="modoo.module.shop.goods.excclc.service.ExcclcResult">
+		SELECT 
+			p.PRTNR_ID 
+			,CASE p.PRTNR_ID WHEN 'PRTNR_0000' THEN 'B2C' ELSE 'B2B' END PRTNR_SE_CODE
+			,code.CODE_NM AS EXCCLC_STTUS_CODE_NM
+			,os.ORDER_SETLE_NO 
+			,os.SETLE_TY_CODE 
+			,os.EZW_SETLE_CONFM_NO 
+			,os.SETLE_PRARNDE 
+			,os.SETLE_PNTTM 
+			,od.ORDER_NO 
+			,CONCAT( IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','',sgc3.GOODS_CTGRY_NM), IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','','&gt;')
+					,IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','',sgc2.GOODS_CTGRY_NM),IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','','&gt;') 
+					,IF(ISNULL(sgc.GOODS_CTGRY_NM) or sgc.GOODS_CTGRY_NM = 'ROOT','',sgc.GOODS_CTGRY_NM)
+					) AS GOODS_CTGRY_NM
+			,g.GOODS_ID
+			,g.GOODS_NM 
+			,g.MODEL_NM 
+			,g.TAXT_SE_CODE
+			,c.CMPNY_NM 
+			,od.SLE_AMOUNT 
+			,od.DSCNT_AMOUNT 
+			,od.SETLE_AMOUNT
+			,o.GOODS_AMOUNT
+			,o.ORDER_CO
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchMode, 'MNG')">
+			,ROUND(IFNULL(od.GOODS_AMOUNT,0) / 1.1) AS ORDER_GOODS_PC
+			,ROUND(IFNULL(od.GOODS_AMOUNT,0) / 1.1 * 0.1) AS GOODS_TAXAMT
+			,ROUND(IFNULL(od.OPTN_AMOUNT,0) / 1.1) AS OPTN_PC
+			,ROUND(IFNULL(od.OPTN_AMOUNT,0) / 1.1 * 0.1) AS OPTN_TAXAMT
+			,ROUND(IFNULL(od.DLVY_AMOUNT,0) / 1.1) AS DLVY_AMOUNT
+			,ROUND(IFNULL(od.DLVY_AMOUNT,0) / 1.1 * 0.1) AS DLVY_TAXAMT
+			</if>
+			,IFNULL(os.SETLE_TOT_AMOUNT,0) AS SETLE_TOT_AMOUNT
+			,IFNULL(os.SETLE_POINT,0) AS SETLE_POINT
+			,IFNULL(os.SETLE_CARD_AMOUNT,0) AS SETLE_CARD_AMOUNT
+			,o.RSRVMNEY
+			,'-' AS COUPON_DSCNT
+			,'-' AS EVENT_DSCNT
+			,IFNULL(o.RSRVMNEY,0) + 0 + 0 AS EVENT_TOT
+			,g.GOODS_FEE_RATE
+			,ROUND(IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100)) AS SETLE_FEE_TOT
+			,ROUND((IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100)) / 1.1) AS SETLE_FEE_SPLPC
+			,ROUND((IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100)) / 1.1 * 0.1) AS SETLE_FEE_VAT
+			,CASE TAXT_SE_CODE 
+				WHEN 'TA01' THEN ROUND((os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100))) / 1.1) 
+				ELSE ROUND((os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100)))) 
+				END AS CMPNY_EXCCLC_AMOUNT
+			,CASE TAXT_SE_CODE 
+				WHEN 'TA01' THEN ROUND(((os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100))) / 1.1) * 0.1) 
+				ELSE 0
+				END AS CMPNY_EXCCLC_VAT
+			,CASE TAXT_SE_CODE 
+				WHEN 'TA01' THEN ROUND((os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100))) / 1.1) +
+								ROUND(((os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100))) / 1.1) * 0.1)
+				ELSE  ROUND(os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100)))
+				END AS CMPNY_EXCCLC_TOT
+			,os.EXCCLC_PRARNDE 
+			,DATE_FORMAT(STR_TO_DATE(os.EXCCLC_PRARNDE, '%Y%m%d'),'%Y-%m-%d') AS EXCCLC_PRARNDE_STR 
+			,os.EXCCLC_STTUS_CODE
+			,CASE os.EXCCLC_STTUS_CODE
+				WHEN 'CPE01' THEN '정산대기'
+				WHEN 'CPE02' THEN '정산보류'
+				WHEN 'CPE03' THEN '정산완료'
+				END EXCCLC_STTUS_CODE_NM
+			,os.EXCCLC_PNTTM
+			,IFNULL(ed.ORDER_NUM,'-') AS ORDER_NUM
+			,IFNULL(ed.ORDER_TOTAL,'-') AS ORDER_TOTAL 
+			,ed.ORDER_STATUS 
+			,CASE ed.ORDER_STATUS
+				WHEN 'F4' THEN '처리중'
+				WHEN 'F1' THEN '주문완료'
+				WHEN 'C1' THEN '완료취소'
+				WHEN 'C2' THEN '마감취소'
+				WHEN 'C3' THEN '취소중'
+				ELSE '-'
+				END AS ORDER_STATUS_NM
+		FROM 	stn_order_setle os
+		JOIN	stn_order_dlvy od ON od.ORDER_SETLE_NO = os.ORDER_SETLE_NO
+		JOIN	stn_order o ON o.ORDER_NO = od.ORDER_NO AND o.USE_AT = 'Y'
+		JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+		JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+		JOIN 	stn_prtnr p ON p.PRTNR_ID = pcm.PRTNR_ID
+		JOIN 	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID
+		LEFT JOIN stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+		LEFT JOIN stn_ezwel_data ed ON ed.ORDER_NUM = os.EZW_SETLE_CONFM_NO
+		LEFT JOIN dtc_cmmn_detail_code code ON code.CODE = os.EXCCLC_STTUS_CODE AND code.CODE_ID='CMS031'
+		<include refid="selectExcclcListWhere"></include>
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectExcclcListWhere">
+		<where>
+			os.SETLE_STTUS_CODE = 'S'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+				AND p.PRTNR_ID = #{searchPrtnrId}
+			</if>
+			<if test="searchBgnde != null and searchEndde != ''">
+				AND os.SETLE_PNTTM BETWEEN STR_TO_DATE(CONCAT(#{searchBgnde},' 00:00:00'), '%Y-%m-%d %H:%i:%s') 
+										AND STR_TO_DATE(CONCAT(#{searchEndde},' 23:59:59'), '%Y-%m-%d %H:%i:%s') 
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchExcclcYear)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEmpty(searchExcclcMonth)">
+						AND os.SETLE_PNTTM BETWEEN STR_TO_DATE(CONCAT(#{searchExcclcYear},'0101000000'),'%Y%m%d%H%i%s') 
+							AND STR_TO_DATE(CONCAT(#{searchExcclcYear},'1231235959'),'%Y%m%d%H%i%s')	
+					</when>
+					<otherwise>
+						<choose>
+							<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEmpty(searchExcclcSePd)">
+								AND os.SETLE_PNTTM BETWEEN STR_TO_DATE(CONCAT(#{searchExcclcYear}, LPAD(#{searchExcclcMonth}, 2 ,0),'01000000'),'%Y%m%d%H%i%s') 
+														AND STR_TO_DATE(CONCAT(#{searchExcclcYear}, LPAD(#{searchExcclcMonth}, 2, 0),'31235959'),'%Y%m%d%H%i%s')	
+							</when>
+							<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchExcclcSePd, 'PD01') ">  <!-- 정산기간 -->
+								AND c.STDE_SE_CODE = 'STDE04'
+								AND os.SETLE_PNTTM BETWEEN STR_TO_DATE(CONCAT(#{searchExcclcYear}, LPAD(#{searchExcclcMonth}, 2 ,0),'01000000'),'%Y%m%d%H%i%s') 
+														AND STR_TO_DATE(CONCAT(#{searchExcclcYear}, LPAD(#{searchExcclcMonth}, 2, 0),'31235959'),'%Y%m%d%H%i%s')	
+							</when>
+							<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchExcclcSePd, 'PD02') ">
+								AND c.STDE_SE_CODE = 'STDE05'
+								AND os.SETLE_PNTTM BETWEEN STR_TO_DATE(CONCAT(#{searchExcclcYear}, LPAD(#{searchExcclcMonth}, 2 ,0),'01000000'),'%Y%m%d%H%i%s') 
+														AND STR_TO_DATE(CONCAT(#{searchExcclcYear}, LPAD(#{searchExcclcMonth}, 2, 0),'15235959'),'%Y%m%d%H%i%s')	
+							</when>
+							<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchExcclcSePd, 'PD03') ">
+								AND c.STDE_SE_CODE = 'STDE05'
+								AND os.SETLE_PNTTM BETWEEN STR_TO_DATE(CONCAT(#{searchExcclcYear}, LPAD(#{searchExcclcMonth}, 2 ,0),'16000000'),'%Y%m%d%H%i%s') 
+														AND STR_TO_DATE(CONCAT(#{searchExcclcYear}, LPAD(#{searchExcclcMonth}, 2, 0),'31235959'),'%Y%m%d%H%i%s')	
+							</when>
+							<otherwise> <!-- 잘못된 값이면 검색 못하게 -->
+								AND os.SETLE_PNTTM = 'XXXX'
+							</otherwise>
+						</choose>
+					</otherwise>
+				</choose>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+				AND c.CMPNY_ID = #{searchCmpnyId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyUserId)">
+				AND c.CMPNY_USER_ESNTL_ID = (SELECT ESNTL_ID FROM dtn_mber WHERE MBER_ID = #{searchCmpnyUserId})
+			</if>
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchExcclcSttusCode, 'CPE01')"> <!-- 정산대기 -->
+					AND os.EXCCLC_STTUS_CODE = 'CPE01'
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchExcclcSttusCode, 'CPE02')"> <!-- 정산보류 -->
+					AND os.EXCCLC_STTUS_CODE = 'CPE02'
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchExcclcSttusCode, 'CPE03')"> <!-- 정산완료 -->
+					AND os.EXCCLC_STTUS_CODE = 'CPE03'
+				</when>
+			</choose>
+		</where>
+	</sql>
+	
+	<!-- 정산목록 카운트 -->
+	<select id="selectExcclcListCnt" parameterType="modoo.module.shop.goods.excclc.service.ExcclcVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM 	stn_order_setle os
+		JOIN	stn_order_dlvy od ON od.ORDER_SETLE_NO = os.ORDER_SETLE_NO
+		JOIN	stn_order o ON o.ORDER_NO = od.ORDER_NO AND o.USE_AT = 'Y'
+		JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+		JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+		JOIN 	stn_prtnr p ON p.PRTNR_ID = pcm.PRTNR_ID
+		JOIN 	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID
+		LEFT JOIN stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+		LEFT JOIN stn_ezwel_data ed ON ed.ORDER_NUM = os.EZW_SETLE_CONFM_NO
+		LEFT JOIN dtc_cmmn_detail_code code ON code.CODE = os.EXCCLC_STTUS_CODE AND code.CODE_ID='CMS031'
+		<include refid="selectExcclcListWhere"></include>
+	</select>
+	
+	<!-- 정산목록 계 -->
+	<select id="selectExcclcListTotalSum" parameterType="modoo.module.shop.goods.excclc.service.ExcclcVO" resultType="egovMap">
+		SELECT 
+			IFNULL(SUM(t.SETLE_CARD_AMOUNT),0) AS SETLE_CARD_AMOUNT
+			,IFNULL(SUM(t.SETLE_POINT),0) AS SETLE_POINT
+			,IFNULL(SUM(t.SETLE_TOT_AMOUNT),0) AS SETLE_TOT_AMOUNT
+			,IFNULL(SUM(t.SETLE_FEE_SPLPC),0) AS SETLE_FEE_SPLPC
+			,IFNULL(SUM(t.SETLE_FEE_VAT),0) AS SETLE_FEE_VAT
+			,IFNULL(SUM(t.SETLE_FEE_TOT),0) AS SETLE_FEE_TOT
+			,IFNULL(SUM(t.RSRVMNEY),0) AS RSRVMNEY
+			,IFNULL(SUM(t.COUPON_DSCNT),0) AS COUPON_DSCNT
+			,IFNULL(SUM(t.EVENT_DSCNT),0) AS EVENT_DSCNT
+			,IFNULL(SUM(t.EVENT_TOT),0) AS EVENT_TOT
+			,IFNULL(SUM(t.CMPNY_EXCCLC_AMOUNT),0) AS CMPNY_EXCCLC_AMOUNT
+			,IFNULL(SUM(t.CMPNY_EXCCLC_VAT),0) AS CMPNY_EXCCLC_VAT
+			,IFNULL(SUM(t.CMPNY_EXCCLC_TOT),0) AS CMPNY_EXCCLC_TOT
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEmpty(searchExcclcSePd) or 
+							@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchExcclcSePd, 'PD01')">
+					,CONCAT(DATE_FORMAT((EXCCLC_STDR_FRST_DE),'%Y-%m-%d'), ' ~ ', DATE_FORMAT(LAST_DAY(EXCCLC_STDR_FRST_DE), '%Y-%m-%d')) AS EXCCLC_STDR_DE
+					,CONCAT(DATE_FORMAT((EXCCLC_STDR_FRST_DE + INTERVAL 1 MONTH),'%Y-%m-04'), ' ~ ', DATE_FORMAT((EXCCLC_STDR_FRST_DE + INTERVAL 1 MONTH),'%Y-%m-08')) AS TAXBIL_DE
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchExcclcSePd, 'PD02') ">
+					,CONCAT(DATE_FORMAT((EXCCLC_STDR_FRST_DE),'%Y-%m-%d'), ' ~ ', DATE_FORMAT(LAST_DAY(EXCCLC_STDR_FRST_DE), '%Y-%m-15')) AS EXCCLC_STDR_DE
+					,CONCAT(DATE_FORMAT((EXCCLC_STDR_FRST_DE + INTERVAL 17 DAY),'%Y-%m-%d'))  AS TAXBIL_DE
+				</when>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchExcclcSePd, 'PD03') ">
+					,CONCAT(DATE_FORMAT((EXCCLC_STDR_FRST_DE),'%Y-%m-16'), ' ~ ', DATE_FORMAT(LAST_DAY(EXCCLC_STDR_FRST_DE), '%Y-%m-%d')) AS EXCCLC_STDR_DE
+					,CONCAT(DATE_FORMAT((EXCCLC_STDR_FRST_DE + INTERVAL 1 MONTH),'%Y-%m-03'))  AS TAXBIL_DE
+				</when>
+				<otherwise>
+					,'' AS EXCCLC_STDR_DE
+					,'' AS TAXBIL_DE
+				</otherwise>
+			</choose>
+		FROM (
+			SELECT 
+				IFNULL(os.SETLE_CARD_AMOUNT,0) AS SETLE_CARD_AMOUNT 
+				,IFNULL(os.SETLE_POINT ,0) AS SETLE_POINT
+				,IFNULL(os.SETLE_TOT_AMOUNT,0) AS SETLE_TOT_AMOUNT 
+				,ROUND((IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100)) / 1.1) AS SETLE_FEE_SPLPC
+				,ROUND((IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100)) / 1.1 * 0.1) AS SETLE_FEE_VAT
+				,ROUND(IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100)) AS SETLE_FEE_TOT
+				,IFNULL(o.RSRVMNEY,0) AS RSRVMNEY
+				,0 AS COUPON_DSCNT
+				,0 AS EVENT_DSCNT
+				,IFNULL(o.RSRVMNEY,0) + 0 AS EVENT_TOT
+				,CASE TAXT_SE_CODE 
+					WHEN 'TA01' THEN ROUND((os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100))) / 1.1) 
+					ELSE ROUND((os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100)))) 
+					END AS CMPNY_EXCCLC_AMOUNT
+				,CASE TAXT_SE_CODE 
+					WHEN 'TA01' THEN ROUND(((os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100))) / 1.1) * 0.1) 
+					ELSE 0
+					END AS CMPNY_EXCCLC_VAT
+				,CASE TAXT_SE_CODE 
+					WHEN 'TA01' THEN ROUND((os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100))) / 1.1) +
+									ROUND(((os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100))) / 1.1) * 0.1) 
+					ELSE  ROUND(os.SETLE_TOT_AMOUNT - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (g.GOODS_FEE_RATE/100)))
+					END AS CMPNY_EXCCLC_TOT
+				,STR_TO_DATE(CONCAT(#{searchExcclcYear},  LPAD(#{searchExcclcMonth}, 2 ,0) ,'01'),'%Y%m%d') AS EXCCLC_STDR_FRST_DE
+			FROM 	stn_order_setle os
+			JOIN	stn_order_dlvy od ON od.ORDER_SETLE_NO = os.ORDER_SETLE_NO
+			JOIN	stn_order o ON o.ORDER_NO = od.ORDER_NO AND o.USE_AT = 'Y'
+			JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+			JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+			JOIN 	stn_prtnr p ON p.PRTNR_ID = pcm.PRTNR_ID
+			JOIN 	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID
+			LEFT JOIN stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+			LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+			LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+			LEFT JOIN stn_ezwel_data ed ON ed.ORDER_NUM = os.EZW_SETLE_CONFM_NO
+			LEFT JOIN dtc_cmmn_detail_code code ON code.CODE = os.EXCCLC_STTUS_CODE AND code.CODE_ID='CMS031'
+			<include refid="selectExcclcListWhere"></include>
+		) t
+	</select>
+	
+	<!-- 정산상태 변경 -->
+	<update id="updateExcclcSttus" parameterType="modoo.module.shop.goods.excclc.service.ExcclcVO">
+		UPDATE stn_order_setle a INNER JOIN (
+			<foreach collection="orderSetleNoList" item="item" index="index" separator=" UNION ALL">
+				SELECT #{item} AS ORDER_SETLE_NO 
+			</foreach>
+		) b ON b.ORDER_SETLE_NO = a.ORDER_SETLE_NO
+		SET
+			a.EXCCLC_STTUS_CODE = #{excclcSttusCode}
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(excclcSttusCode, 'CPE03')">
+					,a.EXCCLC_PNTTM = SYSDATE()
+				</when>
+				<otherwise>
+					,a.EXCCLC_PNTTM = NULL
+				</otherwise>
+			</choose>
+		WHERE	a.SETLE_STTUS_CODE = 'S'
+	</update>
+	
+	<!-- 정산에정일 수정 -->
+	<update id="updateExcclcPrarnde" parameterType="modoo.module.shop.goods.excclc.service.ExcclcVO">
+		UPDATE stn_order_setle
+		SET
+			EXCCLC_PRARNDE = #{excclcPrarnde}
+		WHERE	ORDER_SETLE_NO = #{orderSetleNo}
+	</update>
+	
+	<!-- EZWel 정산 목록 -->
+	<select id="selectEzwelExcclcList" parameterType="modoo.module.shop.goods.excclc.service.ExcclcVO" resultType="egovMap">
+		 SELECT 
+			p.PRTNR_ID 
+			,os.EXCCLC_STTUS_CODE
+			,CASE os.EXCCLC_STTUS_CODE
+				WHEN 'CPE01' THEN '정산대기'
+				WHEN 'CPE02' THEN '정산보류'
+				WHEN 'CPE03' THEN '정산완료'
+				END EXCCLC_STTUS_CODE_NM
+			,o.ORDER_NO 
+			,ed.ORDER_NUM 
+			,os.SETLE_PNTTM 
+			,o.ORDRR_ID
+			,m.MBER_NM AS ORDRR_NM
+			,CONCAT( IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','',sgc3.GOODS_CTGRY_NM), IF(ISNULL(sgc3.GOODS_CTGRY_NM) or sgc3.GOODS_CTGRY_NM = 'ROOT','','>')
+					,IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','',sgc2.GOODS_CTGRY_NM),IF(ISNULL(sgc2.GOODS_CTGRY_NM) or sgc2.GOODS_CTGRY_NM = 'ROOT','','>') 
+					,IF(ISNULL(sgc.GOODS_CTGRY_NM) or sgc.GOODS_CTGRY_NM = 'ROOT','',sgc.GOODS_CTGRY_NM)
+					) AS GOODS_CTGRY_NM
+			,c.CMPNY_NM
+			,g.TAXT_SE_CODE 
+			,g.GOODS_NM
+			,od.ORDER_CO 
+			,od.DLVY_AMOUNT 
+			,IFNULL(os.SETLE_TOT_AMOUNT,0) AS SETLE_TOT_AMOUNT
+			,IFNULL(os.SETLE_POINT,0) AS SETLE_POINT
+			,IFNULL(os.SETLE_CARD_AMOUNT,0) AS SETLE_CARD_AMOUNT
+			,'-' AS COUPON_DSCNT
+			,'-' AS EVENT_DSCNT
+			,IFNULL(o.RSRVMNEY,0) AS RSRVMNEY
+			,5 AS EZWEL_FEE
+			,IFNULL(os.SETLE_TOT_AMOUNT,0) * (0.05) AS EZWEL_FEE_AMOUNT
+			,IFNULL(o.RSRVMNEY,0) AS USE_RSRVMNEY
+			,0 AS USE_COUPON_AMOUNT
+			,IFNULL(os.SETLE_POINT,0) AS USE_EZWEL_FEE_AMOUNT
+			,IFNULL(os.SETLE_TOT_AMOUNT,0) - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (0.05)) - (IFNULL(os.SETLE_POINT,0)) AS REAL_TOT_AMOUNT 
+			,od.REQ_TY_CODE 
+			,od.CANCEL_PNTTM
+			,od.CANCEL_AMOUNT
+			,os.EXCCLC_PNTTM 
+		FROM 	stn_order_setle os
+		JOIN	stn_order_dlvy od ON od.ORDER_SETLE_NO = os.ORDER_SETLE_NO
+		JOIN	stn_order o ON o.ORDER_NO = od.ORDER_NO AND o.USE_AT = 'Y'
+		JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+		JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+		JOIN 	stn_prtnr p ON p.PRTNR_ID = pcm.PRTNR_ID
+		JOIN 	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID
+		LEFT JOIN dtn_mber m ON m.MBER_ID = o.ORDRR_ID
+		LEFT JOIN stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+		LEFT JOIN stn_ezwel_data ed ON ed.ORDER_NUM = os.EZW_SETLE_CONFM_NO
+		LEFT JOIN dtc_cmmn_detail_code code ON code.CODE = os.EXCCLC_STTUS_CODE AND code.CODE_ID='CMS031'
+		<include refid="selectExcclcListWhere"></include>
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<!-- EZWel 정산목록 카운트 -->
+	<select id="selectEzwelExcclcListCnt" parameterType="modoo.module.shop.goods.excclc.service.ExcclcVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM 	stn_order_setle os
+		JOIN	stn_order_dlvy od ON od.ORDER_SETLE_NO = os.ORDER_SETLE_NO
+		JOIN	stn_order o ON o.ORDER_NO = od.ORDER_NO AND o.USE_AT = 'Y'
+		JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+		JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+		JOIN 	stn_prtnr p ON p.PRTNR_ID = pcm.PRTNR_ID
+		JOIN 	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID
+		LEFT JOIN dtn_mber m ON m.MBER_ID = o.ORDRR_ID
+		LEFT JOIN stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+		LEFT JOIN stn_ezwel_data ed ON ed.ORDER_NUM = os.EZW_SETLE_CONFM_NO
+		LEFT JOIN dtc_cmmn_detail_code code ON code.CODE = os.EXCCLC_STTUS_CODE AND code.CODE_ID='CMS031'
+		<include refid="selectExcclcListWhere"></include>
+	</select>
+	
+	<!-- EZWel 정산목록 합계 -->
+	<select id="selectEzwelExcclcListTotalSum" parameterType="modoo.module.shop.goods.excclc.service.ExcclcVO" resultType="egovMap">
+		SELECT 
+			IFNULL(SUM(ORDER_CO),0) ORDER_CO
+			,IFNULL(SUM(DLVY_AMOUNT),0) DLVY_AMOUNT
+			,IFNULL(SUM(SETLE_TOT_AMOUNT),0) SETLE_TOT_AMOUNT
+			,IFNULL(SUM(SETLE_POINT),0) SETLE_POINT
+			,IFNULL(SUM(SETLE_CARD_AMOUNT),0) SETLE_CARD_AMOUNT
+			,IFNULL(SUM(COUPON_DSCNT),0) COUPON_DSCNT
+			,IFNULL(SUM(EVENT_DSCNT),0) EVENT_DSCNT
+			,IFNULL(SUM(RSRVMNEY),0) RSRVMNEY
+			,IFNULL(SUM(EZWEL_FEE_AMOUNT),0) EZWEL_FEE_AMOUNT
+			,IFNULL(SUM(USE_RSRVMNEY),0) USE_RSRVMNEY
+			,IFNULL(SUM(USE_COUPON_AMOUNT),0) USE_COUPON_AMOUNT
+			,IFNULL(SUM(USE_EZWEL_FEE_AMOUNT),0) USE_EZWEL_FEE_AMOUNT
+			,IFNULL(SUM(REAL_TOT_AMOUNT),0) REAL_TOT_AMOUNT
+			,IFNULL(SUM(CANCEL_AMOUNT),0) CANCEL_AMOUNT
+			,IFNULL(SUM(CNT),0) CNT
+		FROM (
+			SELECT
+				p.PRTNR_ID 
+				,od.ORDER_CO 
+				,od.DLVY_AMOUNT 
+				,IFNULL(os.SETLE_TOT_AMOUNT,0) AS SETLE_TOT_AMOUNT
+				,IFNULL(os.SETLE_POINT,0) AS SETLE_POINT
+				,IFNULL(os.SETLE_CARD_AMOUNT,0) AS SETLE_CARD_AMOUNT
+				,0 AS COUPON_DSCNT
+				,0 AS EVENT_DSCNT
+				,IFNULL(o.RSRVMNEY,0) AS RSRVMNEY
+				,IFNULL(os.SETLE_TOT_AMOUNT,0) * (0.05) AS EZWEL_FEE_AMOUNT
+				,IFNULL(o.RSRVMNEY,0) AS USE_RSRVMNEY
+				,0 AS USE_COUPON_AMOUNT
+				,IFNULL(os.SETLE_POINT,0) AS USE_EZWEL_FEE_AMOUNT
+				,IFNULL(os.SETLE_TOT_AMOUNT,0) - (IFNULL(os.SETLE_TOT_AMOUNT,0) * (0.05)) - (IFNULL(os.SETLE_POINT,0)) AS REAL_TOT_AMOUNT 
+				,IFNULL(od.CANCEL_AMOUNT,0) AS CANCEL_AMOUNT
+				,1 AS CNT
+			FROM 	stn_order_setle os
+			JOIN	stn_order_dlvy od ON od.ORDER_SETLE_NO = os.ORDER_SETLE_NO
+			JOIN	stn_order o ON o.ORDER_NO = od.ORDER_NO AND o.USE_AT = 'Y'
+			JOIN 	stn_goods g ON g.GOODS_ID = o.GOODS_ID
+			JOIN 	stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+			JOIN 	stn_prtnr p ON p.PRTNR_ID = pcm.PRTNR_ID
+			JOIN 	stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID
+			LEFT JOIN dtn_mber m ON m.MBER_ID = o.ORDRR_ID
+			LEFT JOIN stn_goods_ctgry sgc ON sgc.GOODS_CTGRY_ID = g.GOODS_CTGRY_ID AND sgc.USE_AT = 'Y'
+			LEFT JOIN stn_goods_ctgry sgc2 ON sgc2.GOODS_CTGRY_ID = sgc.UPPER_GOODS_CTGRY_ID AND sgc2.USE_AT = 'Y'
+			LEFT JOIN stn_goods_ctgry sgc3 ON sgc3.GOODS_CTGRY_ID = sgc2.UPPER_GOODS_CTGRY_ID AND sgc3.USE_AT = 'Y'
+			LEFT JOIN stn_ezwel_data ed ON ed.ORDER_NUM = os.EZW_SETLE_CONFM_NO
+			LEFT JOIN dtc_cmmn_detail_code code ON code.CODE = os.EXCCLC_STTUS_CODE AND code.CODE_ID='CMS031'
+			<include refid="selectExcclcListWhere"></include>
+		) t1
+	</select>
+</mapper>

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.brand.service.impl.GoodsBrandMapper">
+
+	<!-- 브랜드 목록  -->
+	<select id="selectGoodsBrandList" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandVO" resultType="modoo.module.shop.goods.brand.service.GoodsBrandVO">
+		SELECT
+			gb.BRAND_ID
+			,gb.CMPNY_ID
+			,c.CMPNY_NM
+			,gb.BRAND_BTB_GOODS_ID
+			,gb.BRAND_BTC_GOODS_ID
+			,gb.BRAND_NM
+			,gb.BRAND_EXPSR_SE_CODE
+			,gb.BRAND_IMAGE_PATH
+			,gb.BRAND_IMAGE_THUMB_PATH
+			,gb.BRAND_INT_SJ
+			,gb.BRAND_INT_CN
+			,gb.BRAND_INT_LINK
+			,(SELECT BRAND_IMAGE_THUMB_PATH FROM STN_GOODS_BRAND_IMAGE img WHERE gb.BRAND_ID = img.BRAND_ID AND img.BRAND_IMAGE_SE_CODE = 'REP') AS BRAND_REP_IMG
+			,(SELECT BRAND_IMAGE_THUMB_PATH FROM STN_GOODS_BRAND_IMAGE img WHERE gb.BRAND_ID = img.BRAND_ID AND img.BRAND_IMAGE_SE_CODE = 'REPMOB') AS BRAND_REP_IMG_MOB
+			,(SELECT BRAND_IMAGE_THUMB_PATH FROM STN_GOODS_BRAND_IMAGE img WHERE gb.BRAND_ID = img.BRAND_ID AND img.BRAND_IMAGE_SE_CODE = 'INT') AS BRAND_INT_IMG
+		FROM	stn_goods_brand gb
+		LEFT OUTER JOIN stn_cmpny c ON c.CMPNY_ID = gb.CMPNY_ID AND c.USE_AT = 'Y'
+		<include refid="selectGoodsBrandListWhere"></include>
+		<include refid="selectGoodsBrandListOrder"></include>
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectGoodsBrandListOrder">
+		ORDER BY
+		<choose>
+			<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOrderField)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderField, 'S_BRAND_NM_UP')">BRAND_NM ASC</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchOrderField, 'S_BRAND_NM_DOWN')">BRAND_NM DESC</when>
+					<otherwise>BRAND_ID DESC</otherwise>
+				</choose>
+			</when>
+			<otherwise>BRAND_ID DESC</otherwise>
+		</choose>
+	</sql>
+	<sql id="selectGoodsBrandListWhere">
+		<where>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'NM')">
+						AND gb.BRAND_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CNM')">
+						AND c.CMPNY_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+				</choose>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+				AND gb.CMPNY_ID = #{searchCmpnyId}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 브랜드 목록 카운트 -->
+	<select id="selectGoodsBrandListCnt" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	stn_goods_brand gb
+		LEFT OUTER JOIN stn_cmpny c ON c.CMPNY_ID = gb.CMPNY_ID AND c.USE_AT = 'Y'
+		<include refid="selectGoodsBrandListWhere"></include>
+	</select>
+	
+	<!-- 브랜드 저장  -->
+	<insert id="insertGoodsBrand" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandVO">
+		INSERT INTO stn_goods_brand (
+			BRAND_ID
+			,CMPNY_ID
+			,BRAND_BTB_GOODS_ID
+			,BRAND_BTC_GOODS_ID
+			,BRAND_NM
+			,BRAND_EXPSR_SE_CODE
+			,BRAND_IMAGE_PATH
+			,BRAND_IMAGE_THUMB_PATH
+			,BRAND_INT_SJ
+			,BRAND_INT_CN
+			,BRAND_INT_LINK
+			,BRAND_INT_GOODS
+			,SVC_ADRES
+			,SVC_HDRY_NM
+			,RTNGUD_DLVY_PC
+			,EXCHNG_DLVY_PC
+		) VALUES (
+			#{brandId}
+			,#{cmpnyId}
+			,#{brandBtbGoodsId}
+			,#{brandBtcGoodsId}
+			,#{brandNm}
+			,#{brandExpsrSeCode}
+			,#{brandImagePath}
+			,#{brandImageThumbPath}
+			,#{brandIntSj}
+			,#{brandIntCn}
+			,#{brandIntLink}
+			,#{brandIntGoods}
+			,#{svcAdres}
+			,#{svcHdryNm}
+			,#{rtngudDlvyPc}
+			,#{exchngDlvyPc}		
+		)
+	</insert>
+	
+	<!-- 브랜드 상세  -->
+	<select id="selectGoodsBrand" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandVO" resultType="modoo.module.shop.goods.brand.service.GoodsBrandVO">
+		SELECT
+			gb.BRAND_ID
+			,gb.CMPNY_ID
+			,c.CMPNY_NM
+			,gb.BRAND_BTB_GOODS_ID
+			,gb.BRAND_BTC_GOODS_ID
+			,gb.BRAND_NM
+			,gb.BRAND_EXPSR_SE_CODE
+			,gb.BRAND_IMAGE_PATH
+			,gb.BRAND_IMAGE_THUMB_PATH
+			,gb.BRAND_INT_SJ
+			,gb.BRAND_INT_CN
+			,gb.BRAND_INT_LINK
+			,gb.BRAND_INT_GOODS
+			,gb.SVC_ADRES
+			,gb.SVC_HDRY_NM
+			,gb.RTNGUD_DLVY_PC
+			,gb.EXCHNG_DLVY_PC
+			, CASE WHEN gb.BRAND_ID IN (
+				SELECT
+					A.BRAND_ID
+				FROM stn_goods A
+				JOIN stn_goods_event_mapng B ON A.GOODS_ID = B.GOODS_ID
+				JOIN stn_goods_event C ON B.EVENT_NO = C.EVENT_NO
+				WHERE C.EVENT_BEGIN_DT <![CDATA[ <= ]]> SYSDATE()
+					AND C.EVENT_END_DT <![CDATA[ >= ]]> SYSDATE()
+					AND C.END_AT = 'N'
+					<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+						AND C.PRTNR_ID = #{searchPrtnrId}
+					</if>
+				GROUP BY A.BRAND_ID
+			) THEN 'Y'
+			ELSE 'N' END AS EVENT_AT
+			, CASE WHEN ev.EVENT_URL IS NULL THEN '#none'
+				ELSE ev.EVENT_URL
+				END AS EVENT_URL
+		FROM	stn_goods_brand gb
+		LEFT OUTER JOIN stn_cmpny c ON c.CMPNY_ID = gb.CMPNY_ID AND c.USE_AT = 'Y'
+		LEFT JOIN (
+			SELECT
+				A.BRAND_ID
+				, C.EVENT_URL
+				, C.EVENT_NO
+			FROM stn_goods A
+			JOIN stn_goods_event_mapng B ON A.GOODS_ID = B.GOODS_ID
+			JOIN stn_goods_event C ON B.EVENT_NO = C.EVENT_NO
+			WHERE C.EVENT_BEGIN_DT <![CDATA[ <= ]]> SYSDATE()
+				AND C.EVENT_END_DT <![CDATA[ >= ]]> SYSDATE()
+				AND C.END_AT = 'N'
+				<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+					AND C.PRTNR_ID = #{searchPrtnrId}
+				</if>
+			GROUP BY A.BRAND_ID	
+		) ev ON gb.BRAND_ID = ev.BRAND_ID
+		WHERE	gb.BRAND_ID = #{brandId}
+	</select>
+	
+	<!-- 브랜드 수정 -->
+	<update id="updateGoodsBrand" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandVO">
+		UPDATE stn_goods_brand
+		SET
+			BRAND_NM = #{brandNm}
+			,CMPNY_ID = #{cmpnyId}
+			,BRAND_BTB_GOODS_ID = #{brandBtbGoodsId}
+			,BRAND_BTC_GOODS_ID = #{brandBtcGoodsId}
+			,BRAND_EXPSR_SE_CODE = #{brandExpsrSeCode}
+			,BRAND_IMAGE_PATH = #{brandImagePath}
+			,BRAND_IMAGE_THUMB_PATH = #{brandImageThumbPath}
+			,BRAND_INT_SJ = #{brandIntSj}
+			,BRAND_INT_CN = #{brandIntCn}
+			,BRAND_INT_LINK = #{brandIntLink}
+			,BRAND_INT_GOODS = #{brandIntGoods}
+			,SVC_ADRES = #{svcAdres}
+			,SVC_HDRY_NM = #{svcHdryNm}
+			,RTNGUD_DLVY_PC = #{rtngudDlvyPc}
+			,EXCHNG_DLVY_PC = #{exchngDlvyPc}	
+		WHERE	BRAND_ID = #{brandId}
+	</update>
+	
+	<!-- 상품 BRAND_ID NULL 처리 -->
+	<update id="updateGoodsBrandIdNull" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandVO">
+		UPDATE stn_goods
+		SET
+			BRAND_ID = NULL
+		WHERE	BRAND_ID = #{brandId}
+	</update>
+	
+	<!-- 브랜드 삭제 -->
+	<delete id="deleteGoodsBrand" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandVO">
+		DELETE FROM stn_goods_brand
+		WHERE	BRAND_ID = #{brandId}
+	</delete>
+	
+	<!-- 브랜드메뉴 목록 -->
+	<select id="selectGoodsBrandMenuList" resultType="modoo.module.shop.goods.brand.service.GoodsBrandVO">
+		SELECT
+			BRAND_ID
+			,WRD
+			,BRAND_EXPSR_SE_CODE
+			,BRAND_NM
+			,PRTNR_ID
+		FROM (
+			SELECT
+				BRAND_ID
+				<![CDATA[
+				,CASE	WHEN (BRAND_NM RLIKE '^(ㄱㄲ)' OR (BRAND_NM >= '가' AND BRAND_NM < '나')) THEN 'ㄱ' 
+						WHEN (BRAND_NM RLIKE '^ㄴ' OR (BRAND_NM >= '나' AND BRAND_NM < '다')) THEN 'ㄴ' 
+						WHEN (BRAND_NM RLIKE '^(ㄷ|ㄸ)' OR (BRAND_NM >= '다' AND BRAND_NM < '라')) THEN 'ㄷ' 
+						WHEN (BRAND_NM RLIKE '^ㄹ' OR (BRAND_NM >= '라' AND BRAND_NM < '마')) THEN 'ㄹ' 
+						WHEN (BRAND_NM RLIKE '^ㅁ' OR (BRAND_NM >= '마' AND BRAND_NM < '바')) THEN 'ㅁ' 
+						WHEN (BRAND_NM RLIKE '^(ㅂ|ㅃ)' OR (BRAND_NM >= '바' AND BRAND_NM < '사')) THEN 'ㅂ' 
+						WHEN (BRAND_NM RLIKE '^(ㅅ|ㅆ)' OR (BRAND_NM >= '사' AND BRAND_NM < '아')) THEN 'ㅅ' 
+						WHEN (BRAND_NM RLIKE '^ㅇ' OR (BRAND_NM >= '아' AND BRAND_NM < '자')) THEN 'ㅇ' 
+						WHEN (BRAND_NM RLIKE '^(ㅈ|ㅉ)' OR (BRAND_NM >= '자' AND BRAND_NM < '차')) THEN 'ㅈ' 
+						WHEN (BRAND_NM RLIKE '^ㅊ' OR (BRAND_NM >= '차' AND BRAND_NM < '카')) THEN 'ㅊ' 
+						WHEN (BRAND_NM RLIKE '^ㅋ' OR (BRAND_NM >= '카' AND BRAND_NM < '타')) THEN 'ㅋ' 
+						WHEN (BRAND_NM RLIKE '^ㅌ' OR (BRAND_NM >= '타' AND BRAND_NM < '파')) THEN 'ㅌ' 
+						WHEN (BRAND_NM RLIKE '^ㅍ' OR (BRAND_NM >= '파' AND BRAND_NM < '하')) THEN 'ㅍ' 
+						WHEN (BRAND_NM RLIKE '^ㅎ' OR BRAND_NM >= '하') THEN 'ㅎ' 
+						WHEN (BRAND_NM RLIKE '^(A|a)') THEN 'A'
+						WHEN (BRAND_NM RLIKE '^(B|b)') THEN 'B'
+						WHEN (BRAND_NM RLIKE '^(C|c)') THEN 'C'
+						WHEN (BRAND_NM RLIKE '^(D|d)') THEN 'D'
+						WHEN (BRAND_NM RLIKE '^(E|e)') THEN 'E'
+						WHEN (BRAND_NM RLIKE '^(F|f)') THEN 'F'
+						WHEN (BRAND_NM RLIKE '^(G|g)') THEN 'G'
+						WHEN (BRAND_NM RLIKE '^(H|h)') THEN 'H'
+						WHEN (BRAND_NM RLIKE '^(I|i)') THEN 'I'
+						WHEN (BRAND_NM RLIKE '^(J|j)') THEN 'J'
+						WHEN (BRAND_NM RLIKE '^(K|k)') THEN 'K'
+						WHEN (BRAND_NM RLIKE '^(L|l)') THEN 'L'
+						WHEN (BRAND_NM RLIKE '^(M|m)') THEN 'M'
+						WHEN (BRAND_NM RLIKE '^(N|n)') THEN 'N'
+						WHEN (BRAND_NM RLIKE '^(O|o)') THEN 'O'
+						WHEN (BRAND_NM RLIKE '^(P|p)') THEN 'P'
+						WHEN (BRAND_NM RLIKE '^(Q|q)') THEN 'Q'
+						WHEN (BRAND_NM RLIKE '^(R|r)') THEN 'R'
+						WHEN (BRAND_NM RLIKE '^(S|s)') THEN 'S'
+						WHEN (BRAND_NM RLIKE '^(T|t)') THEN 'T'
+						WHEN (BRAND_NM RLIKE '^(U|u)') THEN 'U'
+						WHEN (BRAND_NM RLIKE '^(V|v)') THEN 'V'
+						WHEN (BRAND_NM RLIKE '^(W|w)') THEN 'W'
+						WHEN (BRAND_NM RLIKE '^(X|x)') THEN 'X'
+						WHEN (BRAND_NM RLIKE '^(Y|y)') THEN 'Y'
+						WHEN (BRAND_NM RLIKE '^(Z|z)') THEN 'Z'
+					ELSE 'ETC' END WRD
+				]]>
+				,BRAND_EXPSR_SE_CODE
+				,BRAND_NM
+				,CASE WHEN d.PRT = '1' THEN p.PRTNR_ID ELSE 'PRTNR_XXXX' END AS PRTNR_ID
+			FROM 	stn_goods_brand b
+			JOIN	stn_cmpny c ON c.CMPNY_ID = b.CMPNY_ID AND c.USE_AT = 'Y'
+			JOIN	stn_prtnr_cmpny_mapng p ON p.CMPNY_ID = c.CMPNY_ID AND p.USE_AT = 'Y'
+			JOIN 	(
+				SELECT '1' AS PRT FROM DUAL UNION ALL
+				SELECT '2' AS PRT FROM DUAL
+			) d 
+			<![CDATA[
+			ORDER BY (
+				CASE WHEN ASCII(SUBSTRING(WRD, 1)) BETWEEN 48 AND 57 THEN 3
+					WHEN ASCII(SUBSTRING(WRD, 1)) < 128 THEN 2 ELSE 1 END
+				)
+			]]>
+		) t1
+		GROUP BY BRAND_ID, WRD, BRAND_EXPSR_SE_CODE, BRAND_NM, PRTNR_ID
+	</select>
+
+	<!-- 브랜드관 목록 조회 (ㄱ~ㅎ, A~Z) -->
+	<select id="selectGoodsBrandByChar" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandVO" resultType="modoo.module.shop.goods.brand.service.GoodsBrandVO">
+		SELECT
+			A.BRAND_ID
+			, A.CMPNY_ID
+			, A.BRAND_NM
+			, A.BRAND_BTB_GOODS_ID
+			, A.BRAND_BTC_GOODS_ID
+			, A.BRAND_EXPSR_SE_CODE
+			, A.BRAND_IMAGE_PATH
+			, A.BRAND_IMAGE_THUMB_PATH
+			, A.BRAND_INT_GOODS
+			, B.CMPNY_NM
+		FROM stn_goods_brand A
+		JOIN stn_cmpny B ON A.CMPNY_ID = B.CMPNY_ID
+		WHERE 1=1
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchBrandNmStart)">
+				AND A.BRAND_NM <![CDATA[ >= ]]> #{searchBrandNmStart}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchBrandNmEnd)">
+				AND A.BRAND_NM<![CDATA[ < ]]> #{searchBrandNmEnd}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(brandExpsrSeCode)">
+				AND A.BRAND_EXPSR_SE_CODE IN (#{brandExpsrSeCode}, 'ALL')
+				<!-- <choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(brandExpsrSeCode, 'B2B')">
+						AND A.BRAND_EXPSR_SE_CODE IN (#{brandExpsrSeCode}, 'ALL')
+					</when>
+					<otherwise>
+						AND A.BRAND_EXPSR_SE_CODE IN (#{brandExpsrSeCode}, 'ALL')
+					</otherwise>
+				</choose> -->
+			</if>
+		ORDER BY A.BRAND_NM
+	</select>
+</mapper>

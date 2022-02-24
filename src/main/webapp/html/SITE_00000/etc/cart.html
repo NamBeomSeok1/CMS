@@ -1,0 +1,593 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <title>모두의구독</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="Author" content="">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <!--[if lt IE 9]><script src="../../../resources/front/site/SITE_00000/js/html5.js"></script><![endif]-->
+    <link href="../../../resources/front/site/SITE_00000/css/swiper.css" rel="stylesheet" />
+    <link href="../../../resources/front/site/SITE_00000/css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="accessibility">
+        <a href="#contents">콘텐츠 바로가기</a>
+    </div>
+    <header class="site-header">
+        <div class="wrap">
+            <h1 class="logo">
+                <a href="#none"><img src="../../../resources/front/site/SITE_00000/image/logo/logo.svg" alt="모두의구독" /></a>
+            </h1>
+            <nav class="site-gnb">
+                <ul>
+                    <li><button type="button" class="btn-category-open">카테고리</button></li>
+                    <li><button type="button">브랜드관</button></li>
+                </ul>
+            </nav>
+            <button type="button" class="btn-schall-toggle"><i class="ico-sch" aria-hidden="true"></i><span class="txt-hide">검색</span></button>
+            <!--<div class="schall">
+                <button class="btn-close"><span class="txt-hide">닫기</span></button>
+            </div>-->
+            <div class="util">
+                <a href="#none"><i class="ico-user" aria-hidden="true"></i><span class="txt-hide">마이페이지</span></a>
+                <!--<a href="#none"><i class="ico-zzim" aria-hidden="true"></i><span class="txt-hide">찜</span></a>-->
+                <a href="#none">
+                    <i class="ico-cart" aria-hidden="true"></i>
+                    <span class="txt-hide">장바구니</span>
+                    <span class="label-notice">99+</span>
+                </a>
+            </div>
+
+            <!--모바일 전체 메뉴-->
+            <button type="button" class="m-btn-menu-toggle">
+                <i class="ico-menu" aria-hidden="true"></i>
+                <span class="txt-hide">메뉴</span>
+            </button>
+            <!--
+            <div class="m-menu">
+                <button class="btn-close"><span class="txt-hide">닫기</span></button>
+            </div>-->
+        </div><!-- //wrap -->
+    </header>
+    <div class="site-body" role="main">
+        <div class="contents wrap" id="contents">
+            <div class="sub-contents">
+                <div class="sticky-cont cart">
+                    <div class="cont-area">
+                        <h2 class="sub-tit">장바구니</h2>
+                        <div class="sub-fnc-area">
+                            <div class="fl">
+                                <label><input type="checkbox" /> 전체선택</label>
+                            </div>
+                            <div class="fr">
+                                <button type="submit" class="btn spot2">선택삭제</button>
+                            </div>
+                        </div>
+                        <section>
+                            <!--<div class="sub-tit-area">
+                                <h3 class="sub-tit"><label><input type="checkbox" />델몬트</label></h3>
+                                <div class="fnc-area">
+                                    <button type="submit" class="btn spot2">선택삭제</button>
+                                </div>
+                            </div>-->
+                            <div class="table-type">
+                                <div class="thead">
+                                    <div class="col-w50"></div>
+
+                                    <cite>상품정보</cite>
+                                    <cite class="col-w350">주문정보</cite>
+                                    <cite class="col-w150">결제금액</cite>
+                                </div>
+                                <div class="tbody">
+                                    <div class="col-w50"><label><input type="checkbox" /></label></div>
+                                    <div class="al m-col-block">
+                                        <a href="#none">
+                                            <div class="thumb-area lg">
+                                                <figure><img src="../../../resources/front/site/SITE_00000/image/temp/thumb11.jpg" alt="델몬트 허니글로우 패키지 01" /></figure>
+                                                <div class="txt-area">
+                                                    <cite>델몬트</cite>
+                                                    <h2 class="tit">델몬트 허니글로우 패키지 01</h2>
+
+                                                    <div class="price">
+                                                        <strong><span>29,000</span>원</strong>
+                                                    </div>
+                                                    <p class="fs-sm fc-gr">최소이용주기 : 4주</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-w350 al m-col-block">
+                                        <ul class="option-info">
+                                            <li>
+                                                <strong>구독주기 :</strong>
+                                                <span>1주</span>
+                                            </li>
+                                            <li>
+                                                <strong>구독요일 :</strong>
+                                                <span>화요일</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>수량 :</cite>
+                                                <span>1개</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>기본옵션 :</cite>
+                                                <span>냄비(+6000원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>첫구독옵션 :</cite>
+                                                <span>냄비(+6000원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>추가옵션 :</cite>
+                                                <span>냄비(+6000원)</span>
+                                            </li>
+                                        </ul>
+                                        <!--<ul class="option-info">
+                                            <li>
+                                                <cite>업체요청사항</cite>
+                                                <span>1.섭취연령: 5세, 13세 2.알레르기 반응: 없음 3.기타요청사항: 없음</span>
+                                            </li>
+                                        </ul>-->
+                                        <button type="button" class="btn-option-open" onclick="popOpen('optionEdit')">주문정보변경 <i class="ico-arr-r gr sm back"></i></button>
+                                    </div>
+                                    <div class="col-w150 m-col-block">
+                                        <div class="price">
+                                            <strong><span>29,000</span>원</strong>
+                                            <p class="fc-gr">(무료배송)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tbody">
+                                    <div class="col-w50"><label><input type="checkbox" /></label></div>
+                                    <div class="al m-col-block">
+                                        <a href="#none">
+                                            <div class="thumb-area lg">
+                                                <figure><img src="../../../resources/front/site/SITE_00000/image/temp/thumb11.jpg" alt="델몬트 허니글로우 패키지 01" /></figure>
+                                                <div class="txt-area">
+                                                    <cite>델몬트</cite>
+                                                    <h2 class="tit">델몬트 허니글로우 패키지 01</h2>
+                                                    <div class="price">
+                                                        <strong><span>29,000</span>원</strong>
+                                                        <p class="fs-sm fc-gr">최소이용주기 : 4주</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-w350 al m-col-block">
+                                        <ul class="option-info">
+                                            <li>
+                                                <strong>구독주기 :</strong>
+                                                <span>1주</span>
+                                            </li>
+                                            <li>
+                                                <strong>구독요일 :</strong>
+                                                <span>화요일</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>수량 :</cite>
+                                                <span>1개</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>기본옵션 :</cite>
+                                                <span>냄비(+600원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>첫구독옵션 :</cite>
+                                                <span>냄비(+600원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>추가옵션 :</cite>
+                                                <span>냄비(+6000원)</span>
+                                            </li>
+                                        </ul>
+                                        <!--<ul class="option-info">
+                                            <li>
+                                                <cite>업체요청사항</cite>
+                                                <span>1.섭취연령: 5세, 13세 2.알레르기 반응: 없음 3.기타요청사항: 없음</span>
+                                            </li>
+                                        </ul>-->
+                                        <button type="button" class="btn-option-open" data-popup-open="optionEdit">주문정보변경 <i class="ico-arr-r gr sm back"></i></button>
+                                    </div>
+                                    <div class="col-w150 m-col-block">
+                                        <div class="price">
+                                            <strong><span>29,000</span>원</strong>
+                                            <p class="fc-gr">(무료배송)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tfooter">
+                                    <ul class="sum-area">
+                                        <li>기본가격 (<span>9,000</span>원)</li>
+                                        <li><i>+</i> 옵션가격 (<span>9,000</span>원)</li>
+                                        <li>
+                                            <i>+</i> 배송비(0원)
+                                        </li>
+                                        <li>
+                                            <i>=</i> <strong class="price"><em>18,000</em></strong>원
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+                        <section>
+                            <div class="sub-tit-area">
+                                <h3 class="sub-tit"><label><input type="checkbox" />밀리의 서재</label></h3>
+                                <div class="fnc-area">
+                                    <button type="submit" class="btn spot2">선택삭제</button>
+                                </div>
+                            </div>
+                            <div class="table-type">
+                                <div class="thead">
+                                    <label class="col-w50"><input type="checkbox" /></label>
+                                    <cite>상품정보</cite>
+                                    <cite class="col-w350">주문정보</cite>
+                                    <cite class="col-w150">결제금액</cite>
+                                </div>
+                                <div class="tbody">
+                                    <div class="col-w50"><label><input type="checkbox" /></label></div>
+                                    <div class="al m-col-block">
+                                        <a href="#none">
+                                            <div class="thumb-area lg">
+                                                <figure><img src="../../../resources/front/site/SITE_00000/image/temp/thumb11.jpg" alt="델몬트 허니글로우 패키지 01" /></figure>
+                                                <div class="txt-area">
+                                                    <cite>델몬트</cite>
+                                                    <h2 class="tit">델몬트 허니글로우 패키지 01</h2>
+                                                    <div class="price">
+                                                        <strong><span>29,000</span>원</strong>
+                                                        <p class="fs-sm fc-gr">최소이용주기 : 4주</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-w350 al m-col-block">
+                                        <ul class="option-info">
+                                            <li>
+                                                <strong>구독주기 :</strong>
+                                                <span>1주</span>
+                                            </li>
+                                            <li>
+                                                <strong>구독요일 :</strong>
+                                                <span>화요일</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>수량 :</cite>
+                                                <span>1</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>기본옵션 :</cite>
+                                                <span>냄비(+6000원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>첫구독옵션 :</cite>
+                                                <span>냄비(+6000원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>추가옵션 :</cite>
+                                                <span>냄비(+6000원)</span>
+                                            </li>
+                                        </ul>
+                                        <button type="button" class="btn-option-open" data-popup-open="optionEdit">주문정보변경 <i class="ico-arr-r gr sm back"></i></button>
+                                    </div>
+                                    <div class="col-w150 m-col-block">
+                                        <div class="price">
+                                            <strong><span>29,000</span>원</strong>
+                                            <p class="fc-gr">(무료배송)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tbody">
+                                    <div class="col-w50"><label><input type="checkbox" /></label></div>
+                                    <div class="al m-col-block">
+                                        <a href="#none">
+                                            <div class="thumb-area lg">
+                                                <figure><img src="../../../resources/front/site/SITE_00000/image/temp/thumb11.jpg" alt="델몬트 허니글로우 패키지 01" /></figure>
+                                                <div class="txt-area">
+                                                    <cite>델몬트</cite>
+                                                    <h2 class="tit">델몬트 허니글로우 패키지 01</h2>
+                                                    <div class="price">
+                                                        <strong><span>29,000</span>원</strong>
+                                                        <p class="fs-sm fc-gr">최소이용주기 : 4주</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-w350 al m-col-block">
+                                        <ul class="option-info">
+                                            <li>
+                                                <strong>구독주기 :</strong>
+                                                <span>1주</span>
+                                            </li>
+                                            <li>
+                                                <strong>구독요일 :</strong>
+                                                <span>화요일</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>수량 :</cite>
+                                                <span>1개</span>
+                                            </li>
+                                        </ul>
+                                        <ul class="option-info">
+                                            <li>
+                                                <cite>기본옵션 :</cite>
+                                                <span>냄비(+600원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>첫구독옵션 :</cite>
+                                                <span>냄비(+600원)</span>
+                                            </li>
+                                            <li>
+                                                <cite>추가옵션 :</cite>
+                                                <span>냄비(+6000원)</span>
+                                            </li>
+                                        </ul>
+                                        <button type="button" class="btn-option-open" data-popup-open="optionEdit">주문정보변경 <i class="ico-arr-r gr sm back"></i></button>
+                                    </div>
+                                    <div class="col-w150 m-col-block">
+                                        <div class="price">
+                                            <strong><span>29,000</span>원</strong>
+                                            <p class="fc-gr">(무료배송)</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="tfooter">
+                                    <ul class="sum-area">
+                                        <li>기본가격 (<span>9,000</span>원)</li>
+                                        <li><i>+</i> 옵션가격 (<span>9,000</span>원)</li>
+                                        <li>
+                                            <i>+</i> 배송비(0원)
+                                        </li>
+                                        <li>
+                                            <i>=</i> <strong class="price"><em>18,000</em></strong>원
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="sticky-area total-buy-area">
+                        <div class="sticky-toggle-area">
+                            <div class="sticky-header">결제예정금액 (1회차)</div>
+                            <div class="sticky-body">
+                                <ul class="price-info-list">
+                                    <li>
+                                        <cite>상품금액</cite>
+                                        <div>8,900원</div>
+                                    </li>
+                                    <li>
+                                        <cite>할인예상금액</cite>
+                                        <div>0원</div>
+                                    </li>
+                                    <li>
+                                        <cite>배송비</cite>
+                                        <div>0원</div>
+                                    </li>
+                                </ul>
+                                <div class="total-area">
+                                    <cite>총 <em>3</em>건</cite>
+                                    <div class="price">
+                                        <strong><span>8,900</span> 원</strong>
+                                    </div>
+                                </div>
+                                <div class="agree-area">
+                                    <label class="block"><input type="checkbox" /> 개인정보 제 3자 제공 동의</label>
+                                    <label class="block"><input type="checkbox" /> 구매조건 확인 및 결제대행 서비스 약관 동의</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-table-area">
+                            <a href="#none" class="btn-lg spot">주문하기</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- //contents -->
+        <a href="#" class="btn-top"><span class="txt-hide">처음으로</span></a>
+    </div><!-- //site-body -->
+
+    <footer class="site-footer">
+        <div class="wrap">
+            <div class="footer-info">
+                <address class="company-info">
+                    <cite>한국구독경제서비스(주)</cite>
+                    <p>서울시 강남구 봉은사로 104길 10, 아이큐어타워 6층</p>
+                    <dl>
+                        <dt>통신판매업신고</dt>
+                        <dd>2020 - 서울 - xxxx</dd>
+                        <dt>사업자등록번호</dt>
+                        <dd>410 - 87 - 10313</dd>
+                        <dt>TEL</dt>
+                        <dd><a href="tel:1588-1234">1588 - 1234</a></dd>
+                        <dt>FAX</dt>
+                        <dd>02-000-0000</dd>
+                    </dl>
+                </address>
+                <address>
+                    <cite>고객센터</cite>
+                    <p>서울시 강남구 봉은사로 104길 10, 아이큐어타워 6층</p>
+                    <dl>
+                        <dt>TEL</dt>
+                        <dd><a href="tel:1588-1234">1588 - 1234</a></dd>
+                        <dt>FAX</dt>
+                        <dd>02-000-0000</dd>
+                        <dt>E-mail</dt>
+                        <dd>modoohelp@modoo.com</dd>
+                    </dl>
+                </address>
+                <nav class="footer-menu">
+                    <a href="#none">이용약관</a>
+                    <a href="#none"><strong>개인정보처리방침</strong></a>
+                    <a href="#none">공지사항</a>
+                    <a href="#none">FAQ</a>
+                </nav>
+            </div>
+            <figure class="footer-mark">
+                <img src="../../../resources/front/site/SITE_00000/image/logo/logo_kses_gray.png" alt="KSES" />
+                <a href="none">사업자 정보확인 <i class="ico-arr-r sm gr"></i></a>
+            </figure>
+            <p class="footer-txt">
+                한국구독경제서비스㈜는 통신판매중개자이며, 통신판매의 당사자가 아닙니다. 상품, 상품정보, 거래에 관한 의무와 책임은 판매자에게 있습니다.<br />
+                KSES Copyright © KSES Corp. All Rights Reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!--팝업-->
+    <div class="dim"></div>
+    <!--주문정보변경-->
+    <div class="popup" data-popup="optionEdit">
+        <div class="pop-header">
+            <h1>주문정보 변경</h1>
+            <button type="button" class="btn-pop-close" data-popup-close="optionEdit">닫기</button>
+        </div>
+        <div class="pop-body">
+            <ul class="option-list">
+                <li>
+                    <cite>구독주기</cite>
+                    <select title="주기 선택">
+                        <option>주기를 선택하세요.</option>
+                        <option>1주</option>
+                        <option>2주</option>
+                        <option>3주</option>
+                        <option>4주</option>
+                        <option>5주</option>
+                    </select>
+                </li>
+                <li>
+                    <cite>구독요일</cite>
+                    <select title="배송요일 선택">
+                        <option>배송요일 선택하세요.</option>
+                        <option>월</option>
+                        <option>화</option>
+                        <option>수</option>
+                        <option>목</option>
+                        <option>금</option>
+                        <option>토</option>
+                        <option>일</option>
+                    </select>
+                </li>
+                <!--<li>
+                    <cite>구독날짜</cite>
+                    <input type="text" class="datepicker" placeholder="배송일을 선택하세요" title="배송일 선택" readonly />
+                </li>-->
+                <li>
+                    <cite>구독날짜</cite>
+                    <div class="datepicker-area">
+                        <input type="text" placeholder="배송일을 선택하세요" readonly class="datepicker-input" />
+                        <button type="button" class="btn-datepicker-toggle"><span class="txt-hide">날짜선택</span></button>
+                    </div>
+                </li>
+                <li>
+                    <cite>수량</cite>
+                    <div class="count">
+                        <button type="button" class="btn-minus" disabled><span class="txt-hide">빼기</span></button>
+                        <input type="text" value="1" title="수량 입력" maxlength="6" />
+                        <button type="button" class="btn-plus"><span class="txt-hide">더하기</span></button>
+                    </div>
+                </li>
+                <li>
+                    <cite>기본옵션</cite>
+                    <select title="옵션선택">
+                        <option>옵션을 선택하세요</option>
+                    </select>
+                </li>
+            </ul>
+            <ul class="option-list">
+                <li>
+                    <cite>첫구독옵션</cite>
+                    <select title="옵션선택">
+                        <option>[선택] 첫 구독 옵션을 선택하세요</option>
+                    </select>
+                </li>
+                <li>
+                    <cite>추가옵션</cite>
+                    <select title="옵션선택">
+                        <option>[선택] 옵션을 선택하세요</option>
+                    </select>
+                </li>
+                <li>
+                    <cite></cite>
+                    <select title="옵션선택">
+                        <option>[선택] 옵션을 선택하세요</option>
+                    </select>
+                </li>
+            </ul>
+            <div class="btn-table-area">
+                <button type="button" class="btn-lg" data-popup-close="optionEdit">취소</button>
+                <button type="submit" class="btn-lg spot" data-popup-close="optionEdit">변경하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!--날짜선택-->
+    <div class="layer-datepicker">
+        <button type="button"><span>1</span></button>
+        <button type="button"><span>2</span></button>
+        <button type="button"><span>3</span></button>
+        <button type="button"><span>4</span></button>
+        <button type="button"><span>5</span></button>
+        <button type="button"><span>6</span></button>
+        <button type="button"><span>7</span></button>
+        <button type="button" class="is-current"><span>8</span></button>
+        <button type="button"><span>9</span></button>
+        <button type="button"><span>10</span></button>
+        <button type="button"><span>11</span></button>
+        <button type="button"><span>12</span></button>
+        <button type="button"><span>13</span></button>
+        <button type="button"><span>14</span></button>
+        <button type="button"><span>15</span></button>
+        <button type="button"><span>16</span></button>
+        <button type="button"><span>17</span></button>
+        <button type="button"><span>18</span></button>
+        <button type="button"><span>19</span></button>
+        <button type="button"><span>20</span></button>
+        <button type="button"><span>21</span></button>
+        <button type="button"><span>22</span></button>
+        <button type="button"><span>23</span></button>
+        <button type="button"><span>24</span></button>
+        <button type="button"><span>25</span></button>
+        <button type="button"><span>26</span></button>
+        <button type="button"><span>27</span></button>
+        <button type="button"><span>28</span></button>
+        <button type="button"><span>29</span></button>
+        <button type="button"><span>30</span></button>
+        <button type="button"><span>31</span></button>
+    </div>
+
+    <script src="../../../resources/lib/jquery/jquery.js"></script>
+    <script src="../../../resources/lib/jquery.easing/jquery.easing.js"></script>
+    <script src="../../../resources/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ssm.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/swiper.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/ScrollMagic.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/TweenMax.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/animation.gsap.min.js"></script>
+    <script src="../../../resources/front/site/SITE_00000/js/common.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.recomend.service.impl.GoodsRecomendMapper">
+
+	<!-- 추천상품 목록 -->
+	<select id="selectGoodsRecomendList" parameterType="modoo.module.shop.goods.recomend.service.GoodsRecomendVO" resultType="modoo.module.shop.goods.recomend.service.GoodsRecomendVO">
+		SELECT
+			sgr.GOODS_RECOMEND_NO
+			,sgr.GOODS_ID
+			,g.GOODS_NM
+			,sgr.RECOMEND_GOODS_ID
+			,sgr.RECOMEND_GOODS_SN
+			,g.GOODS_KND_CODE
+			,g.SBSCRPT_CYCLE_SE_CODE
+			,(SELECT GOODS_IMAGE_THUMB_PATH FROM stn_goods_image WHERE GOODS_ID = g.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' ORDER BY GOODS_IMAGE_SN ASC LIMIT 1 ) AS GOODS_TITLE_IMAGE_PATH
+			,(SELECT GOODS_LRGE_IMAGE_PATH FROM stn_goods_image WHERE GOODS_ID = g.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' ORDER BY GOODS_IMAGE_SN ASC LIMIT 1 ) AS GOODS_LRGE_IMAGE_PATH
+			,g.GOODS_PC
+		FROM	stn_goods_recomend sgr
+		JOIN	stn_goods g ON g.GOODS_ID = sgr.RECOMEND_GOODS_ID AND g.USE_AT = 'Y'
+		WHERE	sgr.GOODS_ID = #{goodsId}
+		ORDER BY RECOMEND_GOODS_SN ASC
+	</select>
+	
+	<!-- 추천상품 저장 -->
+	<insert id="insertGoodsRecomend" parameterType="modoo.module.shop.goods.recomend.service.GoodsRecomendVO">
+		INSERT INTO stn_goods_recomend (
+			GOODS_RECOMEND_NO
+			,GOODS_ID
+			,RECOMEND_GOODS_ID
+			,RECOMEND_GOODS_SN
+		) VALUES (
+			#{goodsRecomendNo}
+			,#{goodsId}
+			,#{recomendGoodsId}
+			,#{recomendGoodsSn}
+		)
+	</insert>
+	
+	<!-- 추천상품 수정 -->
+	<update id="updateGoodsRecomend" parameterType="modoo.module.shop.goods.recomend.service.GoodsRecomendVO">
+		UPDATE stn_goods_recomend
+		SET
+			GOODS_ID = #{goodsId}
+			,RECOMEND_GOODS_ID = #{recomendGoodsId}
+			,RECOMEND_GOODS_SN = #{recomendGoodsSn}
+		WHERE
+			GOODS_RECOMEND_NO = #{goodsRecomendNo}
+	</update>
+	
+	<!-- 추천상품 삭제 -->
+	<delete id="deleteGoodsRecomend" parameterType="modoo.module.shop.goods.recomend.service.GoodsRecomendVO">
+		DELETE FROM stn_goods_recomend
+		WHERE
+			GOODS_RECOMEND_NO = #{goodsRecomendNo}
+	</delete>
+
+</mapper>

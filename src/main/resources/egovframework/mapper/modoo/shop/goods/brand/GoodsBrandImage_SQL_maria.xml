@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.brand.service.impl.GoodsBrandImageMapper">
+
+	<!-- 브랜드이미지 목록 -->
+	<select id="selectGoodsBrandImageList" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandImageVO" resultType="modoo.module.shop.goods.brand.service.GoodsBrandImageVO">
+		SELECT
+			BRAND_IMAGE_NO
+			,BRAND_ID
+			,BRAND_IMAGE_SE_CODE
+			,BRAND_IMAGE_SN
+			,BRAND_IMAGE_PATH
+			,BRAND_IMAGE_THUMB_PATH
+		FROM	stn_goods_brand_image
+		WHERE	BRAND_ID = #{brandId}
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(brandImageSeCode)">
+			AND BRAND_IMAGE_SE_CODE = #{brandImageSeCode}
+		</if>
+		ORDER BY BRAND_ID, BRAND_IMAGE_SN
+	</select>
+	
+	<!-- 브랜드이미지 저장 -->
+	<insert id="insertGoodsBrandImage" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandImageVO">
+		INSERT INTO stn_goods_brand_image (
+			BRAND_IMAGE_NO
+			,BRAND_ID
+			,BRAND_IMAGE_SE_CODE
+			,BRAND_IMAGE_SN
+			,BRAND_IMAGE_PATH
+			,BRAND_IMAGE_THUMB_PATH
+		) VALUES (
+			#{brandImageNo}
+			,#{brandId}
+			,#{brandImageSeCode}
+			,#{brandImageSn}
+			,#{brandImagePath}
+			,#{brandImageThumbPath}
+		)
+	</insert>
+
+	<!-- 브랜드이미지 수정 -->
+	<update id="updateGoodsBrandImage" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandImageVO">
+		UPDATE stn_goods_brand_image
+		SET
+			BRAND_IMAGE_SN = #{brandImageSn}
+			,BRAND_IMAGE_PATH = #{brandImageSeCode}
+			,BRAND_IMAGE_THUMB_PATH = #{brandImageThumbPath}
+		WHERE	BRAND_IMAGE_NO = #{brandImagePath}
+	</update>
+	
+	<!-- 브랜드이미지 최대 순번 + 1 -->
+	<select id="selectGoodsBrandImageMaxSn" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandImageVO" resultType="int">
+		SELECT
+			IFNULL(MAX(BRAND_IMAGE_SN) + 1,1) AS NEXT_SN
+		FROM	stn_goods_brand_image
+		WHERE	BRAND_ID = #{brandId}
+			AND BRAND_IMAGE_SE_CODE = #{brandImageSeCode}
+	</select>
+	
+	<!-- 브랜드이미지 삭제 -->
+	<delete id="deleteGoodsBrandImage" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandImageVO">
+		DELETE FROM stn_goods_brand_image
+		WHERE
+			BRAND_IMAGE_NO = #{brandImageNo}
+	</delete>
+	
+	<!-- 브랜드ID에 속한 브랜드이미지 삭제 -->
+	<delete id="deleteGoodsBrandImageBrandId" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandImageVO">
+		DELETE FROM stn_goods_brand_image
+		WHERE
+			BRAND_ID = #{brandId}
+			AND BRAND_IMAGE_SE_CODE = #{brandImageSeCode}
+	</delete>
+	
+	<!-- 브랜드이미지 소속업체ID -->
+	<select id="selectCheckGoodsBrandCmpnyId" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandImageVO" resultType="String">
+		SELECT
+			b.CMPNY_ID
+		FROM	stn_goods_brand b
+		JOIN	stn_goods_brand_image i ON i.BRAND_ID = b.BRAND_ID
+		WHERE	i.BRAND_IMAGE_NO = #{brandImageNo}
+	</select>
+	
+	<!-- 브랜드 이미지 목록 삭제 -->
+	<delete id="deleteGoodsBrandImageList" parameterType="modoo.module.shop.goods.brand.service.GoodsBrandImageVO">
+		DELETE FROM stn_goods_brand_image
+		WHERE
+			BRAND_ID = #{brandId}
+	</delete>
+</mapper>

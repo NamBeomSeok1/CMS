@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.banner.service.impl.BannerMapper">
+
+	<!-- 배너 목록 -->
+	<!-- <select id="selectBannerList" parameterType="modoo.module.banner.service.BannerVO" resultType="egovMap">
+		SELECT
+			bn.BANNER_ID
+			,bn.SITE_ID
+			,bn.BANNER_SE_CODE
+			,cd.CODE_NM AS BANNER_SE_CODE_NM
+			,bn.SORT_NO
+			,bn.BANNER_NM
+			,bn.BANNER_PATH
+			,bn.BANNER_M_PATH
+			,bn.BANNER_LINK
+			,bn.BANNER_WINDOW_AT
+			,bn.BANNER_BGNDE
+			,bn.BANNER_ENDDE
+			,bn.BANNER_TY_CODE
+			,bn.BANNER_LBL
+			,bn.BANNER_LBL_CLOR
+			,bn.DFK
+			,bn.GOODS_ID
+			,bn.EVT_TXT
+			,bn.BCRN_CLOR
+			,bn.FONT_CLOR
+			,bn.ACTVTY_AT
+			,bn.FRST_REGIST_PNTTM
+			,bn.FRST_REGISTER_ID
+			,bn.LAST_UPDT_PNTTM
+			,bn.LAST_UPDUSR_ID
+			,bn.USE_AT
+			,ptr.PRTNR_ID
+      		,ptr.PRTNR_NM
+		FROM	DTN_BANNER bn
+		LEFT OUTER JOIN DTC_CMMN_DETAIL_CODE cd
+			ON cd.CODE = bn.BANNER_SE_CODE AND cd.USE_AT = 'Y'
+		LEFT OUTER JOIN STN_GOODS gs ON bn.GOODS_ID = gs.GOODS_ID
+		LEFT OUTER JOIN STN_PRTNR_CMPNY_MAPNG pcm ON pcm.PCMAPNG_ID = gs.PCMAPNG_ID
+    	LEFT OUTER JOIN STN_PRTNR ptr ON pcm.PRTNR_ID = ptr.PRTNR_ID
+		<include refid="selectBannerListWhere"></include>
+		ORDER BY SORT_NO ASC, BANNER_ID DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	-->
+	<select id="selectBannerList" parameterType="modoo.module.banner.service.BannerVO" resultType="egovMap">
+		SELECT
+			bn.BANNER_ID
+			,bn.SITE_ID
+			,bn.BANNER_SE_CODE
+			,cd.CODE_NM AS BANNER_SE_CODE_NM
+			,bn.SORT_NO
+			,bn.BANNER_NM
+			,bn.BANNER_PATH
+			,bn.BANNER_M_PATH
+			,bn.BANNER_LINK
+			,bn.BANNER_WINDOW_AT
+			,bn.BANNER_BGNDE
+			,bn.BANNER_ENDDE
+			,bn.BANNER_TY_CODE
+			,bn.BANNER_LBL
+			,bn.BANNER_LBL_CLOR
+			,bn.DFK
+			,bn.GOODS_ID
+			,bn.EVT_TXT
+			,bn.BCRN_CLOR
+			,bn.FONT_CLOR
+			,bn.ACTVTY_AT
+			,bn.FRST_REGIST_PNTTM
+			,bn.FRST_REGISTER_ID
+			,bn.LAST_UPDT_PNTTM
+			,bn.LAST_UPDUSR_ID
+			,bn.USE_AT
+			,p.PRTNR_ID
+      		,p.PRTNR_NM
+		FROM	dtn_banner bn
+		LEFT OUTER JOIN dtc_cmmn_detail_code cd ON cd.CODE = bn.BANNER_SE_CODE AND cd.CODE_ID = 'CMS004' AND cd.USE_AT = 'Y'
+    	LEFT OUTER JOIN stn_prtnr p ON p.PRTNR_ID = bn.PRTNR_ID
+		<include refid="selectBannerListWhere"></include>
+		ORDER BY SORT_NO ASC, BANNER_ID DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectBannerListWhere">
+		<where>
+			AND bn.USE_AT = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSiteId)">
+				AND bn.SITE_ID = #{searchSiteId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'NM')">
+						AND bn.BANNER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+				</choose>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSeCode)">
+				AND bn.BANNER_SE_CODE = #{searchSeCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchPrtnrId)">
+				AND bn.PRTNR_ID = #{searchPrtnrId}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 배너 목록 카운트 -->
+	<select id="selectBannerListCnt" parameterType="modoo.module.banner.service.BannerVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	dtn_banner bn
+		LEFT OUTER JOIN dtc_cmmn_detail_code cd ON cd.CODE = bn.BANNER_SE_CODE AND cd.CODE_ID = 'CMS004' AND cd.USE_AT = 'Y'
+    	LEFT OUTER JOIN stn_prtnr p ON p.PRTNR_ID = bn.PRTNR_ID
+		<include refid="selectBannerListWhere"></include>
+	</select>
+
+	<!-- 배너 저장 -->
+	<insert id="insertBanner" parameterType="modoo.module.banner.service.BannerVO">
+		INSERT INTO dtn_banner (
+			BANNER_ID
+			,SITE_ID
+			,BANNER_SE_CODE
+			,SORT_NO
+			,PRTNR_ID
+			,BANNER_NM
+			,BANNER_PATH
+			,BANNER_M_PATH
+			,BANNER_LINK
+			,BANNER_WINDOW_AT
+			,BANNER_BGNDE
+			,BANNER_ENDDE
+			,BANNER_TY_CODE
+			,BANNER_LBL
+			,BANNER_LBL_CLOR
+			,DFK
+			,GOODS_ID
+			,EVT_TXT
+			,BCRN_CLOR
+			,FONT_CLOR
+			,ACTVTY_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSR_ID
+			,USE_AT
+		) VALUES (
+			#{bannerId}
+			,#{siteId}
+			,#{bannerSeCode}
+			,#{sortNo}
+			,#{prtnrId}
+			,#{bannerNm}
+			,#{bannerPath}
+			,#{bannerMPath}
+			,#{bannerLink}
+			,IFNULL(#{bannerWindowAt}, 'N')
+			,#{bannerBgnde}
+			,#{bannerEndde}
+			,#{bannerTyCode}
+			,#{bannerLbl}
+			,#{bannerLblClor}
+			,#{dfk}
+			,#{goodsId}
+			,#{evtTxt}
+			,#{bcrnClor}
+			,#{fontClor}
+			,#{actvtyAt}
+			,SYSDATE()
+			,#{frstRegisterId}
+			,SYSDATE()
+			,#{frstRegisterId}
+			,'Y'
+		)
+	</insert>
+	
+	<!-- 배너 상세 -->
+	<select id="selectBanner" parameterType="modoo.module.banner.service.BannerVO" resultType="modoo.module.banner.service.BannerVO">
+		SELECT
+			bn.BANNER_ID
+			,bn.SITE_ID
+			,bn.BANNER_SE_CODE
+			,bn.SORT_NO
+			,bn.PRTNR_ID
+			,bn.BANNER_NM
+			,bn.BANNER_PATH
+			,bn.BANNER_M_PATH
+			,bn.BANNER_LINK
+			,bn.BANNER_WINDOW_AT
+			,bn.BANNER_BGNDE
+			,DATE_FORMAT(STR_TO_DATE(BANNER_BGNDE, '%Y%m%d%H%i%s'), '%Y-%m-%d') BANNER_BGN_DATE
+			,DATE_FORMAT(STR_TO_DATE(BANNER_BGNDE, '%Y%m%d%H%i%s'), '%H') BANNER_BGN_HOUR
+			,DATE_FORMAT(STR_TO_DATE(BANNER_BGNDE, '%Y%m%d%H%i%s'), '%i') BANNER_BGN_MIN
+			,bn.BANNER_ENDDE
+			,DATE_FORMAT(STR_TO_DATE(BANNER_ENDDE, '%Y%m%d%H%i%s'), '%Y-%m-%d') BANNER_END_DATE
+			,DATE_FORMAT(STR_TO_DATE(BANNER_ENDDE, '%Y%m%d%H%i%s'), '%H') BANNER_END_HOUR
+			,DATE_FORMAT(STR_TO_DATE(BANNER_ENDDE, '%Y%m%d%H%i%s'), '%i') BANNER_END_MIN
+			,bn.BANNER_TY_CODE
+			,bn.BANNER_LBL
+			,bn.BANNER_LBL_CLOR
+			,bn.ACTVTY_AT
+			,bn.DFK
+			,bn.GOODS_ID
+			,bn.EVT_TXT
+			,bn.BCRN_CLOR
+			,bn.FONT_CLOR
+			,bn.FRST_REGIST_PNTTM
+			,bn.FRST_REGISTER_ID
+			,bn.LAST_UPDT_PNTTM
+			,bn.LAST_UPDUSR_ID
+			,bn.USE_AT
+			,gs.GOODS_NM
+		FROM	dtn_banner bn
+		LEFT OUTER JOIN stn_goods gs ON bn.GOODS_ID = gs.GOODS_ID
+		WHERE	BANNER_ID = #{bannerId}
+	</select>
+	
+	<!-- 배너 수정 -->
+	<update id="updateBanner" parameterType="modoo.module.banner.service.BannerVO">
+		UPDATE dtn_banner
+		SET
+			SITE_ID = #{siteId}
+			,BANNER_SE_CODE = #{bannerSeCode}
+			,SORT_NO = #{sortNo}
+			,PRTNR_ID = #{prtnrId}
+			,BANNER_NM = #{bannerNm}
+			,BANNER_PATH = #{bannerPath}
+			,BANNER_M_PATH = #{bannerMPath}
+			,BANNER_LINK = #{bannerLink}
+			,BANNER_WINDOW_AT = IFNULL(#{bannerWindowAt}, 'N')
+			,BANNER_BGNDE = #{bannerBgnde}
+			,BANNER_ENDDE = #{bannerEndde}
+			,BANNER_TY_CODE = #{bannerTyCode}
+			,BANNER_LBL = #{bannerLbl}
+			,BANNER_LBL_CLOR = #{bannerLblClor}
+			,DFK = #{dfk}
+			,GOODS_ID = #{goodsId}
+			,EVT_TXT = #{evtTxt}
+			,BCRN_CLOR = #{bcrnClor}
+			,FONT_CLOR = #{fontClor}
+			,ACTVTY_AT = #{actvtyAt}
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	BANNER_ID = #{bannerId}
+	</update>
+
+	<!-- 배너 삭제 -->
+	<delete id="deleteBanner" parameterType="modoo.module.banner.service.BannerVO">
+		UPDATE dtn_banner
+		SET
+			USE_AT = 'N'
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE	BANNER_ID = #{bannerId}
+	</delete>
+	
+	<!-- 투데이스픽 목록 -->
+	<select id="selectTodaysPickList" parameterType="modoo.module.banner.service.BannerVO" resultType="egovMap">
+		SELECT
+			bn.BANNER_ID
+			,bn.SITE_ID
+			,bn.BANNER_SE_CODE
+			,cd.CODE_NM AS BANNER_SE_CODE_NM
+			,bn.SORT_NO
+			,bn.BANNER_NM
+			,bn.BANNER_PATH
+			,bn.BANNER_M_PATH
+			,bn.BANNER_LINK
+			,bn.BANNER_WINDOW_AT
+			,bn.BANNER_BGNDE
+			,bn.BANNER_ENDDE
+			,bn.BANNER_TY_CODE
+			,bn.BANNER_LBL
+			,bn.BANNER_LBL_CLOR
+			,bn.DFK
+			,bn.GOODS_ID
+			,bn.EVT_TXT
+			,bn.BCRN_CLOR
+			,bn.FONT_CLOR
+			,bn.ACTVTY_AT
+			,bn.FRST_REGIST_PNTTM
+			,bn.FRST_REGISTER_ID
+			,bn.LAST_UPDT_PNTTM
+			,bn.LAST_UPDUSR_ID
+			,bn.USE_AT
+			,gs.GOODS_NM
+			,gs.GOODS_KND_CODE
+			,gs.EVNT_WORDS
+			,gs.GOODS_PC
+			,gs.SBSCRPT_CYCLE_SE_CODE
+			,gs.SBSCRPT_WEEK_CYCLE
+			,gs.SBSCRPT_MT_CYCLE
+			,gi.GOODS_LRGE_IMAGE_PATH 
+			,gi.GOODS_MIDDL_IMAGE_PATH 
+			,gi.GOODS_SMALL_IMAGE_PATH 
+			,gs.GOODS_INTRCN
+			,gs.MRKT_PC
+			,gs.SBSCRPT_DLVY_WD
+			,gs.SBSCRPT_MIN_USE_WEEK
+			,gs.SBSCRPT_MIN_USE_MT
+			,gs.SBSCRPT_DLVY_DAY
+			,gs.SBSCRPT_SETLE_DAY
+			,ptr.PRTNR_ID
+      		,ptr.PRTNR_NM
+      		,b.BRAND_NM
+      		,c.CMPNY_NM
+		FROM	dtn_banner bn
+		LEFT OUTER JOIN dtc_cmmn_detail_code cd ON cd.CODE = bn.BANNER_SE_CODE AND cd.USE_AT = 'Y'
+		LEFT OUTER JOIN stn_goods gs ON bn.GOODS_ID = gs.GOODS_ID
+		LEFT JOIN	stn_goods_image gi ON gi.GOODS_ID  = gs.GOODS_ID AND gi.GOODS_IMAGE_SE_CODE = 'GNR'
+					AND gi.GOODS_IMAGE_SN = (SELECT MIN(GOODS_IMAGE_SN) FROM stn_goods_image WHERE GOODS_ID = gs.GOODS_ID)
+		LEFT OUTER JOIN stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = gs.PCMAPNG_ID
+    	LEFT OUTER JOIN stn_prtnr ptr ON bn.PRTNR_ID = ptr.PRTNR_ID
+    	LEFT OUTER JOIN stn_goods_brand b ON b.BRAND_ID = gs.BRAND_ID
+    	LEFT OUTER JOIN stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID
+		<include refid="selectBannerListWhere"></include>
+			AND bn.USE_AT = 'Y'
+			AND bn.ACTVTY_AT = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(prtnrId)">
+				AND ptr.PRTNR_ID = #{prtnrId}
+			</if>
+			AND INSTR(bn.DFK, CASE WEEKDAY(NOW())
+			  WHEN '0' THEN '월'
+			  WHEN '1' THEN '화'
+			  WHEN '2' THEN '수'
+			  WHEN '3' THEN '목'
+			  WHEN '4' THEN '금'
+			  WHEN '5' THEN '토'
+			  WHEN '6' THEN '일'
+			END)
+			AND DATE_FORMAT(NOW(),'%Y%m%d%H%i') BETWEEN bn.BANNER_BGNDE AND bn.BANNER_ENDDE
+		ORDER BY bn.SORT_NO ASC, bn.LAST_UPDT_PNTTM DESC
+		LIMIT 100
+	</select>
+	
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.site.service.impl.SiteDomainMapper">
+
+	<!-- 사이트 도메인 목록 -->
+	<select id="selectSiteDomainList" parameterType="modoo.module.site.service.SiteDomainVO" resultType="modoo.module.site.service.SiteDomainVO">
+		SELECT
+			SITE_ID
+			,DOMAIN_NM
+			,DOMAIN_SN
+		FROM	dtn_site_domain
+		<where>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSiteId)">
+				AND SITE_ID = #{searchSiteId}
+			</if>
+		</where>
+		ORDER BY DOMAIN_SN ASC
+	</select>
+
+	<!-- 사이트 도메인 저장 -->
+	<insert id="insertSiteDomain" parameterType="modoo.module.site.service.SiteDomainVO">
+		INSERT INTO	dtn_site_domain (
+			SITE_ID
+			,DOMAIN_NM
+			,DOMAIN_SN
+		) VALUES (
+			#{siteId}
+			,#{domainNm}
+			,#{domainSn}
+		)
+	</insert>
+	
+	<!-- 사이트 모든 도메인 삭제 -->
+	<delete id="deleteAllSiteDomain" parameterType="modoo.module.site.service.SiteDomainVO">
+		DELETE FROM dtn_site_domain
+		WHERE	SITE_ID = #{siteId}
+	</delete>
+	
+	<!-- 사이트 도메인 상세 -->
+	<select id="selectSiteDomain" parameterType="modoo.module.site.service.SiteDomainVO" resultType="modoo.module.site.service.SiteDomainVO">
+		SELECT
+			SITE_ID
+			,DOMAIN_NM
+			,DOMAIN_SN
+		FROM	dtn_site_domain
+		<where>
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(domainNm)">
+					AND DOMAIN_NM = #{domainNm}
+				</when>
+				<otherwise>
+					AND SITE_ID = #{siteId}
+				</otherwise>
+			</choose>
+		</where>
+		LIMIT 1
+	</select>
+</mapper>

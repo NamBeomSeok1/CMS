@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.setle.service.impl.OrderSetleMapper">
+
+	<!-- 결제 목록 -->
+	<select id="selectOrderSetleList" parameterType="modoo.module.shop.goods.setle.service.OrderSetleVO" resultType="egovMap">
+		SELECT 
+			DATE_FORMAT(A.SETLE_PNTTM, '%Y-%c-%e') AS SETLE_PNTTM
+			, A.SETLE_TOT_AMOUNT
+			, A.SETLE_STTUS_CODE
+			, B.ORDER_NO
+			, B.SBSCRPT_CYCLE_SE_CODE
+			, B.SBSCRPT_WEEK_CYCLE
+			, B.SBSCRPT_DLVY_WD
+			, B.SBSCRPT_MT_CYCLE
+			, B.SBSCRPT_DLVY_DAY
+			, B.DLVY_ADRES
+			, B.DLVY_STTUS_CODE
+			, (SELECT API_ID FROM stn_hdry_cmpny WHERE HDRY_ID = B.HDRY_ID) AS HDRY_ID
+			, B.HDRY_DLVY_DE
+			, B.INVC_NO
+			, C.ORDER_NO
+			, C.ORDER_CO
+			, C.ORDRR_ID
+			, C.ORDER_KND_CODE
+			, C.SBSCRPT_CYCLE_SE_CODE
+			, C.SBSCRPT_WEEK_CYCLE
+			, C.SBSCRPT_DLVY_WD
+			, C.SBSCRPT_USE_WEEK
+			, C.SBSCRPT_MT_CYCLE
+			, C.SBSCRPT_USE_MT
+			, C.SBSCRPT_DLVY_DAY
+			, D.GOODS_PC
+			, D.GOODS_NM
+			, D.MODEL_NM
+			,CONCAT(
+				IF(ISNULL(H.GOODS_CTGRY_NM) or H.GOODS_CTGRY_NM = 'ROOT','',E.GOODS_CTGRY_NM), 
+				IF(ISNULL(H.GOODS_CTGRY_NM) or H.GOODS_CTGRY_NM = 'ROOT','','&gt;'),
+				IF(ISNULL(G.GOODS_CTGRY_NM) or G.GOODS_CTGRY_NM = 'ROOT','',G.GOODS_CTGRY_NM),
+				IF(ISNULL(G.GOODS_CTGRY_NM) or G.GOODS_CTGRY_NM = 'ROOT','','&gt;'),
+				IF(ISNULL(E.GOODS_CTGRY_NM) or E.GOODS_CTGRY_NM = 'ROOT','',E.GOODS_CTGRY_NM)
+					) AS GOODS_CTGRY_NM
+		FROM stn_order_setle A
+		JOIN stn_order_dlvy B ON A.ORDER_SETLE_NO = B.ORDER_SETLE_NO
+		JOIN stn_order C ON B.ORDER_NO = C.ORDER_NO AND C.USE_AT = 'Y'
+		JOIN stn_goods D ON C.GOODS_ID = D.GOODS_ID AND D.USE_AT = 'Y'
+		JOIN stn_goods_ctgry E ON D.GOODS_CTGRY_ID = E.GOODS_CTGRY_ID AND E.USE_AT = 'Y'
+		JOIN stn_prtnr_cmpny_mapng F ON D.PCMAPNG_ID = F.PCMAPNG_ID
+		LEFT JOIN stn_goods_ctgry G ON G.GOODS_CTGRY_ID = E.UPPER_GOODS_CTGRY_ID AND G.USE_AT = 'Y'
+		LEFT JOIN stn_goods_ctgry H ON H.GOODS_CTGRY_ID = G.UPPER_GOODS_CTGRY_ID AND H.USE_AT = 'Y'
+		<include refid="selectOrderSetleListWhere"></include>
+		ORDER BY A.ORDER_SETLE_NO DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectOrderSetleListWhere">
+		<where>
+			A.USE_AT = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchSetleSttusCode)">
+				AND A.SETLE_STTUS_CODE = #{searchSetleSttusCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchDlvySttusCode)">
+				AND B.DLVY_STTUS_CODE = #{searchDlvySttusCode}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchBgnde)">
+				AND DATE_FORMAT(A.SETLE_PNTTM, '%Y-%c-%e') <![CDATA[ >= ]]> #{searchBgnde}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchEndde)">
+				AND DATE_FORMAT(A.SETLE_PNTTM, '%Y-%c-%e') <![CDATA[ <= ]]> #{searchEndde}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchOrderNo)">
+				AND C.ORDER_NO = #{searchOrderNo}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsNm)">
+				AND D.GOODS_NM LIKE CONCAT( '%' , #{searchGoodsNm} , '%' )
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsCtgryId)">
+				AND E.GOODS_CTGRY_ID IN (
+					SELECT
+						#{searchGoodsCtgryId} AS GOODS_CTGRY_ID
+					FROM 	dual
+					UNION ALL
+					SELECT 
+						AA.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry AA
+					WHERE 	AA.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						BB.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry AA
+					INNER JOIN stn_goods_ctgry BB ON BB.UPPER_GOODS_CTGRY_ID = AA.GOODS_CTGRY_ID
+					WHERE	AA.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						CC.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry AA
+					INNER JOIN stn_goods_ctgry BB ON BB.UPPER_GOODS_CTGRY_ID = AA.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry CC ON CC.UPPER_GOODS_CTGRY_ID = BB.GOODS_CTGRY_ID
+					WHERE	AA.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+					UNION ALL
+					SELECT
+						DD.GOODS_CTGRY_ID 
+					FROM	stn_goods_ctgry AA
+					INNER JOIN stn_goods_ctgry BB ON BB.UPPER_GOODS_CTGRY_ID = AA.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry CC ON CC.UPPER_GOODS_CTGRY_ID = BB.GOODS_CTGRY_ID
+					INNER JOIN stn_goods_ctgry DD ON DD.UPPER_GOODS_CTGRY_ID = CC.GOODS_CTGRY_ID
+					WHERE	AA.UPPER_GOODS_CTGRY_ID = #{searchGoodsCtgryId}
+				)
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchListType, 'LIST')">
+				AND	B.ORDER_DLVY_NO = (	SELECT
+											MAX(BB.ORDER_DLVY_NO)
+										FROM stn_order AA
+										JOIN stn_order_dlvy BB ON AA.ORDER_NO = BB.ORDER_NO
+										GROUP BY AA.ORDER_NO )
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+				AND F.CMPNY_ID=#{searchCmpnyId}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 결제 목록 갯수 -->
+	<select id="selectOrderSetleListCnt" parameterType="modoo.module.shop.goods.setle.service.OrderSetleVO" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM stn_order_setle A
+		JOIN stn_order_dlvy B ON A.ORDER_SETLE_NO = B.ORDER_SETLE_NO
+		JOIN stn_order C ON B.ORDER_NO = C.ORDER_NO AND C.USE_AT = 'Y'
+		JOIN stn_goods D ON C.GOODS_ID = D.GOODS_ID AND D.USE_AT = 'Y'
+		JOIN stn_goods_ctgry E ON D.GOODS_CTGRY_ID = E.GOODS_CTGRY_ID AND E.USE_AT = 'Y'
+		JOIN stn_prtnr_cmpny_mapng F ON D.PCMAPNG_ID = F.PCMAPNG_ID
+		<include refid="selectOrderSetleListWhere"></include>
+	</select>
+	
+	<!-- 결제 상세-->
+	<select id="selectOrderSetle" parameterType="modoo.module.shop.goods.setle.service.OrderSetleVO" resultType="modoo.module.shop.goods.setle.service.OrderSetleVO">
+		SELECT 
+			A.ORDER_SETLE_NO
+			, A.SETLE_POINT
+			, A.SETLE_CARD_AMOUNT
+			, A.SETLE_TOT_AMOUNT
+			, A.SETLE_TY_CODE
+			, A.SETLE_STTUS_CODE
+			, A.SETLE_RESULT_CODE
+			, A.SETLE_RESULT_TY_CODE
+			, A.SETLE_RESULT_MSSAGE
+			, A.EZW_SETLE_CONFM_NO
+			, A.INI_SETLE_CONFM_NO
+			, A.SETLE_PRARNDE
+			, DATE_FORMAT(A.SETLE_PNTTM, '%Y-%c-%e') AS SETLE_PNTTM
+			, A.TEMP_KEY
+			, A.USE_AT
+		FROM STN_ORDER_SETLE A
+		WHERE A.TEMP_KEY = #{tempKey}
+	</select>
+	<!--결제 등록-->
+	<insert id="insertSelectOrder" parameterType="modoo.module.shop.goods.setle.service.OrderSetleVO">
+		INSERT INTO stn_order_setle(
+			SETLE_POINT
+			,SETLE_CARD_AMOUNT
+			,SETLE_TOT_AMOUNT
+			,SETLE_TY_CODE
+			,SETLE_STTUS_CODE
+			,SETLE_RESULT_TY_CODE
+			,GO_PAY_METHOD
+			,SETLE_RESULT_CODE
+			,SETLE_RESULT_MSSAGE
+			,EZW_SETLE_CONFM_NO
+			,INI_SETLE_CONFM_NO
+			,SETLE_PRARNDE
+			,SETLE_PNTTM
+			,TEMP_KEY
+			,EXCCLC_STTUS_CODE
+			,USE_AT
+			)
+		VALUES(
+			#{setlePoint}
+			,#{setleCardAmount}
+			,#{setleTotAmount}
+			,#{setleTyCode}
+			,#{setleSttusCode}
+			,#{setleResultTyCode}
+			,#{goPayMethod}
+			,#{setleResultCode}
+			,#{setleResultMssage}
+			,#{ezwSetleConfmNo}
+			,#{iniSetleConfmNo}
+			,#{setlePrarnde}
+			<if test="setlePnttm!=null">
+			,SYSDATE()
+			</if>
+			<if test="setlePnttm==null">
+			,NULL
+			</if>
+			,#{tempKey}
+			,'CPE01'
+			,'Y'
+		)
+	</insert>
+	
+	<insert id="insertNextSTN_ORDER_DLVY" parameterType="java.util.HashMap">
+  		INSERT INTO stn_order_dlvy (
+			ORDER_NO
+			,ORDER_SETLE_NO
+			,ORDER_KND_CODE
+			,SBSCRPT_CYCLE_SE_CODE
+			,SBSCRPT_WEEK_CYCLE
+			,SBSCRPT_DLVY_WD
+			,SBSCRPT_MT_CYCLE
+			,SBSCRPT_DLVY_DAY
+			,ORDER_ODR
+			,ORDER_CO
+			,SLE_AMOUNT
+			,DLVY_AMOUNT
+			,DLVY_USER_NM
+			,TELNO
+			,DLVY_ZIP
+			,DLVY_ADRES
+			,DLVY_ADRES_DETAIL
+			,DLVY_MSSAGE
+			,DLVY_STTUS_CODE
+			,HDRY_ID
+			,HDRY_DLVY_DE
+			,INVC_NO
+			,REGIST_PNTTM
+			,ORDER_REQ_STTUS_CODE
+			,DSCNT_AMOUNT
+			,ORDER_INFO
+		)
+		SELECT
+			#{orderNo}
+			,#{orderSetleNo}
+			,o.ORDER_KND_CODE
+			,o.SBSCRPT_CYCLE_SE_CODE
+			,o.SBSCRPT_WEEK_CYCLE
+			,o.SBSCRPT_DLVY_WD
+			,o.SBSCRPT_MT_CYCLE
+			,o.SBSCRPT_DLVY_DAY
+			,o.NOW_ODR
+			,o.ORDER_CO
+			,o.TOT_AMOUNT 
+			,o.DLVY_AMOUNT
+			,o.DLVY_USER_NM
+			,o.TELNO
+			,o.DLVY_ZIP
+			,o.DLVY_ADRES
+			,o.DLVY_ADRES_DETAIL
+			,o.DLVY_MSSAGE
+			,'DLVY01'
+			,h.HDRY_ID 
+			,NULL
+			,NULL 
+			,SYSDATE()
+			,#{orderReqSttusCode}
+			,#{dscntPc}
+			,#{orderInfo}
+		FROM	stn_order o
+		JOIN	stn_goods g ON g.GOODS_ID = o.GOODS_ID AND g.USE_AT = 'Y'
+		JOIN	stn_prtnr_cmpny_mapng  p ON p.PCMAPNG_ID = g.PCMAPNG_ID AND p.USE_AT ='Y'
+		JOIN	stn_cmpny c ON c.CMPNY_ID = p.CMPNY_ID AND c.USE_AT = 'Y'
+		JOIN	stn_cmpny_hdry_mapng hm ON hm.CMPNY_ID = c.CMPNY_ID
+		JOIN	stn_hdry_cmpny h ON h.HDRY_ID = hm.HDRY_ID AND h.USE_AT = 'Y'
+		WHERE	o.ORDER_NO = #{orderNo}
+			AND	o.USE_AT = 'Y'
+		LIMIT 1
+    </insert>
+     
+	<!-- 
+    <insert id="insertNextSTN_ORDER_DLVY" parameterType="java.util.HashMap" statementType="CALLABLE">
+    	  { 
+       		CALL INSERT_STN_ORDER_ITEM( 
+   				#{orderSetleNo, mode=IN, jdbcType=BIGINT},
+                #{orderNo, mode=IN, jdbcType=DECIMAL},
+                #{orderReqSttusCode, mode=IN, jdbcType=VARCHAR},
+                #{dscntPc, mode=IN, jdbcType=BIGINT},
+                #{orderInfo, mode=IN, jdbcType=VARCHAR}
+             )
+           }       
+    </insert>
+     -->
+    <!--정산 지급일 수정-->
+    <update id="updateExcclcPrarnde" parameterType="modoo.module.shop.goods.setle.service.OrderSetleVO">
+			  UPDATE stn_order_setle a INNER JOIN (
+		    SELECT
+		        os.ORDER_SETLE_NO
+		        ,CASE c.STDE_SE_CODE
+		            WHEN 'STDE04' THEN CONCAT(DATE_FORMAT(SETLE_PNTTM + interval 1 month, '%Y%m'), DATE_FORMAT(LAST_DAY(os.SETLE_PNTTM + interval 1 month),'%d'))
+		            WHEN 'STDE05' THEN
+		                CASE WHEN DATE_FORMAT(SETLE_PNTTM, '%e') <![CDATA[<=]]> 15 THEN
+		                    (LAST_DAY(SETLE_PNTTM - interval 1 month) + interval 1 DAY) + interval 3 week + interval (2 - DAYOFWEEK((LAST_DAY(SETLE_PNTTM - interval 1 month) + interval 1 DAY) + interval 3 week)) + 1 day
+		                ELSE
+		                    (LAST_DAY(SETLE_PNTTM - interval 1 month) + interval 1 DAY) + interval 1 MONTH + interval 1 WEEK
+		                    + interval (2 - DAYOFWEEK((LAST_DAY(SETLE_PNTTM - interval 1 month) + interval 1 DAY) + interval 1 MONTH + interval 1 WEEK)) + 1 day
+		                END
+		            END EXCCLC_PRARNDE
+		    FROM     stn_order_setle os
+		    JOIN    stn_order_dlvy od ON od.ORDER_SETLE_NO = os.ORDER_SETLE_NO
+		    JOIN     stn_order o ON o.ORDER_NO  = od.ORDER_NO
+		    JOIN    stn_goods g ON g.GOODS_ID = o.GOODS_ID
+		    JOIN     stn_prtnr_cmpny_mapng pcm ON pcm.PCMAPNG_ID = g.PCMAPNG_ID
+		    JOIN     stn_cmpny c ON c.CMPNY_ID = pcm.CMPNY_ID
+		    WHERE     os.SETLE_STTUS_CODE = 'S'
+		        AND os.ORDER_SETLE_NO = #{orderSetleNo}
+		    GROUP BY os.ORDER_SETLE_NO
+		) b ON b.ORDER_SETLE_NO = b.ORDER_SETLE_NO
+		SET
+		    a.EXCCLC_PRARNDE = b.EXCCLC_PRARNDE
+		WHERE a.ORDER_SETLE_NO = #{orderSetleNo}
+    </update>
+    
+    <!-- 취소할 이지웰 결제 내역 조회 -->
+    <select id="selectEzwelSetleToCancel" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="egovMap">
+  		SELECT
+			A.*
+			, C.ORDER_SETLE_NO
+			, IFNULL(C.SETLE_POINT, 0) AS SETLE_POINT
+			, C.SETLE_CARD_AMOUNT
+			, C.SETLE_TOT_AMOUNT
+			, C.SETLE_TY_CODE
+			, C.SETLE_STTUS_CODE
+			, C.SETLE_RESULT_CODE
+			, C.SETLE_RESULT_MSSAGE
+			, C.EZW_SETLE_CONFM_NO
+			, C.INI_SETLE_CONFM_NO
+			, C.SETLE_PRARNDE
+			, C.SETLE_PNTTM
+			, C.USE_AT
+			, E.PRTNR_ID
+		FROM stn_order A
+		JOIN stn_order_dlvy B ON A.ORDER_NO = B.ORDER_NO
+		JOIN stn_order_setle C ON B.ORDER_SETLE_NO = C.ORDER_SETLE_NO
+		JOIN stn_goods D ON A.GOODS_ID = D.GOODS_ID
+		JOIN stn_prtnr_cmpny_mapng E ON D.PCMAPNG_ID = E.PCMAPNG_ID
+		WHERE C.SETLE_STTUS_CODE = 'S'
+			AND C.SETLE_TY_CODE='EZP'
+			AND B.REQ_TY_CODE != 'R05'
+			AND A.ORDER_GROUP_NO = #{orderGroupNo}
+    </select>
+    
+    <!-- 취소할 카드 결제 내역 조회 -->
+    <select id="selectOrderSetleToCancel" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="egovMap"> 
+	   	SELECT
+			*
+		FROM stn_order A
+		JOIN stn_order_dlvy B ON A.ORDER_NO = B.ORDER_NO
+		JOIN stn_order_setle C ON B.ORDER_SETLE_NO = C.ORDER_SETLE_NO
+		WHERE B.ORDER_DLVY_NO = (SELECT
+								MAX(ORDER_DLVY_NO)
+								FROM stn_order_dlvy AA
+								JOIN stn_order_setle BB ON AA.ORDER_SETLE_NO = BB.ORDER_SETLE_NO
+								WHERE AA.ORDER_NO = #{orderNo}
+									AND BB.SETLE_STTUS_CODE = 'S')
+    </select>
+
+	<!-- 결제 내역 상태 변경 -->
+	<update id="updateOrderSetle" parameterType="modoo.module.shop.goods.setle.service.OrderSetleVO">
+		UPDATE stn_order_setle s
+			<set>
+				<if test="setlePnttm != null">
+					SETLE_PNTTM = SYSDATE(),
+				</if>
+				<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(setleSttusCode)">
+					SETLE_STTUS_CODE = #{setleSttusCode},
+				</if>
+				<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(setleResultCode)">
+					SETLE_RESULT_CODE = #{setleResultCode},
+				</if>
+				<if test="setlePrarnde != null">
+					SETLE_PRARNDE = #{setlePrarnde},
+				</if>
+				<if test="setleTotAmount == -1">
+					SETLE_TOT_AMOUNT = (SELECT o.TOT_AMOUNT+o.DSCNT_AMOUNT FROM stn_order o
+				JOIN stn_order_dlvy d ON o.ORDER_NO = d.ORDER_NO
+				WHERE d.ORDER_SETLE_NO = #{orderSetleNo}),
+					<!-- (SELECT
+				(o.GOODS_AMOUNT * o.ORDER_CO) + o.DLVY_AMOUNT
+				FROM stn_order o
+				JOIN stn_order_dlvy d ON o.ORDER_NO = d.ORDER_NO
+				WHERE d.ORDER_SETLE_NO = #{orderSetleNo})
+				+
+				(SELECT
+				IFNULL(SUM(i.GITEM_PC),0)
+				FROM stn_order_item i
+        		JOIN stn_order_dlvy d ON d.ORDER_NO = i.ORDER_NO
+        		WHERE d.ORDER_SETLE_NO = #{orderSetleNo})  -->
+				</if>
+			</set>
+		WHERE ORDER_SETLE_NO = #{orderSetleNo}
+	</update>
+
+	<!-- 이니시스 카드결제 confirm price 계산 -->
+	<select id="selectConfirmPrice" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="java.math.BigDecimal">
+		SELECT
+			SUM(X.MONEY) AS CONFIRM_PRICE
+		FROM
+			(SELECT
+				IFNULL(SUM(A.SETLE_CARD_AMOUNT), 0) AS MONEY
+			FROM stn_order_setle A
+			JOIN stn_order_dlvy B ON A.ORDER_SETLE_NO = B.ORDER_SETLE_NO
+			JOIN stn_order C ON B.ORDER_NO = C.ORDER_NO
+			WHERE C.ORDER_GROUP_NO = #{orderGroupNo}
+				AND A.INI_SETLE_CONFM_NO = #{iniSetleConfmNo}
+				AND A.SETLE_STTUS_CODE = 'S'
+			
+			UNION ALL
+			
+<!-- 			SELECT -->
+<!-- 				IFNULL(SUM(A.SETLE_CARD_AMOUNT), 0) * -1 AS MONEY -->
+<!-- 			FROM stn_order_setle A -->
+<!-- 			WHERE A.INI_SETLE_CONFM_NO = #{iniSetleConfmNo} -->
+<!-- 				AND A.SETLE_STTUS_CODE = 'C' -->
+				
+<!-- 			UNION ALL -->
+				
+			SELECT
+				IFNULL(SUM(A.SETLE_CARD_AMOUNT), 0) * -1 AS MONEY
+			FROM stn_order_setle A
+			JOIN stn_order_dlvy B ON A.ORDER_SETLE_NO = B.ORDER_SETLE_NO
+			JOIN stn_order C ON B.ORDER_NO = C.ORDER_NO
+			WHERE C.ORDER_NO = #{orderNo}
+				AND A.INI_SETLE_CONFM_NO = #{iniSetleConfmNo}
+				AND A.SETLE_STTUS_CODE = 'S'
+			) X
+	</select>
+
+    <select id="selectCardSetleToCancel" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="egovMap">
+  		SELECT
+			A.*
+			, C.ORDER_SETLE_NO
+			, IFNULL(C.SETLE_POINT, 0) AS SETLE_POINT
+			, C.SETLE_CARD_AMOUNT
+			, C.SETLE_TOT_AMOUNT
+			, C.SETLE_TY_CODE
+			, C.SETLE_STTUS_CODE
+			, C.SETLE_RESULT_CODE
+			, C.SETLE_RESULT_MSSAGE
+			, C.EZW_SETLE_CONFM_NO
+			, C.INI_SETLE_CONFM_NO
+			, C.SETLE_PRARNDE
+			, C.SETLE_PNTTM
+			, C.USE_AT
+			, E.PRTNR_ID
+		FROM stn_order A
+		JOIN stn_order_dlvy B ON A.ORDER_NO = B.ORDER_NO
+		JOIN stn_order_setle C ON B.ORDER_SETLE_NO = C.ORDER_SETLE_NO
+		JOIN stn_goods D ON A.GOODS_ID = D.GOODS_ID
+		JOIN stn_prtnr_cmpny_mapng E ON D.PCMAPNG_ID = E.PCMAPNG_ID
+		WHERE C.SETLE_STTUS_CODE = 'S'
+			AND C.SETLE_TY_CODE='CARD'
+			AND B.REQ_TY_CODE != 'R05'
+			AND A.ORDER_GROUP_NO = #{orderGroupNo}
+    </select>
+    
+    <!-- 구독 해지 -->
+    <select id="stopSubscribeConfirm" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="egovMap">
+	    UPDATE stn_order_setle
+		SET SETLE_STTUS_CODE='T'
+		WHERE SETLE_STTUS_CODE = 'R'
+			AND ORDER_SETLE_NO = (SELECT
+										MAX(B.ORDER_SETLE_NO)
+									FROM stn_order A
+									JOIN stn_order_dlvy B ON A.ORDER_NO = B.ORDER_NO
+									WHERE A.ORDER_NO=#{orderNo})
+    </select>
+    
+    <!-- 구독 해지 취소 -->
+<!--     <select id="stopSubscribeCancel" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="egovMap"> -->
+<!-- 	    UPDATE STN_ORDER_SETLE -->
+<!-- 		SET SETLE_STTUS_CODE='R' -->
+<!-- 		WHERE SETLE_STTUS_CODE = 'T' -->
+<!-- 			AND ORDER_SETLE_NO = (SELECT -->
+<!-- 										MAX(B.ORDER_SETLE_NO) -->
+<!-- 									FROM stn_order A -->
+<!-- 									JOIN stn_order_dlvy B ON A.ORDER_NO = B.ORDER_NO -->
+<!-- 									WHERE A.ORDER_NO=#{orderNo}) -->
+<!--     </select> -->
+    
+    <!-- 취소할 결제 내역 -->
+    <select id="selectOrderSetleListToCancel" parameterType="modoo.module.shop.goods.order.service.OrderVO" resultType="egovMap">
+   		SELECT
+			*
+		FROM stn_order_setle A
+		JOIN stn_order_dlvy B ON A.ORDER_SETLE_NO = B.ORDER_SETLE_NO
+		JOIN stn_order C ON B.ORDER_NO = C.ORDER_NO
+		WHERE C.ORDER_NO = #{orderNo}
+			AND B.ORDER_DLVY_NO = (SELECT MAX(ORDER_DLVY_NO) FROM stn_order_dlvy WHERE ORDER_NO = #{orderNo})
+    </select>
+    
+    <select id="selectNextOrderSetle" parameterType="modoo.module.shop.goods.dlvy.service.OrderDlvyVO" resultType="modoo.module.shop.goods.setle.service.OrderSetleVO">
+<!-- 		SELECT -->
+<!-- 			X.*  -->
+<!-- 		FROM STN_ORDER_SETLE X -->
+<!-- 		WHERE X.ORDER_SETLE_NO = (SELECT -->
+<!-- 										MAX(AA.ORDER_SETLE_NO) -->
+<!-- 									FROM -->
+<!-- 									stn_order_dlvy AA -->
+<!-- 									JOIN stn_order BB ON AA.ORDER_NO = BB.ORDER_NO -->
+<!-- 									WHERE BB.ORDER_GROUP_NO = #{searchOrderGroupNo} -->
+<!-- 									ORDER BY AA.ORDER_DLVY_NO -->
+<!-- 									LIMIT 1) -->
+		SELECT
+			A.*
+		FROM stn_order_setle A
+		JOIN stn_order_dlvy B ON A.ORDER_SETLE_NO = B.ORDER_SETLE_NO
+		JOIN stn_order C ON B.ORDER_NO = C.ORDER_NO
+		WHERE C.ORDER_NO = #{orderNo}
+			AND B.ORDER_DLVY_NO <![CDATA[ >= ]]> #{orderDlvyNo}
+		ORDER BY B.ORDER_DLVY_NO DESC, A.ORDER_SETLE_NO DESC
+		LIMIT 2
+    </select>
+    
+</mapper>

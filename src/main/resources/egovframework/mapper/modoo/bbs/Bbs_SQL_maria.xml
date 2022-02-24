@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.api.service.impl.BbsMapper">
+
+	<!-- 게시물 시간이 빠른게 위로 -->
+	<select id="selectBbsList" parameterType="modoo.module.api.service.BbsVO" resultType="modoo.module.api.service.BbsVO">
+		SELECT
+			BBS_NO
+			,USR_NM
+			/*,STR_TO_DATE(RCORD,'%i:%s.%i') AS RCORD*/
+			,RCORD
+			,PARTCPTN_CO AS PARTCPTN_CO
+			,REGST_PNTTM
+		FROM	dprc_bbs
+		<include refid="selectBbsListWhere"></include>
+		ORDER BY RCORD ASC
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchKeyword,'ten')">
+			LIMIT 10
+		</if>
+	</select>
+
+	<select id="selectFilter" parameterType="modoo.module.api.service.FilterVO" resultType="modoo.module.api.service.FilterVO">
+		SELECT
+			FRST_PNTTM
+			,LAST_PNTTM
+			,DPLCT_AT
+		FROM bbs_view_filter
+	</select>
+
+	<select id="selectDupliBbsList" parameterType="modoo.module.api.service.BbsVO" resultType="modoo.module.api.service.BbsVO">
+		SELECT
+		BBS_NO
+		,USR_NM
+		,STR_TO_DATE(RCORD,'%H:%i:%s') AS RCORD
+		,COUNT(USR_NM) AS PARTCPTN_CO
+		,REGST_PNTTM
+		FROM	dprc_bbs
+		<include refid="selectBbsListWhere"></include>
+		GROUP BY USR_NM ORDER BY RCORD ASC
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchKeyword,'ten')">
+			LIMIT 10
+		</if>
+	</select>
+
+	<sql id="selectBbsListWhere">
+		<where>
+			1=1
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'SJ')">
+						AND SAMPLE_SJ LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CN')">
+						AND SAMPLE_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 뷰필터 저장 -->
+	<insert id="insertFilter" parameterType="modoo.module.api.service.FilterVO">
+		INSERT INTO bbs_view_filter (
+				  FRST_PNTTM
+				 ,LAST_PNTTM
+				 ,DPLCT_AT
+		) VALUES (
+				 #{frst_pnttm}
+				 ,#{last_pnttm}
+				 ,#{dplctAt}
+				 )
+	</insert>
+
+	<!-- 게시글 저장 -->
+	<insert id="insertBbs" parameterType="modoo.module.api.service.BbsVO">
+		INSERT INTO dprc_bbs (
+			USR_NM
+			,RCORD
+			,PARTCPTN_CO
+			,REGST_PNTTM
+		) VALUES (
+			#{usrNm}
+			,#{rcord}
+			,#{partcptnCo}
+			,SYSDATE()
+		)
+	</insert>
+
+	<!-- 샘플 상세 -->
+	<select id="selectBbs" parameterType="modoo.module.api.service.BbsVO" resultType="modoo.module.api.service.BbsVO">
+		SELECT
+		    BBS_NO
+			,USR_NM
+			,RCORD
+			,PARTCPTN_CO
+			,REGST_PNTTM
+		FROM	dprc_bbs
+		WHERE	BBS_NO = #{bbsNo}
+	</select>
+
+	<update id="updateFilter" parameterType="modoo.module.api.service.FilterVO">
+		UPDATE bbs_view_filter
+			SET
+			FRST_PNTTM = #{frstPnttm}
+			,LAST_PNTTM = #{lastPnttm}
+			,DPLCT_AT = #{dplctAt}
+	</update>
+
+
+	<!-- 샘플 삭제 -->
+	<delete id="deleteBbs" parameterType="modoo.module.api.service.BbsVO">
+		DELETE FROM dprc_bbs
+		WHERE	BBS_NO = #{bbsNo}
+	</delete>
+</mapper>

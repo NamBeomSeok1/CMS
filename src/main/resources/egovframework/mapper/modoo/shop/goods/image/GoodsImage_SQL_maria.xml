@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.goods.image.service.impl.GoodsImageMapper">
+
+	<!-- 상품이미지 목록 -->
+	<select id="selectGoodsImageList" parameterType="modoo.module.shop.goods.image.service.GoodsImageVO" resultType="modoo.module.shop.goods.image.service.GoodsImageVO">
+		SELECT
+			GOODS_IMAGE_NO
+			,GOODS_ID
+			,GOODS_IMAGE_SE_CODE
+			,GOODS_IMAGE_SN
+			,GOODS_IMAGE_PATH
+			,GOODS_IMAGE_THUMB_PATH
+			,GOODS_LRGE_IMAGE_PATH
+			,GOODS_MIDDL_IMAGE_PATH
+			,GOODS_SMALL_IMAGE_PATH
+		FROM	stn_goods_image
+		WHERE	GOODS_ID = #{goodsId}
+			AND GOODS_IMAGE_SE_CODE = #{goodsImageSeCode}
+		ORDER BY GOODS_IMAGE_SN ASC, GOODS_IMAGE_NO ASC
+	</select>
+	
+	<!-- 상품이미지 저장  -->	
+	<insert id="insertGoodsImage" parameterType="modoo.module.shop.goods.image.service.GoodsImageVO">
+		INSERT INTO stn_goods_image (
+			GOODS_IMAGE_NO
+			,GOODS_ID
+			,GOODS_IMAGE_SE_CODE
+			,GOODS_IMAGE_SN
+			,GOODS_IMAGE_PATH
+			,GOODS_IMAGE_THUMB_PATH
+			,GOODS_LRGE_IMAGE_PATH
+			,GOODS_MIDDL_IMAGE_PATH
+			,GOODS_SMALL_IMAGE_PATH
+		) VALUES (
+			#{goodsImageNo}
+			,#{goodsId}
+			,#{goodsImageSeCode}
+			,#{goodsImageSn}
+			,#{goodsImagePath}
+			,#{goodsImageThumbPath}
+			,#{goodsLrgeImagePath}
+			,#{goodsMiddlImagePath}
+			,#{goodsSmallImagePath}
+		)
+	</insert>
+			
+	<!-- 상품이미지 수정 -->
+	<update id="updateGoodsImage" parameterType="modoo.module.shop.goods.image.service.GoodsImageVO">
+		UPDATE stn_goods_image
+		SET
+			GOODS_ID = #{goodsId}
+			,GOODS_IMAGE_SE_CODE = #{goodsImageSeCode}
+			,GOODS_IMAGE_SN = #{goodsImageSn}
+			,GOODS_IMAGE_PATH = #{goodsImagePath}
+			,GOODS_IMAGE_THUMB_PATH = #{goodsImageThumbPath}
+			,GOODS_LRGE_IMAGE_PATH = #{goodsLrgeImagePath}
+			,GOODS_MIDDL_IMAGE_PATH = #{goodsMiddlImagePath}
+			,GOODS_SMALL_IMAGE_PATH = #{goodsSmallImagePath}
+		WHERE	GOODS_IMAGE_NO = #{goodsImageNo}
+	</update>
+	
+	<!-- 상품이미지 삭제  -->
+	<delete id="deleteGoodsImage" parameterType="modoo.module.shop.goods.image.service.GoodsImageVO">
+		DELETE FROM stn_goods_image
+		WHERE	GOODS_IMAGE_NO = #{goodsImageNo}
+	</delete>
+</mapper>

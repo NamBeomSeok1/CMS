@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.comment.service.impl.CommentMapper">
+
+	<resultMap id="commentListResultMap" type="egovMap">
+		<result property="commentId" column="COMMENT_ID"/>
+		<result property="cntntsSeCode" column="CNTNTS_SE_CODE"/>
+		<result property="cntntsId" column="CNTNTS_ID"/>
+		<result property="wrterId" column="WRTER_ID"/>
+		<result property="wrterNm" column="WRTER_NM"/>
+		<result property="commentCn" column="COMMENT_CN" jdbcType="CLOB" javaType="java.lang.String"/>
+		<result property="commentSortOrdr" column="COMMENT_SORT_ORDR"/>
+		<result property="commentNo" column="COMMENT_NO"/>
+		<result property="commentParntId" column="COMMENT_PARNT_ID"/>
+		<result property="commentReplyLc" column="COMMENT_REPLY_LC"/>
+		<result property="recomendCo" column="RECOMEND_CO"/>
+		<result property="unrecomendCo" column="UNRECOMEND_CO"/>
+		<result property="useAt" column="USE_AT"/>
+		<result property="frstRegistPnttm" column="FRST_REGIST_PNTTM"/>
+		<result property="frstRegisterId" column="FRST_REGISTER_ID"/>
+		<result property="lastUpdtPnttm" column="LAST_UPDT_PNTTM"/>
+		<result property="lastUpduserId" column="LAST_UPDUSER_ID"/>
+		<result property="secretAt" column="SECRET_AT"/>
+	</resultMap>
+
+	<!-- 댓글 목록 -->
+	<select id="selectCommentList" parameterType="modoo.module.comment.service.CommentVO" resultType="modoo.module.comment.service.CommentVO">
+			SELECT
+				dc.COMMENT_ID
+				,dc.CNTNTS_SE_CODE
+				,dc.CNTNTS_ID
+				,CASE WHEN (dc.FRST_REGISTER_ID = 'USRCNFRM_000000ADMIN' || dc.FRST_REGISTER_ID = 'USRCNFRM_00000000251') AND dc.WRTER_ID IS NOT NULL THEN dc.WRTER_ID
+					WHEN dc.WRTER_ID IS NULL THEN B.MBER_ID
+					ELSE B.MBER_ID END AS WRTER_ID
+				,dc.WRTER_NM
+				,dc.COMMENT_CN
+				,dc.COMMENT_SORT_ORDR
+				,dc.COMMENT_NO
+				,dc.COMMENT_PARNT_ID
+				,dc.COMMENT_REPLY_LC
+				,dc.RECOMEND_CO
+				,dc.UNRECOMEND_CO
+				,dc.USE_AT
+				,dc.FRST_REGIST_PNTTM
+				,dc.FRST_REGISTER_ID
+				,dc.LAST_UPDT_PNTTM
+				,dc.LAST_UPDUSER_ID
+				,dc.SECRET_AT
+				,dc.SCORE
+				,dc.ATCH_FILE_ID
+			FROM	dtn_comment dc
+			JOIN dtn_mber B ON dc.FRST_REGISTER_ID = B.ESNTL_ID
+				LEFT JOIN stn_goods A ON dc.CNTNTS_ID = A.GOODS_ID
+		<include refid="selectCommentListWhere"></include>
+		<choose>
+			<when test="commentSortOrdr == 1">
+				ORDER BY dc.FRST_REGIST_PNTTM DESC
+			</when>
+			<otherwise>
+				ORDER BY  dc.FRST_REGIST_PNTTM DESC,dc.SCORE DESC
+			</otherwise>
+		</choose>
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectCommentListWhere">
+		<where>
+			AND dc.USE_AT = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCntntsId)">
+				AND dc.CNTNTS_ID = #{searchCntntsId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsId)">
+				AND A.GOODS_ID = #{searchGoodsId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(cntntsSeCode)">
+				AND dc.CNTNTS_SE_CODE = #{cntntsSeCode} 
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(wrterId)">
+				AND dc.WRTER_ID = #{wrterId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'NM')">
+						AND dc.WRTER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 댓글 목록 카운트 -->
+	<select id="selectCommentListCnt" parameterType="modoo.module.comment.service.CommentVO" resultType="int">
+		SELECT	COUNT(*) AS CNT
+		FROM	dtn_comment dc
+		LEFT JOIN stn_goods A ON dc.CNTNTS_ID = A.GOODS_ID
+		<include refid="selectCommentListWhere"></include>
+	</select>
+	
+	<!-- 댓글 저장 -->
+	<insert id="insertComment" parameterType="modoo.module.comment.service.CommentVO">
+		<selectKey keyProperty="commentSortOrdr" resultType="long" order="BEFORE">
+			SELECT 	IFNULL(MAX(COMMENT_SORT_ORDR),0)+1 AS COMMENT_SORT_ORDR
+			FROM 	dtn_comment
+			WHERE 	CNTNTS_ID= #{cntntsId} 
+					AND CNTNTS_SE_CODE = #{cntntsSeCode}
+		</selectKey>
+		INSERT INTO dtn_comment (
+			COMMENT_ID
+			,CNTNTS_SE_CODE
+			,CNTNTS_ID
+			,WRTER_ID
+			,WRTER_NM
+			,COMMENT_CN
+			,PASSWORD
+			,COMMENT_SORT_ORDR
+			,COMMENT_NO
+			,COMMENT_PARNT_ID
+			,COMMENT_REPLY_LC
+			,RECOMEND_CO
+			,UNRECOMEND_CO
+			,USE_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSER_ID
+			,SECRET_AT
+			,SCORE
+			,ATCH_FILE_ID
+		) VALUES (
+			#{commentId}
+			,#{cntntsSeCode}
+			,#{cntntsId}
+			,#{wrterId}
+			,#{wrterNm}
+			,#{commentCn}
+			,#{password}
+			,#{commentId}
+			,#{commentNo}
+			,#{commentParntId}
+			,#{commentReplyLc}
+			,0
+			,0
+			,'Y'
+			,SYSDATE()
+			,#{frstRegisterId}
+			,#{lastUpdtPnttm}
+			,#{lastUpduserId}
+			,#{secretAt}
+			,#{score}
+			,#{atchFileId}
+		)
+	</insert>
+
+	<!-- 댓글 상세 -->
+	<select id="selectComment" parameterType="modoo.module.comment.service.CommentVO" resultType="modoo.module.comment.service.CommentVO">
+		SELECT
+			COMMENT_ID
+			,CNTNTS_SE_CODE
+			,CNTNTS_ID
+			,CASE WHEN (dc.FRST_REGISTER_ID = 'USRCNFRM_000000ADMIN' || dc.FRST_REGISTER_ID = 'USRCNFRM_00000000251') AND dc.WRTER_ID IS NOT NULL THEN dc.WRTER_ID
+				WHEN dc.WRTER_ID IS NULL THEN A.MBER_ID
+				ELSE A.MBER_ID END AS MBER_ID
+			,WRTER_NM
+			,COMMENT_CN
+			,dc.PASSWORD
+			,COMMENT_SORT_ORDR
+			,COMMENT_NO
+			,COMMENT_PARNT_ID
+			,COMMENT_REPLY_LC
+			,RECOMEND_CO
+			,UNRECOMEND_CO
+			,USE_AT
+			,FRST_REGIST_PNTTM
+			,FRST_REGISTER_ID
+			,LAST_UPDT_PNTTM
+			,LAST_UPDUSER_ID
+			,SCORE
+			,SECRET_AT
+			,ATCH_FILE_ID
+		FROM dtn_comment dc
+		JOIN dtn_mber A ON dc.FRST_REGISTER_ID  = A.ESNTL_ID
+		WHERE COMMENT_ID = #{commentId}
+	</select>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateComment" parameterType="modoo.module.comment.service.CommentVO">
+		UPDATE dtn_comment
+		SET
+			COMMENT_CN = #{commentCn}
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSER_ID = #{lastUpduserId}
+			,SCORE = #{score}
+			,SECRET_AT = #{secretAt}
+			,WRTER_ID = #{wrterId}
+			,ATCH_FILE_ID = #{atchFileId}
+		WHERE	COMMENT_ID = #{commentId}
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteComment" parameterType="modoo.module.comment.service.CommentVO">
+		UPDATE 	dtn_comment
+		SET
+			USE_AT = 'N'
+			,LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSER_ID = #{lastUpduserId}
+		WHERE	COMMENT_ID = #{commentId}
+	</delete>
+	
+	<!-- 평균 평점 -->
+	<select id="selectAvgScore" parameterType="modoo.module.comment.service.CommentVO" resultType="int">
+		SELECT
+			CASE WHEN AVG(A.SCORE) IS NULL THEN 0
+			ELSE AVG(A.SCORE) END AS SCORE
+		FROM dtn_comment A
+		JOIN stn_goods B ON A.CNTNTS_ID = B.GOODS_ID
+		WHERE
+			A.USE_AT='Y'
+			AND A.CNTNTS_SE_CODE = 'STN_ORDER'
+			AND B.GOODS_ID=#{searchGoodsId}
+	</select>
+	
+	<!-- 댓글 1개당 첨부 이미지 목록 -->
+	<select id="selectImageList" parameterType="modoo.module.comment.service.CommentVO" resultType="egovframework.com.cmm.service.FileVO">
+		SELECT
+			B.*  <!-- 수정 예정 -->
+		FROM dtn_comment A
+		JOIN dtn_file_detail B ON A.ATCH_FILE_ID = B.ATCH_FILE_ID
+		AND A.COMMENT_ID = #{commentId}
+	</select>
+	
+	<!-- 로그인한 유저의 주문 목록 -->
+	<select id="selectOrder" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="modoo.module.shop.goods.order.service.OrderVO">
+		SELECT
+			A.* <!-- 수정 예정 -->
+		FROM stn_order A
+		WHERE
+			A.FRST_REGISTER_ID = #{frstRegisterId}
+			AND A.GOODS_ID=#{goodsId}
+		LIMIT 1
+	</select>
+	
+	<!-- 리뷰 작성 시 상품 정보 -->
+	<select id="selectGoodsInfo" parameterType="modoo.module.shop.goods.info.service.GoodsVO" resultType="modoo.module.shop.goods.info.service.GoodsVO">
+		SELECT
+			A.GOODS_ID
+			, A.GOODS_CTGRY_ID
+			, A.PCMAPNG_ID
+			, A.GOODS_KND_CODE
+			, A.GOODS_NM
+			, A.MODEL_NM
+			, A.MAKR
+			, A.ORGPLCE
+			, A.BRAND_ID
+			, A.CRTFC_MATTER
+			, A.CNSLT_TELNO
+			, A.GOODS_INTRCN
+			, A.EVNT_WORDS
+			, A.MNGR_MEMO
+			, A.MVP_SOURC_CN
+			, A.GOODS_CN
+			, A.GOODS_PC
+			, A.GOODS_RSRVMNEY
+			, A.GOODS_RSRVMNEY_RATE_AT
+			, A.GOODS_RSRVMNEY_RATE
+			, A.MRKT_PC
+			, A.TAXT_SE_CODE
+			, A.DLVY_SE_CODE
+			, A.DLVY_PC
+			, A.SBSCRPT_CYCLE_SE_CODE
+			, A.SBSCRPT_WEEK_CYCLE
+			, A.SBSCRPT_DLVY_WD
+			, A.SBSCRPT_MIN_USE_WEEK
+			, A.SBSCRPT_MT_CYCLE
+			, A.SBSCRPT_MIN_USE_MT
+			, A.SBSCRPT_DLVY_DAY
+			, A.SBSCRPT_SETLE_DAY
+			, A.BUNDLE_DLVY_AT
+			, A.BUNDLE_DLVY_CO
+			, A.RDCNT
+			, A.SLE_CO
+			, A.OPTN_USE_AT
+			, A.D_OPTN_USE_AT
+			, A.A_OPTN_USE_AT
+			, A.F_OPTN_USE_AT
+			, A.Q_OPTN_USE_AT
+			, A.SOLD_OUT_AT
+			, A.REGIST_STTUS_CODE
+			, A.FRST_REGIST_PNTTM
+			, A.FRST_REGISTER_ID
+			, A.LAST_UPDT_PNTTM
+			, A.LAST_UPDUSR_ID
+			, A.USE_AT
+			, B.GOODS_IMAGE_SN
+			, B.GOODS_IMAGE_THUMB_PATH
+			, C.BRAND_NM
+			, C.BRAND_IMAGE_PATH
+			, C.BRAND_IMAGE_THUMB_PATH
+		FROM stn_goods A
+		LEFT JOIN stn_goods_image B ON A.GOODS_ID = B.GOODS_ID AND GOODS_IMAGE_SE_CODE='GNR' AND GOODS_IMAGE_SN = '1'
+		LEFT JOIN stn_goods_brand C ON A.BRAND_ID = C.BRAND_ID
+		WHERE A.GOODS_ID = #{goodsId}
+	</select>
+	
+	<!-- 로그인한 유저의 상품평 작성 이력 -->
+	<select id="selectUserCommentList"  parameterType="modoo.module.comment.service.CommentVO" resultType="modoo.module.comment.service.CommentVO">
+<!-- 		SELECT -->
+<!-- 			* -->
+<!-- 		FROM DTN_COMMENT A -->
+<!-- 		WHERE -->
+<!-- 			A.FRST_REGISTER_ID = #{frstRegisterId} -->
+<!-- 			AND A.USE_AT='Y' -->
+<!-- 			AND A.CNTNTS_SE_CODE = 'STN_ORDER' -->
+<!-- 			AND A.CNTNTS_ID=#{cntntsId} -->
+		SELECT
+			*
+		FROM dtn_comment A
+		WHERE
+			A.WRTER_ID = #{wrterId}
+			AND A.USE_AT='Y'
+			AND A.CNTNTS_SE_CODE = 'STN_ORDER'
+			AND A.CNTNTS_ID=#{cntntsId}
+	</select>
+	
+	<!-- 첨부파일 정보 수정 -->
+	<update id="deleteCommentFileRef" parameterType="modoo.module.comment.service.CommentVO">
+		UPDATE dtn_comment
+		SET
+			LAST_UPDT_PNTTM = SYSDATE()
+			,LAST_UPDUSER_ID = #{lastUpduserId}
+			,ATCH_FILE_ID = NULL
+		WHERE COMMENT_ID = #{commentId}
+	</update>
+	
+	<!-- 내가 작성한 리뷰 목록 -->
+	<select id="selectMyCommentList" parameterType="modoo.module.comment.service.CommentVO" resultType="egovMap">
+		SELECT
+			dc.COMMENT_ID
+			,dc.CNTNTS_SE_CODE
+			,dc.CNTNTS_ID
+			,dc.WRTER_ID
+			,dc.WRTER_NM
+			,dc.COMMENT_CN
+			,dc.COMMENT_SORT_ORDR
+			,dc.COMMENT_NO
+			,dc.COMMENT_PARNT_ID
+			,dc.COMMENT_REPLY_LC
+			,dc.RECOMEND_CO
+			,dc.UNRECOMEND_CO
+			,dc.USE_AT
+			,dc.FRST_REGIST_PNTTM
+			,dc.FRST_REGISTER_ID
+			,dc.LAST_UPDT_PNTTM
+			,dc.LAST_UPDUSER_ID
+			,dc.SECRET_AT
+			,dc.SCORE
+			,dc.ATCH_FILE_ID
+			,A.GOODS_ID AS SEARCH_GOODS_ID
+			,A.GOODS_ID
+			,A.GOODS_NM
+		FROM dtn_comment dc
+		JOIN stn_goods A ON dc.CNTNTS_ID = A.GOODS_ID
+		<include refid="selectCommentListWhere"></include>
+			AND dc.FRST_REGISTER_ID = #{frstRegisterId}
+		ORDER BY dc.FRST_REGIST_PNTTM DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}		
+	</select>
+	
+	<!-- 내가 작성한 리뷰 목록 수 -->
+	<select id="selectMyCommentListCnt" parameterType="modoo.module.comment.service.CommentVO" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM dtn_comment dc
+		JOIN stn_goods A ON dc.CNTNTS_ID = A.GOODS_ID
+<!-- 		LEFT JOIN -->
+<!-- 			(SELECT * -->
+<!-- 			FROM STN_ORDER -->
+<!-- 		GROUP BY GOODS_ID ) B ON A.GOODS_ID = B.GOODS_ID -->
+			<include refid="selectCommentListWhere"></include> 
+				AND dc.FRST_REGISTER_ID = #{frstRegisterId}
+	</select>
+	
+	<!-- 작성 가능한 리뷰 목록 -->
+	<select id="selectMyCommentTodoList" parameterType="modoo.module.comment.service.CommentVO" resultType="egovMap">
+		SELECT
+			A.GOODS_ID
+			, A.GOODS_NM
+			, A.GOODS_KND_CODE
+			, C.ORDER_NO
+			, C.ORDER_KND_CODE
+			, CASE WHEN C.SBSCRPT_CYCLE_SE_CODE = 'WEEK' THEN CONCAT(C.SBSCRPT_WEEK_CYCLE, '주')
+				WHEN C.SBSCRPT_CYCLE_SE_CODE = 'MONTH' THEN CONCAT(C.SBSCRPT_MT_CYCLE, '월')
+				END AS SBSCRPT_CYCLE_SE_CODE_NM
+			, CASE WHEN C.SBSCRPT_CYCLE_SE_CODE = 'WEEK' THEN CONCAT(CODE3.CODE_NM, '요일')
+				WHEN C.SBSCRPT_CYCLE_SE_CODE = 'MONTH' THEN CONCAT(C.SBSCRPT_DLVY_DAY, '일')
+				END AS SBSCRPT_DLVY_DAY_NM	
+			, C.SBSCRPT_USE_WEEK
+			, C.SBSCRPT_MT_CYCLE
+			, C.SBSCRPT_USE_MT
+			, C.SBSCRPT_DLVY_DAY
+			, C.ORDER_CO
+			, C.TOT_AMOUNT
+			, C.NOW_ODR
+			, B.COMMENT_ID
+			, (SELECT GOODS_IMAGE_THUMB_PATH FROM stn_goods_image WHERE GOODS_ID = A.GOODS_ID AND GOODS_IMAGE_SE_CODE = 'GNR' LIMIT 1) AS GOODS_IMAGE_THUMB_PATH
+			, CODE1.CODE_NM AS GOODS_KND_CODE_NM
+			, IFNULL(CODE2.CODE_NM, '상품준비중') AS DLVY_STTUS_CODE_NM
+	<include refid="selectMyCommentTodoListFrom"></include>
+	<include refid="selectMyCommentTodoListWhere"></include>
+		ORDER BY A.GOODS_ID DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectMyCommentTodoListFrom">
+		FROM stn_goods A
+		LEFT JOIN dtn_comment B ON A.GOODS_ID = B.CNTNTS_ID AND B.CNTNTS_SE_CODE = 'STN_ORDER' AND B.USE_AT = 'Y'
+		JOIN (SELECT
+			MIN(ORDER_NO) AS ORDER_NO
+			, ORDER_KND_CODE
+			, SBSCRPT_USE_WEEK
+			, SBSCRPT_MT_CYCLE
+			, SBSCRPT_USE_MT
+			, SBSCRPT_DLVY_DAY
+			, ORDER_CO
+			, TOT_AMOUNT
+			, NOW_ODR
+			, SBSCRPT_CYCLE_SE_CODE
+			, SBSCRPT_WEEK_CYCLE
+			, GOODS_ID
+			, FRST_REGISTER_ID
+		FROM stn_order
+		WHERE USE_AT = 'Y'
+		AND FRST_REGISTER_ID = #{frstRegisterId}
+<!-- 		AND FRST_REGISTER_ID = 'USRCNFRM_00000000124' -->
+		GROUP BY GOODS_ID
+		 ) C ON A.GOODS_ID = C.GOODS_ID
+		LEFT JOIN dtc_cmmn_detail_code CODE1 ON A.GOODS_KND_CODE = CODE1.CODE AND CODE1.CODE_ID = 'CMS009'
+		LEFT JOIN dtc_cmmn_detail_code CODE2 ON A.GOODS_KND_CODE = CODE2.CODE AND CODE2.CODE_ID = 'CMS022'
+		LEFT JOIN dtc_cmmn_detail_code CODE3 ON A.GOODS_KND_CODE = CODE3.CODE AND CODE3.CODE_ID = 'CMS023'
+	</sql>
+	
+	<sql id="selectMyCommentTodoListWhere">
+		WHERE C.FRST_REGISTER_ID = #{frstRegisterId}
+<!-- 		WHERE C.FRST_REGISTER_ID = 'USRCNFRM_00000000124' -->
+			AND B.COMMENT_ID IS NULL
+	</sql>
+	
+	<!-- 작성 가능한 리뷰 수 -->
+	<select id="selectMyCommentTodoListCnt" parameterType="modoo.module.comment.service.CommentVO" resultType="int">
+		SELECT
+			COUNT(*)
+		<include refid="selectMyCommentTodoListFrom"></include>
+		<include refid="selectMyCommentTodoListWhere"></include>
+	</select>
+	
+	<!-- 상품평목록 -->
+	<select id="selectReviewList" parameterType="modoo.module.comment.service.CommentVO" resultType="egovMap">
+		SELECT
+			dc.COMMENT_ID
+			,dc.CNTNTS_SE_CODE
+			,dc.CNTNTS_ID
+			,CASE WHEN (dc.FRST_REGISTER_ID = 'USRCNFRM_000000ADMIN' || dc.FRST_REGISTER_ID = 'USRCNFRM_00000000251') AND dc.WRTER_ID IS NOT NULL THEN dc.WRTER_ID
+				WHEN dc.WRTER_ID IS NULL THEN B.MBER_ID
+				ELSE B.MBER_ID END AS WRTER_ID
+			,dc.WRTER_NM
+			,dc.COMMENT_CN
+			,dc.COMMENT_SORT_ORDR
+			,dc.COMMENT_NO
+			,dc.COMMENT_PARNT_ID
+			,dc.COMMENT_REPLY_LC
+			,dc.RECOMEND_CO
+			,dc.UNRECOMEND_CO
+			,dc.USE_AT
+			,dc.FRST_REGIST_PNTTM
+			,dc.FRST_REGISTER_ID
+			,dc.LAST_UPDT_PNTTM
+			,dc.LAST_UPDUSER_ID
+			,dc.SECRET_AT
+			,dc.SCORE
+			,dc.ATCH_FILE_ID
+			,g.GOODS_NM
+		<include refid="selectReviewListFrom"></include>
+		<include refid="selectReviewListWhere"></include>
+		ORDER BY dc.COMMENT_ID DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<sql id="selectReviewListFrom">
+		FROM	dtn_comment dc
+		LEFT JOIN stn_goods g ON dc.CNTNTS_ID = g.GOODS_ID AND g.USE_AT = 'Y'
+		LEFT JOIN stn_order o ON g.GOODS_ID = o.ORDER_NO AND o.USE_AT = 'Y'
+		LEFT JOIN stn_prtnr_cmpny_mapng p ON p.PCMAPNG_ID = g.PCMAPNG_ID
+		JOIN dtn_mber B ON dc.FRST_REGISTER_ID = B.ESNTL_ID
+	</sql>
+	
+	<sql id="selectReviewListWhere">
+		<where>
+			dc.USE_AT = 'Y'
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCommentCn)">
+				AND dc.COMMENT_CN LIKE CONCAT('%', #{searchCommentCn}, '%')
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchWrterId)">
+				AND dc.WRTER_ID LIKE CONCAT('%', #{searchWrterId}, '%')
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchWrterNm)">
+				AND dc.WRTER_NM LIKE CONCAT('%', #{searchWrterNm}, '%')
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchGoodsNm)">
+				AND g.GOODS_NM LIKE CONCAT('%', #{searchGoodsNm}, '%')
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchScore)">
+				AND dc.SCORE = #{searchScore}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchBgnde)">
+				<![CDATA[ AND dc.FRST_REGIST_PNTTM >= STR_TO_DATE(RPAD(REPLACE(#{searchBgnde}, '-', ''), 14, '0'), '%Y%m%d%H%i%s') ]]>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchEndde)">
+				<![CDATA[ AND dc.FRST_REGIST_PNTTM < DATE_ADD(STR_TO_DATE(RPAD(REPLACE(#{searchEndde}, '-', ''), 14, '0'),'%Y%m%d%H%i%s'), INTERVAL 1 DAY) ]]>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchCmpnyId)">
+				AND p.CMPNY_ID = #{searchCmpnyId}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 상품평목록 카운트 -->
+	<select id="selectReviewListCnt" parameterType="modoo.module.comment.service.CommentVO" resultType="int">
+		SELECT	COUNT(*) CNT
+		<include refid="selectReviewListFrom"></include>
+		<include refid="selectReviewListWhere"></include>
+	</select>
+	
+	<!-- 나의 상품평 등록 카운트 -->
+	<select id="selectMyReviewCnt" parameterType="modoo.module.comment.service.CommentVO" resultType="int">
+		SELECT COUNT(*) CNT
+		FROM	dtn_comment
+		WHERE	CNTNTS_ID = #{cntntsId}
+			AND CNTNTS_SE_CODE = #{cntntsSeCode}
+			AND	WRTER_ID = #{wrterId}
+			AND USE_AT = 'Y'			
+	</select>
+</mapper>

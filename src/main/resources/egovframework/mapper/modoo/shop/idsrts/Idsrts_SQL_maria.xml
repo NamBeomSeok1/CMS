@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.shop.idsrts.service.impl.IdsrtsMapper">
+
+	<!-- 도서산간목록 -->
+	<select id="selectIdsrtsList" parameterType="modoo.module.shop.idsrts.service.IdsrtsVO" resultType="modoo.module.shop.idsrts.service.IdsrtsVO">
+		SELECT
+			ZIP
+			,ADRES
+			,USE_AT
+		FROM	stn_idsrts
+		WHERE 	USE_AT = 'Y'
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+			<choose>
+				<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'zip')">
+					AND ZIP LIKE CONCAT('%', #{searchKeyword}, '%')
+				</when>
+			</choose>
+		</if>
+		ORDER BY ZIP ASC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<!-- 도서산간목록 카운트 -->
+	<select id="selectIdsrtsListCnt" parameterType="modoo.module.shop.idsrts.service.IdsrtsVO" resultType="int">
+		SELECT
+			COUNT(*) AS CNT
+		FROM	stn_idsrts
+		WHERE 	USE_AT = 'Y'
+	</select>
+	
+	<!-- 도서산간 저장 -->
+	<insert id="insertIdsrts" parameterType="modoo.module.shop.idsrts.service.IdsrtsVO">
+		INSERT INTO stn_idsrts (
+			ZIP
+			,ADRES
+			,USE_AT
+		) VALUES (
+			#{zip}
+			,#{adres}
+			,'Y'
+		)
+	</insert>
+	
+	<!-- 도서산간상세 -->
+	<select id="selectIdsrts" parameterType="modoo.module.shop.idsrts.service.IdsrtsVO" resultType="modoo.module.shop.idsrts.service.IdsrtsVO">
+		SELECT
+			ZIP
+			,ADRES
+			,USE_AT
+		FROM	stn_idsrts
+		WHERE	ZIP = #{zip}
+	</select>
+	
+	<!-- 도서산간수정 -->
+	<update id="updateIdsrts" parameterType="modoo.module.shop.idsrts.service.IdsrtsVO">
+		UPDATE stn_idsrts
+		SET
+			ZIP = #{zip}
+			,ADRES = #{adres}
+		WHERE	ZIP = #{zip}
+	</update>
+	
+	<!-- 도서산간삭제 -->
+	<delete id="deleteIdsrts" parameterType="modoo.module.shop.idsrts.service.IdsrtsVO">
+		DELETE FROM stn_idsrts
+		WHERE	ZIP = #{zip}
+	</delete>
+	
+	<!-- 도서산간 체크 카운트 -->
+	<select id="selectIdsrtsCheckCnt" parameterType="modoo.module.shop.idsrts.service.IdsrtsVO" resultType="int">
+		SELECT
+			COUNT(*) CNT
+		FROM	stn_idsrts
+		WHERE	ZIP = #{zip}
+		AND 	USE_AT = 'Y'
+	</select>
+	
+</mapper>

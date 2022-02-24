@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<title>GUIDE</title>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="Author" content="yanghyo">
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<link href="../../../resources/front/site/SITE_00000/css/style.css" rel="stylesheet" />
+
+	<style type="text/css">
+		body {
+			padding: 5em;
+			margin-bottom:5em;
+			box-sizing:border-box;
+		}
+
+		h1 {
+			font-size: 2em;
+			padding-top: 10px;
+			position: relative;
+			font-family: 'DIN 2014';
+			font-weight: 700;
+		}
+
+		h2 {
+			font-size: 1.6em;
+			font-weight: normal;
+			padding: 50px 0 20px;
+			font-family: 'DIN 2014';
+			font-weight: 700;
+		}
+	</style>
+</head>
+<body>
+	<h1>Defualt Select & Input Guide</h1>
+
+	<h2>select</h2>
+	<div>
+		<select title="select 선택">
+			<option>SELECT</option>
+			<option>option1</option>
+			<option>option2</option>
+			<option>option3</option>
+			<option>option4</option>
+			<option>option5</option>
+			<option>option6</option>
+		</select>
+
+		<select class="border-none" title="border-none 선택">
+			<option>class=border-none SELECT</option>
+			<option>option1</option>
+			<option>option2</option>
+			<option>option3</option>
+			<option>option4</option>
+			<option>option5</option>
+			<option>option6</option>
+		</select>
+		<select class="p10" title="select 선택" style="margin-top:10px;">
+			<option>class=p10 SELECT</option>
+			<option>option1</option>
+			<option>option2</option>
+			<option>option3</option>
+			<option>option4</option>
+			<option>option5</option>
+			<option>option6</option>
+		</select>
+	</div>
+
+	<h2>select-box</h2>
+	<div>
+		<div class="select">
+			<select title="select 선택">
+				<option>SELECT</option>
+				<option>option1</option>
+				<option>option2</option>
+				<option>option3</option>
+				<option>option4</option>
+				<option>option5</option>
+				<option>option6</option>
+			</select>
+		</div>
+	</div>
+
+	<h2>text / password</h2>
+	<div>
+		<input type="text" />
+		<input type="password" />
+	</div>
+
+	<h2>readonly / disabled</h2>
+	<div>
+		<input type="text" readonly value="readonly" />
+		<input type="text" disabled value="disabled" />
+	</div>
+
+	<h2>checkbox / radio</h2>
+	<div>
+		<!--<input type="radio" name="r1" />
+		<input type="checkbox" /><br />-->
+		<label><input type="radio" name="r2" />radio1</label>
+		<label><input type="radio" name="r2" />radio2</label>
+		<label><input type="checkbox" />checkbox</label>
+	</div>
+
+	<h2>Input size</h2>
+
+	<div>
+		<input type="text" value="input defualt" /> : 기본 인풋
+
+		<br /><br />
+		<!--<input type="text" value="input small" /> : 상세검색이나 작은 공간에 사용
+
+		<br /><br />
+		<input type="text" value="input large" /> : 팝업 기본 인풋으로 사용
+		<br /><br />-->
+		<input type="text" class="p0" value="p0 120px" /><br /><br />
+		<input type="text" class="p1" value="class=p1 10%" /><br /><br />
+		<input type="text" class="p2" value="class=p2 20%" /><br /><br />
+		<input type="text" class="p3" value="class=p3 30%" /><br /><br />
+		<input type="text" class="p4" value="class=p4 40%" /><br /><br />
+		<input type="text" class="p5" value="class=p5 50%" /><br /><br />
+		<input type="text" class="p6" value="class=p6 60%" /><br /><br />
+		<input type="text" class="p7" value="class=p7 70%" /><br /><br />
+		<input type="text" class="p8" value="class=p8 80%" /><br /><br />
+		<input type="text" class="p9" value="class=p9 90%" /><br /><br />
+		<input type="text" class="p10" value="class=p10 100%" />
+	</div>
+
+	<h2>textarea</h2>
+	<div>
+		<textarea rows="5"></textarea>
+	</div>
+
+	<script src="../../../resources/lib/jquery/jquery.js"></script>
+	<script src="../../../resources/lib/jquery.easing/jquery.easing.js"></script>
+	<script src="../../../resources/lib/jquery-ui/jquery-ui.min.js"></script>
+	<script src="../../../resources/front/site/SITE_00000/js/swiper.min.js"></script>
+	<script src="../../../resources/front/site/SITE_00000/js/ScrollMagic.min.js"></script>
+	<script src="../../../resources/front/site/SITE_00000/js/TweenMax.min.js"></script>
+	<script src="../../../resources/front/site/SITE_00000/js/common.js"></script>
+
+</body>
+</html>

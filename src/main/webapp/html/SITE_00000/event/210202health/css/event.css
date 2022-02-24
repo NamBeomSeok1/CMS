@@ -1,0 +1,114 @@
+﻿/* health */
+
+@charset "UTF-8";
+.event-area {
+    margin-top:-15px;
+    text-align:center;
+    overflow:hidden;
+    margin-left:-50px;
+    margin-right:-50px;
+    width:calc(100% + 100px);
+}
+.event-visual,
+.event-cont {
+    padding:0 25px;
+}
+.event-area img {
+    position:relative;
+    z-index:1;
+    display:block;
+    margin:0 auto;
+    text-align:center;
+    max-width:100%;
+}
+.event-visual {
+    position:relative;
+    background-color:#f0f0f0;
+    padding-bottom:90px;
+    margin-bottom:-90px;
+}
+.event-visual figure {
+    position:absolute;
+    width:1020px;
+    left:50%;
+    bottom:0;
+    -webkit-transform:translateX(-50%);
+    -moz-transform:translateX(-50%);
+    -ms-transform:translateX(-50%);
+    transform:translateX(-50%);
+    z-index:0;
+}
+.event-visual figure img{
+    position:absolute;
+    right:0;
+    bottom:0;
+    display:block;
+    width:350px;
+    animation-name: floating; 
+    animation-duration: 2s; 
+    animation-iteration-count: infinite; 
+    animation-direction: alternate;
+    transform-origin:center center;
+}
+@keyframes floating { 
+    0% { transform: translate(0, 0); } 
+ /*   50%  { transform: translate(0, -5%) rotate(0); }*/
+    100% { transform: translate(0, 3%);}  
+}
+.event-cont {
+    position:relative;
+}
+.event-btn-cont {
+    position:absolute;
+    left:50%;
+    bottom:60px;
+     -webkit-transform:translateX(-50%);
+    -moz-transform:translateX(-50%);
+    -ms-transform:translateY(-50%);
+    transform:translateX(-50%);
+    z-index:2;
+}
+/* -------------------------------------------------    
+	- MOBILE MAX-WIDHT 767 		
+------------------------------------------------- */
+@media screen and (max-width:1279px) {
+   .event-area {
+        margin-left:-25px;
+        margin-right:-25px;
+        width:calc(100% + 50px);
+    }
+   .event-visual figure {
+       width:100%;
+   }
+   .event-visual figure img {
+       right:5%;
+       width:30%;
+   }
+}
+/* -------------------------------------------------    
+	- MOBILE MAX-WIDHT 767 		
+------------------------------------------------- */
+@media screen and (max-width:767px) {
+   .event-area {
+        margin-top:0;
+        margin-left:-25px;
+        margin-right:-25px;
+        width:calc(100% + 50px);
+    }
+   .event-visual,
+   .event-cont {
+        padding:0;
+    }
+    .event-visual {
+        padding-bottom:10vw;
+        margin-bottom:-10vw;
+    }
+    .event-btn-cont {
+        width:80%;
+        bottom:15vw;
+    }
+     .event-visual figure img {
+       right:5vw;
+       width:45vw;
+   }
+}

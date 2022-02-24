@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.thema.service.impl.GoodsThemaMapngMapper">
+
+	<insert id="insertGoodsThemaMapng" parameterType="modoo.module.thema.service.impl.GoodsThemaMapngVO">
+		INSERT INTO stn_goods_thema_mapng
+		(
+			THEMA_NO
+			, GOODS_ID
+			, THEMA_RANGE_SE_CODE
+			, THEMA_TY_CODE
+		)
+		VALUES(
+			#{themaNo}
+			, #{goodsId}
+			, #{themaRangeSeCode}
+			, #{themaTyCode}
+		)
+	</insert>
+	
+	<delete id="deleteGoodsThemaMapngList" parameterType="modoo.module.thema.service.impl.GoodsThemaMapngVO">
+		DELETE
+		FROM stn_goods_thema_mapng
+		WHERE THEMA_NO = #{themaNo}
+	</delete>
+	
+	<select id="selectGoodsThemaMapngList" parameterType="modoo.module.thema.service.impl.GoodsThemaMapngVO" resultType="egovMap">
+		SELECT
+			A.THEMA_NO
+			, A.GOODS_ID
+			, A.THEMA_RANGE_SE_CODE
+			, A.THEMA_TY_CODE
+			, B.GOODS_NM
+		FROM stn_goods_thema_mapng A
+		JOIN stn_goods B ON A.GOODS_ID = B.GOODS_ID
+		WHERE A.THEMA_NO = #{themaNo}
+	</select>
+</mapper>

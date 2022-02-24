@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modoo.module.card.service.impl.CreditCardMapper">
+
+
+	<!--카드 목록 -->
+	<select id="selectCardList" parameterType="modoo.module.card.service.CreditCardVO"
+		resultType="modoo.module.card.service.CreditCardVO">
+		SELECT
+		*
+		FROM stn_creditcard cc
+		<include refid="selectCreditCardWhere"></include>
+		ORDER BY CARD_ID DESC
+	</select>
+	
+	<sql id="selectCreditCardWhere">
+		<where>
+			1=1
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(useAt)">
+				AND cc.USE_AT =#{useAt}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(cardId)">
+				AND cc.CARD_ID = #{cardId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(esntlId)">
+				AND cc.ESNTL_ID = #{esntlId}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(bassUseAt)">
+				AND cc.BASS_USE_AT = #{bassUseAt}
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+				<choose>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'NM')">
+						AND cc.CARD_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!--카드 목록 cnt -->
+	<select id="selectCardListCnt" parameterType="modoo.module.card.service.CreditCardVO"
+		resultType="int">
+		SELECT COUNT(*) CNT
+		FROM stn_creditcard cc
+		<include refid="selectCreditCardWhere"></include>
+	</select>
+
+	<!--카드 기본설정 수정  -->
+	<update id="updateBassUseAt" parameterType="modoo.module.card.service.CreditCardVO">
+	UPDATE stn_creditcard SET
+	BASS_USE_AT = "N" 
+	WHERE ESNTL_ID=#{esntlId};
+	</update>
+
+	<!-- 카드 상세 -->
+	<select id="selectCard" parameterType="modoo.module.card.service.CreditCardVO"
+		resultType="modoo.module.card.service.CreditCardVO">
+		SELECT
+		CARD_ID,
+		ESNTL_ID,
+		CARD_NM,
+		CARD_USGPD,
+		CARD_NO,
+		CARD_PASSWORD,
+		BRTHDY,
+		BASS_USE_AT,
+		PASSWORD,
+		USE_AT,
+		REGIST_PNTTM,
+		LAST_UPDT_PNTTM
+		FROM stn_creditcard cc
+		<include refid="selectCreditCardWhere"></include>
+	</select>
+
+	<!-- 카드 등록 -->
+	<insert id="insertCard" parameterType="modoo.module.card.service.CreditCardVO">
+		insert into stn_creditcard(
+		CARD_ID,
+		ESNTL_ID,
+		CARD_NM,
+		CARD_USGPD,
+		CARD_NO,
+		CARD_PASSWORD,
+		BRTHDY,
+		PASSWORD,
+		BASS_USE_AT,
+		USE_AT,
+		REGIST_PNTTM
+
+		)VALUES (
+		#{cardId},
+		#{esntlId},
+		#{cardNm},
+		#{cardUsgpd},
+		#{cardNo},
+		#{cardPassword},
+		#{brthdy},
+		#{password},
+		#{bassUseAt},
+		'Y',
+		sysdate()
+		)
+	</insert>
+	<!--카드 수정-->
+	<update id="updateCard" parameterType="modoo.module.card.service.CreditCardVO">
+		UPDATE stn_creditcard
+		<set>
+			USE_AT='Y',
+			<if test="cardNm!=null">
+				CARD_NM = #{cardNm},
+			</if>
+			<if test="password!=''">
+				PASSWORD = #{password},
+			</if>
+			<if test="bassUseAt!=null">
+				BASS_USE_AT = #{bassUseAt},
+			</if>
+		</set>
+		WHERE CARD_ID = #{cardId}	
+	</update>
+	<!--카드 삭제-->
+	<update id="deleteCard" parameterType="modoo.module.card.service.CreditCardVO">
+		UPDATE stn_creditcard
+		SET 
+			USE_AT = 'N' 
+		WHERE CARD_ID=#{cardId}
+	</update>
+	
+	<!--주문 연동 카드개수  -->
+	<select id="selectOrderCardList" parameterType="modoo.module.card.service.CreditCardVO" resultType="egovMap">
+	
+	SELECT b.ORDER_NO 
+	FROM stn_creditcard a
+	JOIN stn_order b ON a.CARD_ID = b.CARD_ID
+			AND b.ORDER_KND_CODE='SBS'
+			AND b.ORDER_STTUS_CODE NOT IN('ST99','ST04')
+			AND b.card_id=#{cardId} 
+	</select> 
+</mapper>
