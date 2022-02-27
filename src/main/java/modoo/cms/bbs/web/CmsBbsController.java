@@ -9,16 +9,14 @@ import javax.validation.Valid;
 
 import modoo.module.api.service.BbsService;
 import modoo.module.api.service.BbsVO;
+import modoo.module.api.service.FilterVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import modoo.module.biztalk.service.BiztalkService;
 import modoo.module.biztalk.service.BiztalkVO;
@@ -65,13 +63,24 @@ public class CmsBbsController extends CommonDefaultController{
             searchVO.setPageUnit(propertiesService.getInt("gridPageUnit"));
             this.setPagination(paginationInfo, searchVO);
 
-            searchVO.setSearchKeyword("ten");
-            List<?> resultList = bbsService.selectBbsList(searchVO);
-            jsonResult.put("list", resultList);
 
-            int totalRecordCount = 10;
+            FilterVO filterVO = bbsService.selectFilter();
+            if(filterVO!=null){
+                searchVO.setSearchBgnde(filterVO.getFrstPnttm());
+                searchVO.setSearchEndde(filterVO.getLastPnttm());
+                searchVO.setDlpctAt(filterVO.getDplctAt());
+            }
+            if("Y".equals(searchVO.getDlpctAt())){
+                List<?> resultList = bbsService.selectBbsList(searchVO);
+                jsonResult.put("list", resultList);
+            }else{
+                List<?> resultList = bbsService.selectDupliBbsList(searchVO);
+                jsonResult.put("list", resultList);
+            }
+
+         /*   int totalRecordCount = 10;
             paginationInfo.setTotalRecordCount(totalRecordCount);
-            jsonResult.put("paginationInfo", paginationInfo);
+            jsonResult.put("paginationInfo", paginationInfo);*/
 
             jsonResult.setSuccess(true);
 
@@ -79,6 +88,36 @@ public class CmsBbsController extends CommonDefaultController{
             e.printStackTrace();
             jsonResult.setSuccess(false);
             jsonResult.setMessage(egovMessageSource.getMessage("fail.common.select")); //조회에 실패하였습니다.
+        }
+
+        return jsonResult;
+    }
+    /**
+     * 검색 필터 저장
+     *
+     * @param qainfo
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/decms/bbs/writeFilter.json", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResult writeFilter(@Valid FilterVO filterVO, BindingResult bindingResult) {
+        JsonResult jsonResult = new JsonResult();
+
+        try {
+            if (!this.isHasErrorsJson(bindingResult, jsonResult, "<br/>")) {
+
+                System.out.println(filterVO.toString());
+                filterVO.setFrstPnttm(String.valueOf(filterVO.getFrstPnttm()));
+                filterVO.setLastPnttm(String.valueOf(filterVO.getLastPnttm()));
+                bbsService.deleteFilter();
+                bbsService.insertFilter(filterVO);
+
+                jsonResult.setSuccess(true);
+            }
+        } catch (Exception e) {
+            jsonResult.setSuccess(false);
+            jsonResult.setMessage(egovMessageSource.getMessage("fail.common.insert")); //생성이 실패하였습니다.
         }
 
         return jsonResult;
@@ -101,14 +140,16 @@ public class CmsBbsController extends CommonDefaultController{
             if (!this.isHasErrorsJson(bindingResult, jsonResult, "<br/>")) {
 
                 int partcptnCo = 1;
-                System.out.println(bbs.toString());
 
                 List<BbsVO> list = bbsService.selectBbsList(bbs);
                 for(int i=0;i<list.size();i++){
-                    if(list.get(i).getUsrNm().equals(bbs.getUsrNm()))partcptnCo+=1;
+                    if(list.get(i).getUsrNm().equals(bbs.getUsrNm())){
+                        Integer maxPartcptnCo = bbsService.selectMaxPartcprnCo(list.get(i));
+                        partcptnCo=maxPartcptnCo+1;
+                    }
                 }
 
-                bbs.setPartcptnCo(1);
+                bbs.setPartcptnCo(partcptnCo);
                 bbsService.insertBbs(bbs);
 
                 jsonResult.setSuccess(true);

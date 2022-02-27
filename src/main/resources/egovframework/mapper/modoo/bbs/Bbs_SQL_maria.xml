@@ -9,7 +9,7 @@
 			,USR_NM
 			/*,STR_TO_DATE(RCORD,'%i:%s.%i') AS RCORD*/
 			,RCORD
-			,PARTCPTN_CO AS PARTCPTN_CO
+			,PARTCPTN_CO
 			,REGST_PNTTM
 		FROM	dprc_bbs
 		<include refid="selectBbsListWhere"></include>
@@ -19,7 +19,14 @@
 		</if>
 	</select>
 
-	<select id="selectFilter" parameterType="modoo.module.api.service.FilterVO" resultType="modoo.module.api.service.FilterVO">
+	<select id="selectMaxPartcprnCo"  parameterType="modoo.module.api.service.BbsVO" resultType="int">
+		SELECT
+			MAX(PARTCPTN_CO)
+		FROM dprc_bbs
+		WHERE USR_NM=#{usrNm}
+	</select>
+
+	<select id="selectFilter"  resultType="modoo.module.api.service.FilterVO">
 		SELECT
 			FRST_PNTTM
 			,LAST_PNTTM
@@ -27,16 +34,18 @@
 		FROM bbs_view_filter
 	</select>
 
+	<!--중복 허용시 쿼리-->
 	<select id="selectDupliBbsList" parameterType="modoo.module.api.service.BbsVO" resultType="modoo.module.api.service.BbsVO">
 		SELECT
 		BBS_NO
 		,USR_NM
-		,STR_TO_DATE(RCORD,'%H:%i:%s') AS RCORD
-		,COUNT(USR_NM) AS PARTCPTN_CO
+		/*,STR_TO_DATE(RCORD,'%i:%s.%i') AS RCORD*/
+		,MIN(RCORD) AS RCORD
+		,MAX(PARTCPTN_CO) AS PARTCPTN_CO
 		,REGST_PNTTM
 		FROM	dprc_bbs
 		<include refid="selectBbsListWhere"></include>
-		GROUP BY USR_NM ORDER BY RCORD ASC
+		GROUP BY USR_NM ORDER BY MIN(RCORD) ASC
 		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchKeyword,'ten')">
 			LIMIT 10
 		</if>
@@ -44,7 +53,7 @@
 
 	<sql id="selectBbsListWhere">
 		<where>
-			1=1
+			USE_AT = 'Y'
 			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
 				<choose>
 					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'SJ')">
@@ -52,6 +61,12 @@
 					</when>
 					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CN')">
 						AND SAMPLE_CN LIKE CONCAT('%', #{searchKeyword}, '%')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchBgnde)">
+						AND REGST_PNTTM <![CDATA[ >= ]]> STR_TO_DATE(CONCAT(#{searchBgnde}, ' 00:00:00'), '%Y-%m-%d')
+					</when>
+					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchEndde)">
+						AND REGST_PNTTM <![CDATA[ < ]]> STR_TO_DATE(CONCAT(#{searchEndde},' 00:00:00'), '%Y-%m-%d') + INTERVAL 1 DAY
 					</when>
 				</choose>
 			</if>
@@ -65,8 +80,8 @@
 				 ,LAST_PNTTM
 				 ,DPLCT_AT
 		) VALUES (
-				 #{frst_pnttm}
-				 ,#{last_pnttm}
+				 #{frstPnttm}
+				 ,#{lastPnttm}
 				 ,#{dplctAt}
 				 )
 	</insert>
@@ -78,11 +93,13 @@
 			,RCORD
 			,PARTCPTN_CO
 			,REGST_PNTTM
+			,USE_AT
 		) VALUES (
 			#{usrNm}
 			,#{rcord}
 			,#{partcptnCo}
 			,SYSDATE()
+			,'Y'
 		)
 	</insert>
 
@@ -98,18 +115,27 @@
 		WHERE	BBS_NO = #{bbsNo}
 	</select>
 
-	<update id="updateFilter" parameterType="modoo.module.api.service.FilterVO">
-		UPDATE bbs_view_filter
-			SET
-			FRST_PNTTM = #{frstPnttm}
-			,LAST_PNTTM = #{lastPnttm}
-			,DPLCT_AT = #{dplctAt}
-	</update>
-
 
 	<!-- 샘플 삭제 -->
-	<delete id="deleteBbs" parameterType="modoo.module.api.service.BbsVO">
-		DELETE FROM dprc_bbs
+	<delete id="deleteFilter">
+		DELETE FROM bbs_view_filter
+	</delete>
+
+	<!-- 샘플 삭제 -->
+	<delete id="updateBbs" parameterType="modoo.module.api.service.BbsVO">
+		UPDATE FROM dprc_bbs
+		SET
+		    USE_AT = #{useAt}
 		WHERE	BBS_NO = #{bbsNo}
 	</delete>
+
+	<!-- 샘플 삭제 -->
+	<update id="deleteBbs" parameterType="modoo.module.api.service.BbsVO">
+		UPDATE dprc_bbs
+		SET
+			USE_AT = 'N'
+		WHERE	BBS_NO = #{bbsNo}
+	</update>
+
 </mapper>
+

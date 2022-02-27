@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import modoo.module.api.service.BbsService;
 import modoo.module.api.service.BbsVO;
+import modoo.module.api.service.FilterVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,11 +130,22 @@ public class IndexController extends CommonDefaultController {
 
 		try {
 			searchVO.setSearchKeyword("ten");
-			List<?> resultList = bbsService.selectBbsList(searchVO);
-			jsonResult.put("list", resultList);
+			FilterVO filterVO = bbsService.selectFilter();
+			if(filterVO!=null){
+				searchVO.setSearchBgnde(String.valueOf(filterVO.getFrstPnttm()));
+				searchVO.setSearchBgnde(String.valueOf(filterVO.getFrstPnttm()));
+				searchVO.setDlpctAt(filterVO.getDplctAt());
+				jsonResult.put("filter", filterVO);
+			}
+			if("Y".equals(searchVO.getDlpctAt())){
+				List<?> resultList = bbsService.selectBbsList(searchVO);
+				jsonResult.put("list", resultList);
+			}else{
+				List<?> resultList = bbsService.selectDupliBbsList(searchVO);
+				jsonResult.put("list", resultList);
+			}
 
 			jsonResult.setSuccess(true);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonResult.setSuccess(false);
@@ -148,7 +160,12 @@ public class IndexController extends CommonDefaultController {
 	public String index(HttpServletRequest request, Model model) throws Exception {
 
 		String testSessison = (String)((HttpServletRequest)request).getSession().getAttribute("testsession");
+		FilterVO filterVO = bbsService.selectFilter();
+		if(filterVO!=null){
+			model.addAttribute("filter",filterVO);
+		}
 		return "modoo/front/bbs/racer";
+
 		
 	}
 /*

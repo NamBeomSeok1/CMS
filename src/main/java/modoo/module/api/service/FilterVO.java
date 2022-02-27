@@ -1,44 +1,41 @@
 package modoo.module.api.service;
 
+import modoo.module.common.service.CommonDefaultSearchVO;
+
 import java.util.Date;
 
 /**
  * 프론트에 뿌려줄 검색 타입
  */
 @SuppressWarnings("serial")
-public class FilterVO {
+public class FilterVO extends CommonDefaultSearchVO {
 
 
     //첫번째 검색 기간
-    private java.util.Date frstPnttm;
+    private String frstPnttm;
 
     //두번째 검색 기간
-    private java.util.Date lastPnttm;
+    private String lastPnttm;
 
     //두번째 검색 기간
     private String dplctAt;
 
-    public FilterVO(Date frstPnttm, Date lastPnttm, String dplctAt) {
-        this.frstPnttm = frstPnttm;
-        this.lastPnttm = lastPnttm;
-        this.dplctAt = dplctAt;
-    }
-
-    public Date getFrstPnttm() {
+    public String getFrstPnttm() {
         return frstPnttm;
     }
 
-    public void setFrstPnttm(Date frstPnttm) {
+    public void setFrstPnttm(String frstPnttm) {
         this.frstPnttm = frstPnttm;
     }
 
-    public Date getLastPnttm() {
+    public String getLastPnttm() {
         return lastPnttm;
     }
 
-    public void setLastPnttm(Date lastPnttm) {
+    public void setLastPnttm(String lastPnttm) {
         this.lastPnttm = lastPnttm;
     }
+
 
     public String getDplctAt() {
         return dplctAt;

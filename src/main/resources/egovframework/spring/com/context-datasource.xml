@@ -27,7 +27,7 @@
 			<property name="password" value="#{egovEnvCryptoService.getPassword()}"/>
 		</bean> -->
 		<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-			<property name="jndiName" value="java:comp/env/jdbc/racerDB" />
+			<property name="jndiName" value="java:comp/env/jdbc/homeDB" />
 		</bean>
 	</beans>
 

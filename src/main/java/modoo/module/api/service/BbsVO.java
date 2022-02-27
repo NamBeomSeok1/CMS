@@ -21,6 +21,9 @@ public class BbsVO extends CommonDefaultSearchVO {
 
     private Integer partcptnCo;
 
+    /**중복 유무**/
+    private String dlpctAt;
+
 
     @Override
     public String toString() {
@@ -32,6 +35,7 @@ public class BbsVO extends CommonDefaultSearchVO {
                 ", partcptnCo=" + partcptnCo +
                 '}';
     }
+
 
     public BigInteger getBbsNo() {
         return bbsNo;
@@ -65,11 +69,19 @@ public class BbsVO extends CommonDefaultSearchVO {
         this.rcord = rcord;
     }
 
-    public Integer getPartcptnCo(Integer bigInteger) {
+    public void setPartcptnCo(Integer partcptnCo) {
+        this.partcptnCo = partcptnCo;
+    }
+
+    public Integer getPartcptnCo() {
         return partcptnCo;
     }
 
-    public void setPartcptnCo(Integer partcptnCo) {
-        this.partcptnCo = partcptnCo;
+    public String getDlpctAt() {
+        return dlpctAt;
+    }
+
+    public void setDlpctAt(String dlpctAt) {
+        this.dlpctAt = dlpctAt;
     }
 }

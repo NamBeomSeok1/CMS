@@ -20,7 +20,7 @@
 					}},
 				{ header: '관리', name: '', width: 100, align: 'center',
 					formatter: function(item) {
-						return '<button onclick="deleteBbs('+item.row.bbsNo+');">삭제</button>';
+						return '<button class="removeBtn" onclick="deleteBbs('+item.row.bbsNo+');">삭제</button>';
 					}},
 			],
 			columnOptions: {
@@ -30,28 +30,64 @@
 		});
 		getQainfoList();
 
+		$('#datepicker-searchBgnde').datetimepicker({
+			locale: 'ko',
+			format: 'YYYY-MM-DD'
+		});
+
+		$('#datepicker-searchEndde').datetimepicker({
+			locale: 'ko',
+			format: 'YYYY-MM-DD'
+		});
+
 
 	});
 	var grid_qainfo;
+	addFilter=function (){
+
+		var frstPnttm = $('input[name=searchBgnde]').val();
+		var lastPnttm = $('input[name=searchEndde]').val();
+		var dplctAt = $('#dplctAt').val();
+		if(frstPnttm==''||lastPnttm==''||dplctAt==''){
+			alert('검색 값을 정확히 입력해주세요.');
+			return false;
+		}else{
+			var data = {
+				'frstPnttm':frstPnttm,
+				'lastPnttm':lastPnttm,
+				'dplctAt':dplctAt
+			};
+			$.ajax({
+				url:CTX_ROOT + '/decms/bbs/writeFilter.json',
+				type:'POST',
+				data:data,
+				dataType:'json',
+				success:function(result){
+					alert('검색 설정이 변경되었습니다.');
+					$.ajax({
+						url:CTX_ROOT + '/decms/bbs/bbsList.json',
+						type:'GET',
+						success:function(result){
+							var list = result.data.list;
+							grid_qainfo.resetData(list);
+						}
+					});
+				}
+			});
+		}
+
+	}
 	getQainfoList = function() {
 		$.ajax({
 			url:CTX_ROOT + '/decms/bbs/bbsList.json',
 			type:'GET',
 			success:function(result){
-				console.log(result);
-				var cnt = result.data.paginationInfo.totalRecordCount;
-				if (cnt > 0) {
-					$('#qainfo-cnt').text(cnt);
-					$('#qainfo-cnt').removeClass('badge-secondary');
-					$('#qainfo-cnt').addClass('badge-danger');
-				}
 
 				var list = result.data.list;
 				grid_qainfo.resetData(list);
 			}
 		});
 	}
-
 	addBbs=function (){
 
 		var usrNm = $('#usrNm').val();
@@ -60,10 +96,6 @@
 		var sec = $('#rcord2').val();
 		var milSec = $('#rcord3').val();
 		rcord = min+':'+sec+'.'+milSec;
-		console.log(isEmpty(usrNm));
-		console.log(isEmpty(min));
-		console.log(isEmpty(sec));
-		console.log(isEmpty(milSec));
 		if(usrNm==''||min==''||sec==''||milSec==''){
 			alert('값을 정확히 입력해주세요.');
 		}else{
@@ -90,12 +122,6 @@
 						url:CTX_ROOT + '/decms/bbs/bbsList.json',
 						type:'GET',
 						success:function(result){
-							var cnt = result.data.paginationInfo.totalRecordCount;
-							if (cnt > 0) {
-								$('#qainfo-cnt').text(cnt);
-								$('#qainfo-cnt').removeClass('badge-secondary');
-								$('#qainfo-cnt').addClass('badge-danger');
-							}
 
 							var list = result.data.list;
 							grid_qainfo.resetData(list);
@@ -109,6 +135,10 @@
 
 	deleteBbs=function(bbsNo){
 		var result = confirm('삭제하시겠습니까?');
+		if($('#dplctAt').val()=='N'){
+			alert('중복허용으로 바꾼 후 삭제가 가능합니다.');
+			return false;
+		}
 		if(result){
 			var data={
 				'bbsNo':bbsNo
@@ -125,12 +155,6 @@
 						url:CTX_ROOT + '/decms/bbs/bbsList.json',
 						type:'GET',
 						success:function(result){
-							var cnt = result.data.paginationInfo.totalRecordCount;
-							if (cnt > 0) {
-								$('#qainfo-cnt').text(cnt);
-								$('#qainfo-cnt').removeClass('badge-secondary');
-								$('#qainfo-cnt').addClass('badge-danger');
-							}
 
 							var list = result.data.list;
 							grid_qainfo.resetData(list);

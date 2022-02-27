@@ -12,6 +12,16 @@ public interface BbsService {
      */
     List<BbsVO> selectBbsList(BbsVO searchVO) throws Exception;
 
+    Integer selectMaxPartcprnCo(BbsVO searchVO) throws Exception;
+
+    List<BbsVO> selectDupliBbsList(BbsVO searchVO) throws Exception;
+
+    FilterVO selectFilter() throws Exception;
+
+    void insertFilter(FilterVO searchVO) throws Exception;
+
+    void deleteFilter() throws Exception;
+
     void insertBbs(BbsVO searchVO) throws Exception;
 
     void deleteBbs(BbsVO searchVO) throws Exception;
