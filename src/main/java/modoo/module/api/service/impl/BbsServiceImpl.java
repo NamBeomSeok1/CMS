@@ -1,12 +1,14 @@
 package modoo.module.api.service.impl;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import egovframework.rte.psl.dataaccess.util.EgovMap;
 import modoo.module.api.service.BbsService;
 import modoo.module.api.service.BbsVO;
 import modoo.module.api.service.FilterVO;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigInteger;
 import java.util.List;
 
 @Service("bbsService")
@@ -23,7 +25,7 @@ public class BbsServiceImpl extends EgovAbstractServiceImpl implements BbsServic
      */
 
     @Override
-    public List<BbsVO> selectBbsList(BbsVO searchVO) throws Exception {
+    public List<EgovMap> selectBbsList(BbsVO searchVO) throws Exception {
         return bbsMapper.selectBbsList(searchVO);
     }
 
@@ -39,7 +41,7 @@ public class BbsServiceImpl extends EgovAbstractServiceImpl implements BbsServic
     }
 
     @Override
-    public List<BbsVO> selectDupliBbsList(BbsVO searchVO) throws Exception {
+    public List<EgovMap> selectDupliBbsList(BbsVO searchVO) throws Exception {
         return bbsMapper.selectDupliBbsList(searchVO);
     }
 
@@ -50,6 +52,19 @@ public class BbsServiceImpl extends EgovAbstractServiceImpl implements BbsServic
 
     @Override
     public void deleteBbs(BbsVO searchVO) throws Exception {
+
+        if(searchVO.getBbsNoList()!=null){
+            for(BigInteger i : searchVO.getBbsNoList()){
+                searchVO.setBbsNo(i);
+
+                BbsVO bbsVO = bbsMapper.selectBbs(searchVO);
+                searchVO.setUsrNm(bbsVO.getUsrNm());
+                searchVO.setPartcptnCo(bbsVO.getPartcptnCo()-1);
+
+                bbsMapper.updateBbsPartcptnCo(searchVO);
+            }
+        }
+
         bbsMapper.deleteBbs(searchVO);
     }
 
@@ -64,5 +79,8 @@ public class BbsServiceImpl extends EgovAbstractServiceImpl implements BbsServic
         bbsMapper.deleteFilter();
     }
 
-
+    @Override
+    public void updateBbsPartcptnCo(BbsVO searchVO) throws Exception {
+        bbsMapper.updateBbsPartcptnCo(searchVO);
+    }
 }

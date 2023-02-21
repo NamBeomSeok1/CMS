@@ -33,12 +33,14 @@
                 <img src="/resources/front/bbs/images/tit.svg"
                      alt="1st AWS DeepRacer League FOX LEARNING CENTER @ Daejeon"/>
             </figure>
-            <c:if test="${!empty filter}">
-                <div class="date">
+            <c:set var="display" value="display:none;"/>
+            <c:if test="${!empty filter and  filter.dateUseAt eq 'Y'}">
+                <c:set var="display" value=""/>
+            </c:if>
+                <div class="date" style="${display}">
                     <i></i>
                     <span>${filter.frstPnttm}  ~  ${filter.lastPnttm}</span>
                 </div>
-            </c:if>
         </header>
         <div class="rank-body">
             <div class="rank-tit">
@@ -98,15 +100,24 @@
                 }
                 $('.rank-list li').remove();
                 $('.rank-list').append(html);
-                if(!isEmpty(result.data.filter.dplctAt)){
+                if(!isEmpty(result.data.filter)){
                     var filter = result.data.filter;
-                    var filterHtml = '   <i></i>';
-                    filterHtml += '<span>'+filter.frstPnttm+' ~ '+filter.lastPnttm+'</span>';
-                    /*$('.date').children().empty();
-                    $('.data').html(filterHtml);*/
-                }
+                    console.log(filter);
+                    var filterHtml = '';
+                    if(filter.dateUseAt == 'Y'){
+                        var frstPnttm = filter.frstPnttm.replace("00:00:00.0","");
+                        var lastPnttm = filter.lastPnttm.replace("00:00:00.0","");
+                        filterHtml += frstPnttm+' ~ '+lastPnttm;
+                        $('.date').children('span').text(filterHtml);
+                        $('.date').show();
+                    }else{
+                        $('.date').hide();
+                    }
 
+
+                }
                 loop();
+
             }
         });
     }

@@ -3,20 +3,26 @@
 <mapper namespace="modoo.module.api.service.impl.BbsMapper">
 
 	<!-- 게시물 시간이 빠른게 위로 -->
-	<select id="selectBbsList" parameterType="modoo.module.api.service.BbsVO" resultType="modoo.module.api.service.BbsVO">
+	<select id="selectBbsList" parameterType="modoo.module.api.service.BbsVO" resultType="egovMap">
 		SELECT
-			BBS_NO
+			ROW_NUMBER() OVER(ORDER BY RCORD ASC) as rn
+			,BBS_NO
 			,USR_NM
 			/*,STR_TO_DATE(RCORD,'%i:%s.%i') AS RCORD*/
 			,RCORD
 			,PARTCPTN_CO
-			,REGST_PNTTM
+			,DATE_FORMAT(REGST_PNTTM,'%Y-%m-%d') AS REGST_PNTTM
 		FROM	dprc_bbs
 		<include refid="selectBbsListWhere"></include>
 		ORDER BY RCORD ASC
-		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchKeyword,'ten')">
-			LIMIT 10
-		</if>
+		<choose>
+			<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchKeyword,'ten')">
+				LIMIT 10
+			</when>
+			<otherwise>
+				LIMIT 100
+			</otherwise>
+		</choose>
 	</select>
 
 	<select id="selectMaxPartcprnCo"  parameterType="modoo.module.api.service.BbsVO" resultType="int">
@@ -31,24 +37,31 @@
 			FRST_PNTTM
 			,LAST_PNTTM
 			,DPLCT_AT
+			,DATE_USE_AT
 		FROM bbs_view_filter
 	</select>
 
 	<!--중복 허용시 쿼리-->
-	<select id="selectDupliBbsList" parameterType="modoo.module.api.service.BbsVO" resultType="modoo.module.api.service.BbsVO">
+	<select id="selectDupliBbsList" parameterType="modoo.module.api.service.BbsVO" resultType="egovMap">
 		SELECT
-		BBS_NO
+		ROW_NUMBER() OVER(ORDER BY RCORD ASC) as rn
+		,BBS_NO
 		,USR_NM
 		/*,STR_TO_DATE(RCORD,'%i:%s.%i') AS RCORD*/
 		,MIN(RCORD) AS RCORD
 		,MAX(PARTCPTN_CO) AS PARTCPTN_CO
-		,REGST_PNTTM
+		,DATE_FORMAT(REGST_PNTTM,'%Y-%m-%d') AS REGST_PNTTM
 		FROM	dprc_bbs
 		<include refid="selectBbsListWhere"></include>
 		GROUP BY USR_NM ORDER BY MIN(RCORD) ASC
-		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchKeyword,'ten')">
-			LIMIT 10
-		</if>
+		<choose>
+			<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchKeyword,'ten')">
+				LIMIT 10
+			</when>
+			<otherwise>
+				LIMIT 100
+			</otherwise>
+		</choose>
 	</select>
 
 	<sql id="selectBbsListWhere">
@@ -62,13 +75,13 @@
 					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(searchCondition, 'CN')">
 						AND SAMPLE_CN LIKE CONCAT('%', #{searchKeyword}, '%')
 					</when>
-					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchBgnde)">
-						AND REGST_PNTTM <![CDATA[ >= ]]> STR_TO_DATE(CONCAT(#{searchBgnde}, ' 00:00:00'), '%Y-%m-%d')
-					</when>
-					<when test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchEndde)">
-						AND REGST_PNTTM <![CDATA[ < ]]> STR_TO_DATE(CONCAT(#{searchEndde},' 00:00:00'), '%Y-%m-%d') + INTERVAL 1 DAY
-					</when>
 				</choose>
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchBgnde)">
+				AND REGST_PNTTM <![CDATA[ >= ]]> STR_TO_DATE(CONCAT(#{searchBgnde}, ' 00:00:00'), '%Y-%m-%d')
+			</if>
+			<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchEndde)">
+				AND REGST_PNTTM <![CDATA[ < ]]> STR_TO_DATE(CONCAT(#{searchEndde},' 00:00:00'), '%Y-%m-%d') + INTERVAL 1 DAY
 			</if>
 		</where>
 	</sql>
@@ -79,10 +92,12 @@
 				  FRST_PNTTM
 				 ,LAST_PNTTM
 				 ,DPLCT_AT
+				 ,DATE_USE_AT
 		) VALUES (
 				 #{frstPnttm}
 				 ,#{lastPnttm}
 				 ,#{dplctAt}
+				 ,#{dateUseAt}
 				 )
 	</insert>
 
@@ -123,10 +138,17 @@
 
 	<!-- 샘플 삭제 -->
 	<delete id="updateBbs" parameterType="modoo.module.api.service.BbsVO">
-		UPDATE FROM dprc_bbs
+		UPDATE dprc_bbs
 		SET
 		    USE_AT = #{useAt}
 		WHERE	BBS_NO = #{bbsNo}
+	</delete>
+
+	<delete id="updateBbsPartcptnCo" parameterType="modoo.module.api.service.BbsVO">
+		UPDATE dprc_bbs
+		SET
+			PARTCPTN_CO = #{partcptnCo}
+		WHERE	USR_NM = #{usrNm}
 	</delete>
 
 	<!-- 샘플 삭제 -->
@@ -134,7 +156,7 @@
 		UPDATE dprc_bbs
 		SET
 			USE_AT = 'N'
-		WHERE	BBS_NO = #{bbsNo}
+		WHERE	BBS_NO IN <foreach item="item" collection="bbsNoList" open="(" separator="," close=")">#{item}</foreach>
 	</update>
 
 </mapper>

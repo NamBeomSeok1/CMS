@@ -20,6 +20,8 @@ public class FilterVO extends CommonDefaultSearchVO {
     //두번째 검색 기간
     private String dplctAt;
 
+    private String dateUseAt;
+
     public String getFrstPnttm() {
         return frstPnttm;
     }
@@ -52,5 +54,13 @@ public class FilterVO extends CommonDefaultSearchVO {
                 ", lastPnttm=" + lastPnttm +
                 ", dplctAt='" + dplctAt + '\'' +
                 '}';
+    }
+
+    public String getDateUseAt() {
+        return dateUseAt;
+    }
+
+    public void setDateUseAt(String dateUseAt) {
+        this.dateUseAt = dateUseAt;
     }
 }

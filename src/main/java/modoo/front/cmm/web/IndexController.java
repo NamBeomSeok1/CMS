@@ -132,8 +132,10 @@ public class IndexController extends CommonDefaultController {
 			searchVO.setSearchKeyword("ten");
 			FilterVO filterVO = bbsService.selectFilter();
 			if(filterVO!=null){
-				searchVO.setSearchBgnde(String.valueOf(filterVO.getFrstPnttm()));
-				searchVO.setSearchBgnde(String.valueOf(filterVO.getFrstPnttm()));
+				if("Y".equals(filterVO.getDateUseAt())){
+					searchVO.setSearchBgnde(String.valueOf(filterVO.getFrstPnttm()));
+					searchVO.setSearchEndde(String.valueOf(filterVO.getLastPnttm()));
+				}
 				searchVO.setDlpctAt(filterVO.getDplctAt());
 				jsonResult.put("filter", filterVO);
 			}

@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class BbsVO extends CommonDefaultSearchVO {
@@ -24,6 +25,8 @@ public class BbsVO extends CommonDefaultSearchVO {
     /**중복 유무**/
     private String dlpctAt;
 
+
+    private List<java.math.BigInteger> bbsNoList;
 
     @Override
     public String toString() {
@@ -83,5 +86,13 @@ public class BbsVO extends CommonDefaultSearchVO {
 
     public void setDlpctAt(String dlpctAt) {
         this.dlpctAt = dlpctAt;
+    }
+
+    public List<BigInteger> getBbsNoList() {
+        return bbsNoList;
+    }
+
+    public void setBbsNoList(List<BigInteger> bbsNoList) {
+        this.bbsNoList = bbsNoList;
     }
 }

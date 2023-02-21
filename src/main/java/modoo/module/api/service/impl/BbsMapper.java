@@ -1,6 +1,7 @@
 package modoo.module.api.service.impl;
 
 import egovframework.rte.psl.dataaccess.mapper.Mapper;
+import egovframework.rte.psl.dataaccess.util.EgovMap;
 import modoo.module.api.service.BbsVO;
 import modoo.module.api.service.FilterVO;
 import modoo.module.banner.service.BannerVO;
@@ -16,11 +17,13 @@ public interface BbsMapper {
      * @return
      * @throws Exception
      */
-    List<BbsVO> selectBbsList(BbsVO searchVO) throws Exception;
+    List<EgovMap> selectBbsList(BbsVO searchVO) throws Exception;
 
-    Integer selectMaxPartcprnCo(BbsVO searchVO) throws Exception;
+    BbsVO selectBbs(BbsVO searchVO) throws Exception;
 
-    List<BbsVO> selectDupliBbsList(BbsVO searchVO) throws Exception;
+    Integer selectMaxPartcprnCo(BbsVO seBbsVO) throws Exception;
+
+    List<EgovMap> selectDupliBbsList(BbsVO searchVO) throws Exception;
 
     FilterVO selectFilter() throws Exception;
 
@@ -31,4 +34,5 @@ public interface BbsMapper {
     void insertBbs(BbsVO searchVO) throws Exception;
 
     void deleteBbs(BbsVO searchVO) throws Exception;
+    void updateBbsPartcptnCo(BbsVO searchVO) throws Exception;
 }

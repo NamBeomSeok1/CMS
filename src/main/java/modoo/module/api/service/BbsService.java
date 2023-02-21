@@ -1,5 +1,7 @@
 package modoo.module.api.service;
 
+import egovframework.rte.psl.dataaccess.util.EgovMap;
+
 import java.util.List;
 
 public interface BbsService {
@@ -10,11 +12,11 @@ public interface BbsService {
      * @return
      * @throws Exception
      */
-    List<BbsVO> selectBbsList(BbsVO searchVO) throws Exception;
+    List<EgovMap> selectBbsList(BbsVO searchVO) throws Exception;
 
     Integer selectMaxPartcprnCo(BbsVO searchVO) throws Exception;
 
-    List<BbsVO> selectDupliBbsList(BbsVO searchVO) throws Exception;
+    List<EgovMap> selectDupliBbsList(BbsVO searchVO) throws Exception;
 
     FilterVO selectFilter() throws Exception;
 
@@ -25,4 +27,5 @@ public interface BbsService {
     void insertBbs(BbsVO searchVO) throws Exception;
 
     void deleteBbs(BbsVO searchVO) throws Exception;
+    void updateBbsPartcptnCo(BbsVO searchVO) throws Exception;
 }

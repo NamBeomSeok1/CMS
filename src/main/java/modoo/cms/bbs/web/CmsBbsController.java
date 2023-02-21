@@ -2,19 +2,21 @@ package modoo.cms.bbs.web;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.enterprise.inject.Model;
 import javax.validation.Valid;
 
 import modoo.module.api.service.BbsService;
 import modoo.module.api.service.BbsVO;
 import modoo.module.api.service.FilterVO;
+import modoo.module.shop.goods.info.service.GoodsVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +42,10 @@ import egovframework.com.cmm.util.EgovUserDetailsHelper;
 import egovframework.com.utl.fcc.service.EgovDateUtil;
 import egovframework.rte.psl.dataaccess.util.EgovMap;
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
+import org.springframework.web.servlet.ModelAndView;
+
+import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.Collectors.toList;
 
 @Controller
 public class CmsBbsController extends CommonDefaultController{
@@ -62,21 +68,40 @@ public class CmsBbsController extends CommonDefaultController{
             PaginationInfo paginationInfo = new PaginationInfo();
             searchVO.setPageUnit(propertiesService.getInt("gridPageUnit"));
             this.setPagination(paginationInfo, searchVO);
+            List<EgovMap> resultList = new ArrayList<>();
 
+            searchVO.setDlpctAt("Y");
+            if("Y".equals(searchVO.getDlpctAt())){
+                 resultList = bbsService.selectBbsList(searchVO);
+            }else{
+                 resultList = bbsService.selectDupliBbsList(searchVO);
+            }
 
             FilterVO filterVO = bbsService.selectFilter();
-            if(filterVO!=null){
+           /* if(filterVO!=null){
                 searchVO.setSearchBgnde(filterVO.getFrstPnttm());
                 searchVO.setSearchEndde(filterVO.getLastPnttm());
                 searchVO.setDlpctAt(filterVO.getDplctAt());
-            }
-            if("Y".equals(searchVO.getDlpctAt())){
-                List<?> resultList = bbsService.selectBbsList(searchVO);
-                jsonResult.put("list", resultList);
-            }else{
-                List<?> resultList = bbsService.selectDupliBbsList(searchVO);
-                jsonResult.put("list", resultList);
-            }
+                searchVO.setSearchKeyword("ten");
+
+                List<Object> frontNoList = bbsService.selectBbsList(searchVO).stream()
+                        .map(m -> String.valueOf(m.get("bbsNo")))
+                        .collect(toList());
+
+                for(EgovMap e : resultList){
+                    for(Object a : frontNoList){
+                        if(String.valueOf(e.get("bbsNo")).equals(String.valueOf(a))){
+                            e.put("front","Y");
+                            e.put("cnt",resultList.size()-frontNoList.size());
+                        }
+                    }
+                }
+            }*/
+
+
+            jsonResult.put("list", resultList);
+
+
 
          /*   int totalRecordCount = 10;
             paginationInfo.setTotalRecordCount(totalRecordCount);
@@ -108,8 +133,10 @@ public class CmsBbsController extends CommonDefaultController{
             if (!this.isHasErrorsJson(bindingResult, jsonResult, "<br/>")) {
 
                 System.out.println(filterVO.toString());
-                filterVO.setFrstPnttm(String.valueOf(filterVO.getFrstPnttm()));
-                filterVO.setLastPnttm(String.valueOf(filterVO.getLastPnttm()));
+                if("Y".equals(filterVO.getDateUseAt())){
+                    filterVO.setFrstPnttm(String.valueOf(filterVO.getFrstPnttm()));
+                    filterVO.setLastPnttm(String.valueOf(filterVO.getLastPnttm()));
+                }
                 bbsService.deleteFilter();
                 bbsService.insertFilter(filterVO);
 
@@ -140,17 +167,19 @@ public class CmsBbsController extends CommonDefaultController{
             if (!this.isHasErrorsJson(bindingResult, jsonResult, "<br/>")) {
 
                 int partcptnCo = 1;
-
-                List<BbsVO> list = bbsService.selectBbsList(bbs);
+                List<EgovMap> list = bbsService.selectBbsList(bbs);
                 for(int i=0;i<list.size();i++){
-                    if(list.get(i).getUsrNm().equals(bbs.getUsrNm())){
-                        Integer maxPartcptnCo = bbsService.selectMaxPartcprnCo(list.get(i));
+                    if(list.get(i).get("usrNm").equals(bbs.getUsrNm())){
+                        BbsVO searBbsVO = new BbsVO();
+                        searBbsVO.setUsrNm(String.valueOf(list.get(i).get("usrNm")));
+                        Integer maxPartcptnCo = bbsService.selectMaxPartcprnCo(searBbsVO);
                         partcptnCo=maxPartcptnCo+1;
                     }
                 }
 
                 bbs.setPartcptnCo(partcptnCo);
                 bbsService.insertBbs(bbs);
+                bbsService.updateBbsPartcptnCo(bbs);
 
                 jsonResult.setSuccess(true);
             }
@@ -177,7 +206,6 @@ public class CmsBbsController extends CommonDefaultController{
 
         try {
             System.out.println(bbs.toString());
-
             bbsService.deleteBbs(bbs);
 
         } catch (Exception e) {
@@ -186,6 +214,34 @@ public class CmsBbsController extends CommonDefaultController{
         }
 
         return jsonResult;
+    }
+
+    @RequestMapping(value = "/decms/bbs/bbsExcelDownload.do")
+    public ModelAndView bbsListExcel(@ModelAttribute("searchVO") BbsVO searchVO
+                                       ) throws Exception {
+        LoginVO user = (LoginVO)EgovUserDetailsHelper.getAuthenticatedUser();
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        FilterVO filterVO = bbsService.selectFilter();
+
+       /* if(filterVO!=null){
+            searchVO.setSearchBgnde(filterVO.getFrstPnttm());
+            searchVO.setSearchEndde(filterVO.getLastPnttm());
+            searchVO.setDlpctAt(filterVO.getDplctAt())
+        }*/
+        searchVO.setDlpctAt("Y");
+        if("Y".equals(searchVO.getDlpctAt())){
+            List<?> resultList = bbsService.selectBbsList(searchVO);
+            map.put("dataList", resultList);
+        }else{
+            List<?> resultList = bbsService.selectDupliBbsList(searchVO);
+            map.put("dataList", resultList);
+        }
+
+        map.put("template", "deepRacer.xlsx");
+        map.put("fileName", "딥레이서기록");
+
+        return new ModelAndView("commonExcelView", map);
     }
 
 }
