@@ -53,7 +53,7 @@ public class BbsServiceImpl extends EgovAbstractServiceImpl implements BbsServic
     @Override
     public void deleteBbs(BbsVO searchVO) throws Exception {
 
-        if(searchVO.getBbsNoList()!=null){
+       /* if(searchVO.getBbsNoList()!=null){
             for(BigInteger i : searchVO.getBbsNoList()){
                 searchVO.setBbsNo(i);
 
@@ -63,7 +63,7 @@ public class BbsServiceImpl extends EgovAbstractServiceImpl implements BbsServic
 
                 bbsMapper.updateBbsPartcptnCo(searchVO);
             }
-        }
+        }*/
 
         bbsMapper.deleteBbs(searchVO);
     }

@@ -179,7 +179,7 @@ public class CmsBbsController extends CommonDefaultController{
 
                 bbs.setPartcptnCo(partcptnCo);
                 bbsService.insertBbs(bbs);
-                bbsService.updateBbsPartcptnCo(bbs);
+                /*bbsService.updateBbsPartcptnCo(bbs);*/
 
                 jsonResult.setSuccess(true);
             }

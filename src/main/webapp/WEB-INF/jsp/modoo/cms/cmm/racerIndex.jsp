@@ -17,35 +17,27 @@
 </head>
 <body>
 	<fieldset class="container-fluid rounded pt-3 pb-3 mb-3">
-	<hr/>
 		<div class="card">
 			<div class="card-body">
 				<h5 class="card-title">등록</h5>
-				<div class="col-sm-3">
-					<div class="form-group row">
+				<div class="col-sm-5">
+					<div class="card-body mt-1">
+						<h4 class="card-title">이름</h4>
+						<p class="card-text">동일 이름 입력 시 이름 옆 ‘#참여횟수’가 추가됩니다.</p>
 						<div class="input-group input-group-sm">
-						<div class="input-group-prepend">
-							<div class="input-group-text">이름</div>
+							<input type="text" id="usrNm" class="form-control form-control-sm" value=""/>
 						</div>
-						<input type="text" id="usrNm" class="form-control form-control-sm" value=""/>
-						</div>
+						<h4 class="card-title mt-3">분</h4>
 						<div class="input-group input-group-sm">
 							<input type="text" placeholder="한자리수면 앞에 0붙여주세요 ex)5분->05"  maxlength="2" id="rcord1" class="form-control form-control-sm inputNumber" value=""/>
-							<div class="input-group-append">
-								<span class="input-group-text">분</span>
-							</div>
 						</div>
+						<h4 class="card-title mt-3">초</h4>
 						<div class="input-group input-group-sm">
 							<input type="text" placeholder="한자리수면 앞에 0붙여주세요 ex)5분->05"  maxlength="2" id="rcord2" class="form-control form-control-sm inputNumber" value=""/>
-							<div class="input-group-append">
-								<span class="input-group-text">초</span>
-							</div>
 						</div>
+						<h4 class="card-title mt-3">밀리초</h4>
 						<div class="input-group input-group-sm">
 							<input type="text" placeholder="한자리수면 앞에 00붙여주세요 ex)5분->05"  maxlength="3" id="rcord3" class="form-control form-control-sm inputNumber" value=""/>
-							<div class="input-group-append">
-								<span class="input-group-text">밀리초</span>
-							</div>
 						</div>
 				</div>
 				<a href="javascript: addBbs();" class="btn btn-primary btn-sm btn-area">등록</a>
@@ -55,20 +47,26 @@
 	<div class="col-sm-12">
 		<div class="card">
 			<div class="card-body">
-				<h5 class="card-title">순위</h5>
-				<p class="card-text">딥레이서 홈페이지에 나오는 기록입니다. (중복허용을 하지 않으면 같은 이름으로 등록된 기록 중 제일 빠른 기록으로 나옵니다.)</p>
-				<div class="card mt-2">
-					<div class="card-body">
-						<div class="col-sm-5">
-						<h5 class="card-title">순위 기간 설정</h5>
+				<h5 class="card-title">딥레이서 리그 TOP 10</h5>
+				<p class="card-text">딥레이서 리그 기록은 상위 1위부터 10위까지 노출됩니다. (http://racer.foxedu.kr/)</p>
+				<div class="col-sm-6">
+				<div class="card">
+						<div class="card-body">
+						<div class="form-group row col-sm-12">
+							<h5 class="card-title">순위 기간 설정</h5>
 							<c:set var="dateDisabled" value="disabled"/>
 							<c:set var="dateChecked" value=""/>
-								<c:if test="${filter.dateUseAt eq 'Y'}">
-									<c:set var="dateChecked" value="checked"/>
-									<c:set var="dateDisabled" value=""/>
-								</c:if>
-						<div class="form-group row">
-							<div class="col-sm-3">
+							<c:if test="${filter.dateUseAt eq 'Y'}">
+								<c:set var="dateChecked" value="checked"/>
+								<c:set var="dateDisabled" value=""/>
+							</c:if>
+							<div class="custom-control custom-control-sm custom-checkbox custom-control-inline ml-3">
+								<input type="checkbox" id="dateUseAt" name="dateUseAt" class="custom-control-input" value="Y" ${dateChecked}>
+								<label class="custom-control-label" for="dateUseAt"><small>기간 설정</small></label>
+							</div>
+						</div>
+						<div class="form-group row col-sm-12">
+							<div class="col-sm-5">
 								<div class="input-group input-group-sm" id="datepicker-searchBgnde" data-target-input="nearest">
 									<input name="searchBgnde" id="beginDate" class="form-control datetimepicker-input" data-target="#datepicker-searchBgnde" placeholder="시작일" value="${filter.frstPnttm}" ${dateDisabled}/>
 									<div class="input-group-append" data-target="#datepicker-searchBgnde" data-toggle="datetimepicker">
@@ -76,8 +74,8 @@
 									</div>
 								</div>
 							</div>
-							&nbsp ~ &nbsp
-							<div class="col-sm-3">
+							~
+							<div class="col-sm-5">
 								<div class="input-group input-group-sm" id="datepicker-searchEndde" data-target-input="nearest">
 									<input name="searchEndde" id="endDate" class="form-control datetimepicker-input" data-target="#datepicker-searchEndde" placeholder="종료일" value="${filter.lastPnttm}" ${dateDisabled}/>
 									<div class="input-group-append" data-target="#datepicker-searchEndde" data-toggle="datetimepicker">
@@ -85,29 +83,26 @@
 									</div>
 								</div>
 							</div>
-							<div class="custom-control custom-control-sm custom-checkbox custom-control-inline">
-								<input type="checkbox" id="dateUseAt" name="dateUseAt" class="custom-control-input" value="Y" ${dateChecked}>
-								<label class="custom-control-label" for="dateUseAt"><small>기간 설정</small></label>
-							</div>
-							<div class="col-sm-3">
+						</div>
+
+						<h5 class="card-title">이름 중복 허용</h5>
+						<p class="card-text">’중복 비허용’ 시 동일 이름 기록 중 가장 빠른 기록만 제공됩니다.</p>
+							<div class="form-group row col-sm-8">
 								<div class="input-group input-group-sm">
-									<div class="input-group-prepend">
-										<span class="input-group-text">1~10 이름</span>
-									</div>
 									<select id="dplctAt" class="custom-select custom-select-sm">
 										<c:if test="${empty filter}">
 											<option value="Y" selected>중복허용</option>
-											<option value="N">중복허용X</option>
+											<option value="N">중복 비허용</option>
 										</c:if>
 										<c:if test="${!empty filter}">
 											<c:choose>
 												<c:when test="${filter.dplctAt eq 'Y'}">
 													<option value="Y" selected>중복허용</option>
-													<option value="N">중복허용X</option>
+													<option value="N">중복 비허용</option>
 												</c:when>
 												<c:otherwise>
 													<option value="Y" >중복허용</option>
-													<option value="N" selected>중복허용X</option>
+													<option value="N" selected>중복 비허용</option>
 												</c:otherwise>
 											</c:choose>
 										</c:if>

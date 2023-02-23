@@ -29,7 +29,7 @@
 		SELECT
 			MAX(PARTCPTN_CO)
 		FROM dprc_bbs
-		WHERE USR_NM=#{usrNm}
+		WHERE USR_NM=#{usrNm} AND USE_AT ='Y'
 	</select>
 
 	<select id="selectFilter"  resultType="modoo.module.api.service.FilterVO">
@@ -155,7 +155,7 @@
 	<update id="deleteBbs" parameterType="modoo.module.api.service.BbsVO">
 		UPDATE dprc_bbs
 		SET
-			USE_AT = 'N'
+		    USE_AT = 'N'
 		WHERE	BBS_NO IN <foreach item="item" collection="bbsNoList" open="(" separator="," close=")">#{item}</foreach>
 	</update>
 
